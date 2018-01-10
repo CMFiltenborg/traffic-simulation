@@ -68,9 +68,13 @@ def simulate(animate=False):
         if animate:
             yield grid
 
+grids = simulate(False)
+def print_grid(grid):
+    print("---------------")
+    print(grid)
+    print("---------------")
 
-simulate()
-
+[print_grid(grid) for grid in grids]
 
 
 

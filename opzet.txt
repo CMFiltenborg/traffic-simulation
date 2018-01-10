@@ -1,0 +1,10 @@
+- Main event loop
+    - Spawn autos
+    - For-each auto:
+        - Case baan wissel:
+            - Incentive criteria
+            - Safety criteria
+        - Case non-baan wissel:
+            - NaSch rules of discplacement
+            
+- Visualisatie

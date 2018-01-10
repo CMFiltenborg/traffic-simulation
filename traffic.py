@@ -10,7 +10,7 @@ grid = np.full((rows,collums),  -1, dtype=np.int32)
 step = 10#0
 auto = 1
 vmax = 5
-pv = 0.5
+pv = 0.2
 
 
 '''
@@ -23,6 +23,7 @@ def simulate(animate=False):
     print("hoi")
     for i in range(step):
         coordinates = np.where(grid != -1)
+        gridTemp = grid
         for j in range(len(coordinates[0])):
             if False:
                 print("hoi")
@@ -36,7 +37,7 @@ def simulate(animate=False):
                 gap = 0
                 for k in range(1, vmax+1):
                     if c+k < collums-1:
-                        if grid[r][c+k] == -1:
+                        if gridTemp[r][c+k] == -1:
                             gap += 1
                         else:
                             break
@@ -56,9 +57,16 @@ def simulate(animate=False):
 
         #generate auto only works for 1 car
         for l in range(auto):
-            r = np.random.randint(0, 3)
-            v = np.random.randint(1, 6)
-            grid[r][0] = v
+            space = []
+            for m in range(rows):
+                if grid[m][0] == -1:
+                    space.append(m)
+            if len(space) < 1:
+                break
+            else:
+                r = np.random.randint(0, len(space))
+                v = np.random.randint(1, 6)
+                grid[space[r]][0] = v
 
         print("---------------")
         print(grid)

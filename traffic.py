@@ -4,9 +4,13 @@
 
 import numpy as np
 
-grid = np.full((3,10),  -1, dtype=np.int32)
-step = 100
+rows = 3
+collums = 10
+grid = np.full((rows,collums),  -1, dtype=np.int32)
+step = 10#0
 auto = 1
+vmax = 5
+pv = 0.5
 
 '''
 grid[2][3] = 3
@@ -17,13 +21,62 @@ print(np.where(grid != -1))
 for i in range(step):
     coordinates = np.where(grid != -1)
     for j in range(len(coordinates[0])):
-        if incentive:
-        
+        if False:
+            print("hoi")
         else:
             #nagel-schreckenberg
-    #generate auto
-    for j in range(auto):
-        x = np.random.randint(0, 3)
-        y = np.random.randint(0, 10)
+            r = coordinates[0][j]
+            c = coordinates[1][j]
+            v = grid[r][c]
+            grid[r][c] = -1
+            
+            gap = 0
+            for k in range(1, vmax+1):
+                if c+k < collums-1:
+                    if grid[r][c+k] == -1:
+                        gap += 1
+                    else:
+                        break
+                else:
+                    gap = 10
+
+            #acceleration
+            v = min(v+1, vmax)
+            #braking
+            v = min(v, gap)
+            #randomness
+            if np.random.random() < pv:
+                v = max(v-1, 0)
+            #update
+            if c+v < collums-1:
+                grid[r][c+v] = v
+
+    #generate auto only works for 1 car
+    for l in range(auto):
+        r = np.random.randint(0, 3)
         v = np.random.randint(1, 6)
-        grid[x][y] = v
+        grid[r][0] = v
+
+    print("---------------")
+    print(grid)
+    print("---------------")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

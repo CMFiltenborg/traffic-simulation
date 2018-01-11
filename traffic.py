@@ -106,8 +106,8 @@ def simulate(animate=False):
             vh = min(v+1, vmax)
 
             gap = calcGap(r, c, gridTemp, 1)
-            
-            
+
+
             if vh > gap:
                 laneChange(r, c, v, gridTemp, gap, vh)
             else:
@@ -158,21 +158,20 @@ def simulate(animate=False):
                 grid[space[r]][0] = v
                 '''
 
-        print("---------------")
-        print(grid)
-        print("---------------")
-
         # If we want to animate the simulation, yield the grid for every step
         if animate:
             yield grid
 
-grids = simulate(False)
+
 def print_grid(grid):
     print("---------------")
     print(grid)
     print("---------------")
 
-[print_grid(grid) for grid in grids]
+
+if __name__ == '__main__':
+    grids = simulate(False)
+    [print_grid(grid) for grid in grids]
 
 
 

@@ -8,3 +8,8 @@
             - NaSch rules of discplacement
             
 - Visualisatie
+
+
+- Index grid maken / Auto object
+- Oprit / Auto's spawnen
+- Afrit

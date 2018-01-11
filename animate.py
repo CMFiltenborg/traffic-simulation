@@ -1,33 +1,60 @@
-from traffic import simulate
+"""
+Simple animation of the highway
+
+"""
+
+import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-import numpy as np
+from traffic import simulate
+
+
+def update_line(num, data, line):
+    line.set_data(data[..., :num])
+    return line,
+
+
 
 grids = simulate(animate=True)
-
-def animate(i):
-    line.set_ydata(np.sin(x + i/10.0))  # update the data
-    return line,
-
-
-# Init only required for blitting to give a clean slate.
-def init():
-    line.set_ydata(np.ma.array(x, mask=True))
-    return line,
-
+grid = next(grids)
 fig, ax = plt.subplots()
-x = np.arange(0, 2*np.pi, 0.01)
-line, = ax.plot(x, np.sin(x))
-ani = animation.FuncAnimation(fig, animate, np.arange(1, 200), init_func=init,
-                              interval=25, blit=True)
+x = np.arange(0, 100)
+y = np.arange(0, 10)
+
+data = np.random.rand(2, 25)
+
+row_heights = [0.45, 0.5, 0.55]
+
+for row_height in row_heights:
+    l, = ax.plot([0, 1], [row_height, row_height])
+    l, = ax.plot([0, 1], [row_height, row_height])
+    l, = ax.plot([0, 1], [row_height, row_height])
+
+
+# Scale to plot 0 - 1
+
+plt.xlim(0, 1)
+plt.ylim(0, 1)
+plt.xlabel('x')
+plt.title('test')
+
+
+def plot_grid(grid):
+    lines = []
+    for i in range(grid.shape[0]):
+        row = grid[i]
+        row_height = row_heights[i]
+        column_coordinates, = np.where(row != -1)
+        column_coordinates = column_coordinates / row.shape[0]
+        print(column_coordinates, np.full(column_coordinates.shape[0], row_height))
+        line, = ax.plot(column_coordinates, np.full(column_coordinates.shape[0], row_height), 'bo')
+        lines.append(line)
+
+    return (*lines),
+
+line_ani = animation.FuncAnimation(fig, plot_grid, grids, fargs=(),
+                                   interval=500, blit=True)
+
+# To save the animation, use the command: line_ani.save('lines.mp4')
+
 plt.show()
-
-
-
-
-
-
-# def animate(grid):
-#     animate
-
-

@@ -108,7 +108,7 @@ def laneChange(r, c, v, gridTemp, gap, vh, cars, grid):
         grid[r][c] = -1
 
 
-def simulate(config, animate=False):
+def simulate(config):
     rows = config['rows']
     columns = config['columns']
     step = config['step']

@@ -20,11 +20,9 @@ states = simulate(config, animate=True)
 grid, cars = next(states)
 
 fig, ax = plt.subplots()
-x = np.arange(0, 100)
-y = np.arange(0, 10)
-
 data = np.random.rand(2, 25)
 
+# Create lines for every row in the grid, the 'highways'
 row_heights = np.linspace(0.3, 0.7, grid.shape[0])
 for row_height in row_heights:
     l, = ax.plot([0, 1], [row_height, row_height])
@@ -34,6 +32,7 @@ plt.xlim(0, 1)
 plt.ylim(0, 1)
 plt.xlabel('Position')
 plt.title('Highway simulation')
+
 
 def plot_grid(items):
     grid, cars = items

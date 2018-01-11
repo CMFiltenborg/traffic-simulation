@@ -204,7 +204,7 @@ if __name__ == '__main__':
         'step': 10,
     }
 
-    grids = simulate(config, animate=True)
+    grids = simulate(config)
     [print_grid(grid) for grid in grids]
 
 

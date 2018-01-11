@@ -16,7 +16,7 @@ config = {
     'step': 100,
 }
 
-states = simulate(config, animate=True)
+states = simulate(config)
 grid, cars = next(states)
 
 fig, ax = plt.subplots()

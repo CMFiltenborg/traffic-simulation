@@ -5,7 +5,7 @@
 import numpy as np
 import copy
 
-rows = 3
+rows = 5
 collums = 10
 grid = np.full((rows,collums),  -1, dtype=np.int32)
 #grid = np.array([[-1,-1,5,-1,-1,3,-1,-1,-1,-1],[-1,-1,-1,-1,2,-1,-1,-1,-1,-1],[-1,-1,2,-1,-1,3,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,3,-1,-1,-1],[-1,-1,-1,-1,2,-1,-1,-1,-1,-1]])
@@ -98,7 +98,6 @@ def laneChange(r, c, v, gridTemp, gap, vh):
 def simulate(animate=False):
     for i in range(step):
         coordinates = np.where(grid != -1)
-        print(grid)
         gridTemp = copy.deepcopy(grid)
         for j in range(len(coordinates[0])):
             r = coordinates[0][j]
@@ -110,13 +109,43 @@ def simulate(animate=False):
             
             
             if vh > gap:
-                print("hoi")
                 laneChange(r, c, v, gridTemp, gap, vh)
             else:
                 nasch(r, c, v, gap)
 
         #generate auto only works for 1 car
-        for l in range(auto):
+        for l in range(rows):
+            if l == 4:
+                if np.random.random() < 0.7:
+                    v = np.random.randint(3,5)
+                    grid[l][0] = v
+                break
+            ps = 1/float(rows+2)*(l+1)
+            if np.random.random() < ps:
+                if l == 0:
+                    v = 5
+                elif l == 1:
+                    if np.random.random() < 0.75:
+                        v = 5
+                    else:
+                        v = 4
+                elif l == 2:
+                    if np.random.random() < 0.65:
+                        v = 5
+                    else:
+                        v = 4
+                elif l == 3:
+                    if np.random.random() < 0.55:
+                        v = 5
+                    else:
+                        v = 4
+                elif l == 3:
+                    if np.random.random() < 0.55:
+                        v = 5
+                    else:
+                        v = 4
+                grid[l][0] = v
+            '''
             space = []
             for m in range(rows):
                 if grid[m][0] == -1:
@@ -127,6 +156,7 @@ def simulate(animate=False):
                 r = np.random.randint(0, len(space))
                 v = np.random.randint(1, 6)
                 grid[space[r]][0] = v
+                '''
 
         print("---------------")
         print(grid)

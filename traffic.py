@@ -107,7 +107,7 @@ def laneChange(r, c, v, gridTemp, gap, vh, cars):
 
 
 def simulate(animate=False):
-    cars = []
+    cars = {}
     for i in range(step):
         speed_changes = {}
         coordinates = np.where(grid != -1)
@@ -142,12 +142,12 @@ def simulate(animate=False):
                 r = np.random.randint(0, len(space))
                 v = np.random.randint(1, 6)
                 new_car_index = len(cars)
-                cars.append(Car(v, np.random.random(3), np.random.randint(2)))
+                cars[new_car_index] = Car(v, np.random.random(3), np.random.randint(2))
                 grid[space[r]][0] = new_car_index
 
         # If we want to animate the simulation, yield the grid for every step
         if animate:
-            yield grid
+            yield grid, cars
 
 
 def print_grid(grid):

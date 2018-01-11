@@ -145,18 +145,6 @@ def simulate(animate=False):
                     else:
                         v = 4
                 grid[l][0] = v
-            '''
-            space = []
-            for m in range(rows):
-                if grid[m][0] == -1:
-                    space.append(m)
-            if len(space) < 1:
-                break
-            else:
-                r = np.random.randint(0, len(space))
-                v = np.random.randint(1, 6)
-                grid[space[r]][0] = v
-                '''
 
         # If we want to animate the simulation, yield the grid for every step
         if animate:
@@ -170,7 +158,7 @@ def print_grid(grid):
 
 
 if __name__ == '__main__':
-    grids = simulate(False)
+    grids = simulate(True)
     [print_grid(grid) for grid in grids]
 
 

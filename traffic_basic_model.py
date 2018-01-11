@@ -1,6 +1,6 @@
 #Computational science project
-#Lukas, Martijn, Lennard, Max
-#10783687, , 11042729,
+#Lukas, Martijn, Lennart, Max
+#10783687, , 10432973, 11042729,
 
 import numpy as np
 import copy
@@ -106,8 +106,8 @@ def simulate(animate=False):
             vh = min(v+1, vmax)
 
             gap = calcGap(r, c, gridTemp, 1)
-            
-            
+
+
             if vh > gap:
                 laneChange(r, c, v, gridTemp, gap, vh)
             else:
@@ -145,34 +145,21 @@ def simulate(animate=False):
                     else:
                         v = 4
                 grid[l][0] = v
-            '''
-            space = []
-            for m in range(rows):
-                if grid[m][0] == -1:
-                    space.append(m)
-            if len(space) < 1:
-                break
-            else:
-                r = np.random.randint(0, len(space))
-                v = np.random.randint(1, 6)
-                grid[space[r]][0] = v
-                '''
-
-        print("---------------")
-        print(grid)
-        print("---------------")
 
         # If we want to animate the simulation, yield the grid for every step
         if animate:
             yield grid
 
-grids = simulate(False)
+
 def print_grid(grid):
     print("---------------")
     print(grid)
     print("---------------")
 
-[print_grid(grid) for grid in grids]
+
+if __name__ == '__main__':
+    grids = simulate(True)
+    [print_grid(grid) for grid in grids]
 
 
 

@@ -140,7 +140,7 @@ def simulate(config, animate=False):
         # Generate auto only works for 1 car
         generate_cars(cars, grid, rows)
 
-        if i % 100 == 0:
+        if i % 100 == 0 and i > 0:
             remove_old_cars(cars, grid)
 
         # If we want to animate the simulation, yield the grid for every step

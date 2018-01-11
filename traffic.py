@@ -4,6 +4,8 @@
 
 import numpy as np
 import copy
+from car import Car
+
 
 rows = 3
 collums = 10
@@ -15,10 +17,12 @@ vmax = 5
 pv = 0.2
 vback = -1
 pc = 1
+speed_changes = {}
 
 
 #nagel-scheckenberg
-def nasch(r, c, v, gap):
+def nasch(r, c, v, gap, cars):
+    index = grid[r][c]
     grid[r][c] = -1
     #acceleration
     v = min(v+1, vmax)
@@ -29,12 +33,14 @@ def nasch(r, c, v, gap):
         v = max(v-1, 0)
     #update
     if c+v < collums:
-        grid[r][c+v] = v
+        grid[r][c+v] = index
+        speed_changes[index] = v
+
 
 
 
 #t is 1 dan vooruit gap en t is -1 achteruit gap
-def calcGap(r, c, gridTemp, t):
+def calcGap(r, c, gridTemp, t, cars):
     gap = 0
     for k in range(1, vmax+1):
         if t == -1:
@@ -42,7 +48,7 @@ def calcGap(r, c, gridTemp, t):
                 if gridTemp[r][c-k] == -1:
                     gap += 1
                 else:
-                    vback = gridTemp[r][c-k]
+                    vback = cars[gridTemp[r][c-k]].speed
                     break
             else:
                 gap = 10
@@ -56,64 +62,73 @@ def calcGap(r, c, gridTemp, t):
                 gap = 10
     return gap
 
-def laneChange(r, c, v, gridTemp, gap, vh):
+def laneChange(r, c, v, gridTemp, gap, vh, cars):
     vback = -1
+    index = gridTemp[r][c]
     #Als de auto zich in de meest linker rijstrook bevind.
     if r == 0:
-        gapo = calcGap(1, c, gridTemp, 1)
-        gapoBack = calcGap(1, c+gap, gridTemp, -1)
+        gapo = calcGap(1, c, gridTemp, 1, cars)
+        gapoBack = calcGap(1, c+gap, gridTemp, -1, cars)
         grid[r][c] = -1
         if gapo >= v and gapoBack > vback and np.random.random() < pc and c+vh < collums:
-            grid[1][c+vh] = vh
+            grid[1][c+vh] = index
+            speed_changes[index] = vh
         else:
-            nasch(r, c, v, gap)
+            nasch(r, c, v, gap, cars)
 
     #Als de auto zich in de meest rechter rijstrook bevind.
     elif r == rows-1:
-        gapo = calcGap(r-1, c, gridTemp, 1)
-        gapoBack = calcGap(r-1, c+gap, gridTemp, -1)
+        gapo = calcGap(r-1, c, gridTemp, 1, cars)
+        gapoBack = calcGap(r-1, c+gap, gridTemp, -1, cars)
         grid[r][c] = -1
         if gapo >= v and gapoBack > vback and np.random.random() < pc and c+vh < collums:
-            grid[r-1][c+vh] = vh
+            grid[r-1][c+vh] = index
+            speed_changes[index] = vh
         else:
-            nasch(r, c, v, gap)
+            nasch(r, c, v, gap, cars)
 
     #Als de auto in een van de middelste rijstroken bevind.
     else:
-        gapoL = calcGap(r-1, c, gridTemp, 1)
-        gapoBackL = calcGap(r-1, c+gap, gridTemp, -1)
+        gapoL = calcGap(r-1, c, gridTemp, 1, cars)
+        gapoBackL = calcGap(r-1, c+gap, gridTemp, -1, cars)
         if gapoL >= v and gapoBackL > vback and np.random.random() < pc and c+vh < collums:
-            grid[r-1][c+vh] = vh
+            grid[r-1][c+vh] = index
+            speed_changes[index] = vh
         else:
-            gapoR = calcGap(r+1, c, gridTemp, 1)
-            gapoBackR = calcGap(r+1, c+gap, gridTemp, -1)
+            gapoR = calcGap(r+1, c, gridTemp, 1, cars)
+            gapoBackR = calcGap(r+1, c+gap, gridTemp, -1, cars)
             if gapoR >= v and gapoBackR > vback and np.random.random() < pc and c+vh < collums:
-                grid[r+1][c+vh] = vh
+                grid[r+1][c+vh] = index
+                speed_changes[index] = vh
             else:
-                nasch(r, c, v, gap)
+                nasch(r, c, v, gap, cars)
 
         grid[r][c] = -1
 
 
 def simulate(animate=False):
+    cars = []
     for i in range(step):
+        speed_changes = {}
         coordinates = np.where(grid != -1)
-        print(grid)
         gridTemp = copy.deepcopy(grid)
         for j in range(len(coordinates[0])):
             r = coordinates[0][j]
             c = coordinates[1][j]
-            v = grid[r][c]
+            v = cars[grid[r][c]].speed
             vh = min(v+1, vmax)
 
-            gap = calcGap(r, c, gridTemp, 1)
+            gap = calcGap(r, c, gridTemp, 1, cars)
 
 
             if vh > gap:
-                print("hoi")
-                laneChange(r, c, v, gridTemp, gap, vh)
+                laneChange(r, c, v, gridTemp, gap, vh, cars)
             else:
-                nasch(r, c, v, gap)
+                nasch(r, c, v, gap, cars)
+    
+        # Update car speeds
+        for x, y in speed_changes.items():
+            cars[x].speed_changes(y)
 
         #generate auto only works for 1 car
         for l in range(auto):
@@ -126,7 +141,9 @@ def simulate(animate=False):
             else:
                 r = np.random.randint(0, len(space))
                 v = np.random.randint(1, 6)
-                grid[space[r]][0] = v
+                new_car_index = len(cars)
+                cars.append(Car(v, np.random.random(3), np.random.randint(2)))
+                grid[space[r]][0] = new_car_index
 
         # If we want to animate the simulation, yield the grid for every step
         if animate:
@@ -140,7 +157,7 @@ def print_grid(grid):
 
 
 if __name__ == '__main__':
-    grids = simulate(False)
+    grids = simulate(True)
     [print_grid(grid) for grid in grids]
 
 

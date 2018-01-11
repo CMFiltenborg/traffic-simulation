@@ -1,6 +1,6 @@
 #Computational science project
-#Lukas, Martijn, Lennard, Max
-#10783687, , 11042729,
+#Lukas, Martijn, Lennart, Max
+#10783687, , 10432973, 11042729,
 
 import numpy as np
 import copy

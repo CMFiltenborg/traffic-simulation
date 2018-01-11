@@ -5,9 +5,9 @@
 import numpy as np
 
 rows = 3
-collums = 10
+collums = 100
 grid = np.full((rows,collums),  -1, dtype=np.int32)
-step = 10#0
+step = 1000
 auto = 1
 vmax = 5
 pv = 0.5
@@ -43,7 +43,7 @@ def simulate(animate=False):
                     else:
                         gap = 10
 
-                #acceleration
+                # acceleration
                 v = min(v+1, vmax)
                 #braking
                 v = min(v, gap)
@@ -60,21 +60,20 @@ def simulate(animate=False):
             v = np.random.randint(1, 6)
             grid[r][0] = v
 
-        print("---------------")
-        print(grid)
-        print("---------------")
-
         # If we want to animate the simulation, yield the grid for every step
         if animate:
             yield grid
 
-grids = simulate(False)
+
 def print_grid(grid):
     print("---------------")
     print(grid)
     print("---------------")
 
-[print_grid(grid) for grid in grids]
+
+if __name__ == '__main__':
+    grids = simulate(False)
+    [print_grid(grid) for grid in grids]
 
 
 

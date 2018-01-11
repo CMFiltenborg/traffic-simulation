@@ -3,11 +3,13 @@
 #10783687, , 11042729,
 
 import numpy as np
+import copy
 
 rows = 3
 collums = 10
 grid = np.full((rows,collums),  -1, dtype=np.int32)
-step = 10#0
+#grid = np.array([[-1,-1,5,-1,-1,3,-1,-1,-1,-1],[-1,-1,-1,-1,2,-1,-1,-1,-1,-1],[-1,-1,2,-1,-1,3,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,3,-1,-1,-1],[-1,-1,-1,-1,2,-1,-1,-1,-1,-1]])
+step = 10
 auto = 1
 vmax = 5
 pv = 0.2
@@ -26,7 +28,7 @@ def nasch(r, c, v, gap):
     if np.random.random() < pv:
         v = max(v-1, 0)
     #update
-    if c+v < collums-1:
+    if c+v < collums:
         grid[r][c+v] = v
 
 
@@ -45,7 +47,7 @@ def calcGap(r, c, gridTemp, t):
             else:
                 gap = 10
         else:
-            if c+k < collums-1:
+            if c+k < collums:
                 if gridTemp[r][c+k] == -1:
                     gap += 1
                 else:
@@ -61,7 +63,7 @@ def laneChange(r, c, v, gridTemp, gap, vh):
         gapo = calcGap(1, c, gridTemp, 1)
         gapoBack = calcGap(1, c+gap, gridTemp, -1)
         grid[r][c] = -1
-        if gapo > v and gapoBack > vback and np.random.random() < pc and c+vh < collums-1:
+        if gapo >= v and gapoBack > vback and np.random.random() < pc and c+vh < collums:
             grid[1][c+vh] = vh
         else:
             nasch(r, c, v, gap)
@@ -71,7 +73,7 @@ def laneChange(r, c, v, gridTemp, gap, vh):
         gapo = calcGap(r-1, c, gridTemp, 1)
         gapoBack = calcGap(r-1, c+gap, gridTemp, -1)
         grid[r][c] = -1
-        if gapo > v and gapoBack > vback and np.random.random() < pc and c+vh < collums-1:
+        if gapo >= v and gapoBack > vback and np.random.random() < pc and c+vh < collums:
             grid[r-1][c+vh] = vh
         else:
             nasch(r, c, v, gap)
@@ -80,12 +82,12 @@ def laneChange(r, c, v, gridTemp, gap, vh):
     else:
         gapoL = calcGap(r-1, c, gridTemp, 1)
         gapoBackL = calcGap(r-1, c+gap, gridTemp, -1)
-        if gapoL > v and gapoBackL > vback and np.random.random() < pc and c+vh < collums-1:
+        if gapoL >= v and gapoBackL > vback and np.random.random() < pc and c+vh < collums:
             grid[r-1][c+vh] = vh
         else:
             gapoR = calcGap(r+1, c, gridTemp, 1)
             gapoBackR = calcGap(r+1, c+gap, gridTemp, -1)
-            if gapoR > v and gapoBackR > vback and np.random.random() < pc and c+vh < collums-1:
+            if gapoR >= v and gapoBackR > vback and np.random.random() < pc and c+vh < collums:
                 grid[r+1][c+vh] = vh
             else:
                 nasch(r, c, v, gap)
@@ -96,7 +98,8 @@ def laneChange(r, c, v, gridTemp, gap, vh):
 def simulate(animate=False):
     for i in range(step):
         coordinates = np.where(grid != -1)
-        gridTemp = grid
+        print(grid)
+        gridTemp = copy.deepcopy(grid)
         for j in range(len(coordinates[0])):
             r = coordinates[0][j]
             c = coordinates[1][j]

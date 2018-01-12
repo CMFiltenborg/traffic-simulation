@@ -53,6 +53,7 @@ def calcGap(r, c, gridTemp, t, cars):
                 gap = 10
         else:
             if c+k < gridTemp.shape[1]:
+                print('gridtemp', gridTemp, r, c, k)
                 if gridTemp[r][c+k] == -1:
                     gap += 1
                 else:
@@ -132,13 +133,13 @@ def simulate(config):
                 laneChange(r, c, v, gridTemp, gap, vh, cars, grid)
             else:
                 nasch(r, c, v, gap, grid)
-    
+
         # Update car speeds
         for x, y in speed_changes.items():
             cars[x].speed_changes(y)
 
         # Generate auto only works for 1 car
-        generate_cars(cars, grid, rows)
+        generate_cars(cars, grid)
 
         if i % 100 == 0 and i > 0:
             remove_old_cars(cars, grid)
@@ -157,7 +158,8 @@ def remove_old_cars(cars, grid):
 
 
 # Generates cars for every step
-def generate_cars(cars, grid, rows):
+def generate_cars(cars, grid):
+    rows = grid.shape[0]
     for i in range(rows):
         if i == 4:
             if np.random.random() < 0.7:

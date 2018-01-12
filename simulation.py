@@ -63,7 +63,7 @@ class Simulation:
             if vh > gap:
                 laneChange(r, c, v, grid_temp, gap, vh, cars, grid)
             else:
-                nasch(r, c, v, gap, grid)
+                nasch(r, c, v, gap, grid, gridTemp)
 
 
 def simulate(config):
@@ -88,7 +88,7 @@ def simulate(config):
             if vh > gap:
                 laneChange(r, c, v, gridTemp, gap, vh, cars, grid)
             else:
-                nasch(r, c, v, gap, grid)
+                nasch(r, c, v, gap, grid, gridTemp)
 
         # Update car speeds
         for x, y in speed_changes.items():

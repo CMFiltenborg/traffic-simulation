@@ -10,7 +10,7 @@ from car import Car
 
 # TODO: remove
 # Global vars
-speed_changes = {}
+updates = {}
 auto = 1
 vmax = 5
 pv = 0.2
@@ -33,7 +33,7 @@ def nasch(r, c, v, gap, grid):
     # update
     if c+v < grid.shape[1]:
         grid[r][c+v] = index
-        speed_changes[index] = v
+        updates[index] = (v, (r, c+v))
 
 
 
@@ -73,8 +73,20 @@ def laneChange(r, c, v, gridTemp, gap, vh, cars, grid):
         gapoBack = calcGap(1, c+gap, gridTemp, -1, cars)
         grid[r][c] = -1
         if gapo >= v and gapoBack > vback and np.random.random() < pc and c+vh < columns:
-            grid[1][c+vh] = index
-            speed_changes[index] = vh
+            if grid[1][c+vh] == -1:
+                grid[1][c+vh] = index
+                updates[index] = (vh, (1, c+vh))
+            else:
+                if cars[grid[1][c+vh]].position[1] < c:
+                    r2, c2 = cars[grid[1][c+vh]].position
+                    v2 = cars[grid[1][c+vh]].speed
+                    gap2 = calcGap(r2, c2, gridTemp, 1, cars)
+                    nasch(r2, c2, v2, gap2, grid)
+                    grid[1][c+vh] = index
+                    updates[index] = (vh, (1, c+vh))
+                else:
+                    nasch(r, c, v, gap, grid)
+    
         else:
             nasch(r, c, v, gap, grid)
 
@@ -84,8 +96,19 @@ def laneChange(r, c, v, gridTemp, gap, vh, cars, grid):
         gapoBack = calcGap(r-1, c+gap, gridTemp, -1, cars)
         grid[r][c] = -1
         if gapo >= v and gapoBack > vback and np.random.random() < pc and c+vh < columns:
-            grid[r-1][c+vh] = index
-            speed_changes[index] = vh
+            if grid[r-1][c+vh] == -1:
+                grid[r-1][c+vh] = index
+                updates[index] = (vh, (r-1, c+vh))
+            else:
+                if cars[grid[r-1][c+vh]].position[1] < c:
+                    r2, c2 = cars[grid[r-1][c+vh]].position
+                    v2 = cars[grid[r-1][c+vh]].speed
+                    gap2 = calcGap(r2, c2, gridTemp, 1, cars)
+                    nasch(r2, c2, v2, gap2, grid)
+                    grid[r-1][c+vh] = index
+                    updates[index] = (vh, (r-1, c+vh))
+                else:
+                    nasch(r, c, v, gap, grid)
         else:
             nasch(r, c, v, gap, grid)
 
@@ -94,14 +117,36 @@ def laneChange(r, c, v, gridTemp, gap, vh, cars, grid):
         gapoL = calcGap(r-1, c, gridTemp, 1, cars)
         gapoBackL = calcGap(r-1, c+gap, gridTemp, -1, cars)
         if gapoL >= v and gapoBackL > vback and np.random.random() < pc and c+vh < columns:
-            grid[r-1][c+vh] = index
-            speed_changes[index] = vh
+            if  grid[r-1][c+vh] == -1:
+                grid[r-1][c+vh] = index
+                updates[index] = (vh, (r-1, c+vh))
+            else:
+                if cars[grid[r-1][c+vh]].position[1] < c:
+                    r2, c2 = cars[grid[r-1][c+vh]].position
+                    v2 = cars[grid[r-1][c+vh]].speed
+                    gap2 = calcGap(r2, c2, gridTemp, 1, cars)
+                    nasch(r2, c2, v2, gap2, grid)
+                    grid[r-1][c+vh] = index
+                    updates[index] = (vh, (r-1, c+vh))
+                else:
+                    nasch(r, c, v, gap, grid)
         else:
             gapoR = calcGap(r+1, c, gridTemp, 1, cars)
             gapoBackR = calcGap(r+1, c+gap, gridTemp, -1, cars)
             if gapoR >= v and gapoBackR > vback and np.random.random() < pc and c+vh < columns:
-                grid[r+1][c+vh] = index
-                speed_changes[index] = vh
+                if  grid[r+1][c+vh] == -1:
+                    grid[r+1][c+vh] = index
+                    updates[index] = (vh, (r+1, c+vh))
+                else:
+                    if cars[grid[r+1][c+vh]].position[1] < c:
+                        r2, c2 = cars[grid[r+1][c+vh]].position
+                        v2 = cars[grid[r+1][c+vh]].speed
+                        gap2 = calcGap(r2, c2, gridTemp, 1, cars)
+                        nasch(r2, c2, v2, gap2, grid)
+                        grid[r+1][c+vh] = index
+                        updates[index] = (vh, (r+1, c+vh))
+                    else:
+                        nasch(r, c, v, gap, grid)
             else:
                 nasch(r, c, v, gap, grid)
 
@@ -114,9 +159,18 @@ def simulate(config):
     step = config['step']
 
     grid = np.full((rows, columns),  -1, dtype=np.int32)
-    cars = {}
+    cars = {
+    0 : Car(5, 1, 1, (0,2)),
+    1 : Car(5, 1, 1, (2,2)),
+    2 : Car(2, 1, 1, (0,4)),
+    3 : Car(2, 1, 1, (2,4))
+    }
+    grid = np.array([[-1,-1,0,-1,2,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,1,-1,3,-1,-1,-1,-1,-1]])
+    
     for i in range(step):
-        speed_changes = {}
+        updates = {}
         coordinates = np.where(grid != -1)
         gridTemp = copy.deepcopy(grid)
         for j in range(len(coordinates[0])):
@@ -134,8 +188,9 @@ def simulate(config):
                 nasch(r, c, v, gap, grid)
     
         # Update car speeds
-        for x, y in speed_changes.items():
-            cars[x].speed_changes(y)
+        for x, y in updates.items():
+            cars[x].set_speed(y[0])
+            cars[x].set_position(y[1])
 
         # Generate auto only works for 1 car
         generate_cars(cars, grid, rows)
@@ -163,7 +218,7 @@ def generate_cars(cars, grid, rows):
             if np.random.random() < 0.7:
                 v = np.random.randint(3, 5)
                 new_car_index = len(cars)
-                cars[new_car_index] = Car(v, np.random.random(3), np.random.randint(2))
+                cars[new_car_index] = Car(v, np.random.random(3), np.random.randint(2), (i, 0))
                 grid[i][0] = new_car_index
             break
 
@@ -187,21 +242,23 @@ def generate_cars(cars, grid, rows):
                 else:
                     v = 4
             new_car_index = len(cars)
-            cars[new_car_index] = Car(v, np.random.random(3), np.random.randint(2))
+            cars[new_car_index] = Car(v, np.random.random(3), np.random.randint(2), (i, 0))
             grid[i][0] = new_car_index
 
 
 def print_grid(grid):
+    grid, cars = grid
     print("---------------")
     print(grid)
+    print(cars[1].position)
     print("---------------")
 
 
 if __name__ == '__main__':
     config = {
-        'rows': 5,
+        'rows': 3,
         'columns': 10,
-        'step': 10,
+        'step': 1,
     }
 
     grids = simulate(config)

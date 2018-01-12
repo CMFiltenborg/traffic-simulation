@@ -1,6 +1,6 @@
 from RoadSection import RoadSection
 import numpy as np
-from traffic import calcGap, laneChange, nasch, generate_cars, remove_old_cars
+from traffic import calcGap, lane_change, nasch, generate_cars, remove_old_cars, get_car_updates, update_cars
 import copy
 
 # TODO: remove
@@ -27,14 +27,14 @@ class Simulation:
                 road_section = self.roads[j]
                 grid = road_section.grid
                 cars = road_section.cars
-                speed_changes = {}
-
+                updates = {}
                 grid_temp = copy.deepcopy(grid)
 
-                self.determine_car_updates(grid, grid_temp, cars)
-                # Update car speeds
-                for x, y in speed_changes.items():
-                    cars[x].speed_changes(y)
+                # Generates the updates for all cars
+                get_car_updates(cars, grid, grid_temp, updates)
+
+                # Update cars
+                update_cars(cars, updates)
 
                 # Generate auto only works for 1 car
                 # Only generate cars in the start section
@@ -49,22 +49,6 @@ class Simulation:
 
             yield roads_steps
 
-    @staticmethod
-    def determine_car_updates(grid, grid_temp, cars):
-        coordinates = np.where(grid != -1)
-        for j in range(len(coordinates[0])):
-            r = coordinates[0][j]
-            c = coordinates[1][j]
-            v = cars[grid[r][c]].speed
-            vh = min(v + 1, vmax)
-
-            gap = calcGap(r, c, grid_temp, 1, cars)
-
-            if vh > gap:
-                laneChange(r, c, v, grid_temp, gap, vh, cars, grid)
-            else:
-                nasch(r, c, v, gap, grid, gridTemp)
-
 
 def simulate(config):
     rows = config['rows']
@@ -73,26 +57,24 @@ def simulate(config):
 
     grid = np.full((rows, columns),  -1, dtype=np.int32)
     cars = {}
+    # cars = {
+    # 0 : Car(5, 1, 1, (0,2)),
+    # 1 : Car(5, 1, 1, (2,2)),
+    # 2 : Car(2, 1, 1, (0,4)),
+    # 3 : Car(2, 1, 1, (2,4))
+    # }
+    # grid = np.array([[-1,-1,0,-1,2,-1,-1,-1,-1,-1],
+    #         [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+    #         [-1,-1,1,-1,3,-1,-1,-1,-1,-1]])
+
     for i in range(step):
-        speed_changes = {}
-        coordinates = np.where(grid != -1)
+        updates = {}
         gridTemp = copy.deepcopy(grid)
-        for j in range(len(coordinates[0])):
-            r = coordinates[0][j]
-            c = coordinates[1][j]
-            v = cars[grid[r][c]].speed
-            vh = min(v+1, vmax)
 
-            gap = calcGap(r, c, gridTemp, 1, cars)
+        get_car_updates(cars, grid, gridTemp, updates)
 
-            if vh > gap:
-                laneChange(r, c, v, gridTemp, gap, vh, cars, grid)
-            else:
-                nasch(r, c, v, gap, grid, gridTemp)
-
-        # Update car speeds
-        for x, y in speed_changes.items():
-            cars[x].speed_changes(y)
+        # Update cars
+        update_cars(cars, updates)
 
         # Generate auto only works for 1 car
         generate_cars(cars, grid)

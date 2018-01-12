@@ -11,3 +11,7 @@ class Car:
 
     def set_position(self, position):
         self.position = position
+
+    def get_vh(self):
+        return min(self.speed + 1, 5)
+

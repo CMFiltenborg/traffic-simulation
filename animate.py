@@ -3,10 +3,15 @@ Simple animation of the highway
 
 """
 
+import matplotlib
+matplotlib.use('TKAgg')
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from traffic import simulate, print_grid
+
+
 
 
 config = {
@@ -36,7 +41,7 @@ plt.title('Highway simulation')
 def plot_grid(items):
     grid, cars = items
     markers = []
-    print_grid(grid)
+    #print_grid(grid)
     for i in range(grid.shape[0]):
         row = grid[i]
 
@@ -50,7 +55,7 @@ def plot_grid(items):
             x_placement = column / row.shape[0]  # Scale from 0 - 1
             marker, = ax.plot(x_placement, row_height, color=cars[car_index].color, marker='o')
             markers.append(marker)
-
+    
     return (*markers),  # Unpack all the new markers
 
 line_ani = animation.FuncAnimation(fig, plot_grid, states, fargs=(),

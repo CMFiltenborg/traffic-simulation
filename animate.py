@@ -27,7 +27,7 @@ fig, ax = plt.subplots()
 data = np.random.rand(2, 25)
 
 # Create lines for every row in the grid, the 'highways'
-row_heights = np.linspace(0.3, 0.7, grid.shape[0])
+row_heights = np.linspace(0.7, 0.3, grid.shape[0])
 for row_height in row_heights:
     l, = ax.plot([0, 1], [row_height, row_height], color='black')
 

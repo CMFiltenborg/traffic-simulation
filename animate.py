@@ -7,7 +7,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from traffic import simulate, print_grid
-import seaborn as sb
 
 
 config = {
@@ -25,7 +24,7 @@ data = np.random.rand(2, 25)
 # Create lines for every row in the grid, the 'highways'
 row_heights = np.linspace(0.3, 0.7, grid.shape[0])
 for row_height in row_heights:
-    l, = ax.plot([0, 1], [row_height, row_height])
+    l, = ax.plot([0, 1], [row_height, row_height], color='black')
 
 # Scale to plot 0 - 1
 plt.xlim(0, 1)

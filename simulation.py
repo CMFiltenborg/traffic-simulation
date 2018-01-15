@@ -14,6 +14,7 @@ pv = 0.2
 vback = -1
 pc = 1
 
+
 class Simulation:
     def __init__(self, start_road, rest_roads, step):
         self.start_road = start_road

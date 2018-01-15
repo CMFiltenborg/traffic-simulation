@@ -66,6 +66,8 @@ class RoadSection:
             row, column = y[2]
             self.grid[row][column] = index
 
+        self.new_car_updates = {}
+
 
 
 

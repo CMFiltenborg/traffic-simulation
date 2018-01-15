@@ -16,8 +16,8 @@ from traffic import simulate, print_grid
 from RoadSection import RoadSection
 
 
-r1 = RoadSection(2, 10)
-r2 = RoadSection(5, 10, True)
+r1 = RoadSection(2, 50)
+r2 = RoadSection(5, 100, True)
 
 outputMap = {
     0: 3,  # Lane 1 corresponds with lane 5.
@@ -81,7 +81,7 @@ def plot_grid(sections):
     return (*markers),  # Unpack all the new markers
 
 line_ani = animation.FuncAnimation(fig, plot_grid, result, fargs=(),
-                                   interval=1000, blit=True)
+                                   interval=100, blit=True)
 
 # To save the animation, use the command: line_ani.save('lines.mp4')
 

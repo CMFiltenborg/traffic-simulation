@@ -3,7 +3,7 @@ import copy
 
 
 class RoadSection:
-    def __init__(self, rows, columns):
+    def __init__(self, rows, columns, is_end_road=False):
         """
         Rows is the amount of lanes
         Columns is the length of the road
@@ -17,16 +17,48 @@ class RoadSection:
         self.output_map = None
         self.cars = {}
         self.updates = {}
+        self.new_car_updates = {}
+
+        self.is_end_road = is_end_road
+
+        self.finished_cars = 0
 
     def set_output_mapping(self, output_road, output_map):
         self.output_road = output_road
         self.output_map = output_map
+
+    def output_car(self, car, v):
+        self.finished_cars += 1
+
+        if self.is_end_road:
+            return
+
+        output_road = self.output_road
+        output_row = self.output_map[car.position[0]]
+        output_column = car.position[1] + v - self.grid.shape[1]
+
+        del self.cars[car.index]
+        output_road.add_car(car, output_row, output_column, v)
 
     def set_temp_grid(self):
         self.grid_temp = copy.deepcopy(self.grid)
 
     def get_car_coordinates(self):
         return np.where(self.grid != -1)
+
+    def add_car(self, car, row, column, v):
+        self.new_car_updates[car.index] = (car, v, (row, column))
+
+        # self.cars[car.index] = car
+
+    def add_new_cars(self):
+        for index, y in self.new_car_updates.items():
+            self.cars[index] = y[0]
+            self.cars[index].set_speed(y[1])
+            self.cars[index].set_position(y[2])
+
+            row, column = y[2]
+            self.grid[row][column] = index
 
 
 

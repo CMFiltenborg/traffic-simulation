@@ -225,7 +225,7 @@ def generate_cars(cars, grid):
                     color = 'black'
                 else:
                     color = 'r'
-                cars[new_car_index] = Car(v, color, d, (i,0))
+                cars[new_car_index] = Car(new_car_index, v, color, d, (i,0))
                 grid[i][0] = new_car_index
             break
 
@@ -255,7 +255,7 @@ def generate_cars(cars, grid):
                 color = 'black'
             else:
                 color = 'r'
-            cars[new_car_index] = Car(v, color, d, (i,0))
+            cars[new_car_index] = Car(new_car_index, v, color, d, (i,0))
             grid[i][0] = new_car_index
 
 

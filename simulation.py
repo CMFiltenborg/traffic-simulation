@@ -1,6 +1,8 @@
 from RoadSection import RoadSection
 import numpy as np
-from traffic import calc_gap, generate_cars, remove_old_cars, update_cars
+
+from car import Car
+from traffic import calc_gap, remove_old_cars, print_grid
 import copy
 
 # TODO: remove
@@ -12,12 +14,12 @@ pv = 0.2
 vback = -1
 pc = 1
 
-
 class Simulation:
     def __init__(self, start_road, rest_roads, step):
         self.start_road = start_road
         self.roads = [start_road, *rest_roads] # Pack into one list
         self.step = step
+        self.generated_cars = 0
 
     def run(self):
         for i in range(self.step):
@@ -37,19 +39,69 @@ class Simulation:
 
                 # Update cars
                 update_cars(road_section)
+                road_section.add_new_cars()
 
                 # Generate auto only works for 1 car
                 # Only generate cars in the start section
                 if j == 0:
-                    generate_cars(cars, grid)
+                    self.generate_cars(cars, grid)
 
                 if i % 100 == 0 and i > 0:
                     remove_old_cars(cars, grid)
 
                 # If we want to animate the simulation, yield the grid for every step
+                print_grid((grid, cars))
                 roads_steps[j] = (grid, cars)
 
             yield roads_steps
+
+    def generate_cars(self, cars, grid):
+        rows = grid.shape[0]
+        for i in range(rows):
+            if i == 4:
+                if np.random.random() < 0.5:
+                    v = np.random.randint(3, 5)
+                    new_car_index = self.generated_cars
+                    self.generated_cars += 1
+                    d = np.random.randint(2,4)
+                    if d == 3:
+                        color = 'black'
+                    else:
+                        color = 'r'
+                    cars[new_car_index] = Car(new_car_index, v, color, d, (i,0))
+                    grid[i][0] = new_car_index
+                break
+
+            #ps = 1 / float(rows+2) * (i + 1)
+            ps = 1
+            if np.random.random() < ps:
+                if i == 0:
+                    v = 5
+                elif i == 1:
+                    if np.random.random() < 0.75:
+                        v = 5
+                    else:
+                        v = 4
+                elif i == 2:
+                    if np.random.random() < 0.65:
+                        v = 5
+                    else:
+                        v = 4
+                elif i == 3:
+                    if np.random.random() < 0.55:
+                        v = 5
+                    else:
+                        v = 4
+                new_car_index = self.generated_cars
+                self.generated_cars += 1
+                d = np.random.randint(2,4)
+                if d == 3:
+                    color = 'black'
+                else:
+                    color = 'r'
+                cars[new_car_index] = Car(new_car_index, v, color, d, (i,0))
+                grid[i][0] = new_car_index
+
 
 
 def update_cars(road_section):
@@ -106,6 +158,13 @@ def nasch(car, gap, road_section):
     if c+v < grid.shape[1]:
         grid[r][c+v] = index
         updates[index] = (v, (r, c+v))
+        return
+
+    if c + v >= grid.shape[1]:
+        road_section.output_car(car, v)
+
+
+generated_cars = 0
 
 
 def lane_change(car, gap, road_section):
@@ -185,51 +244,52 @@ def change_posistion(r, p, car, gap, road_section):
     grid[car.position[0]][c] = -1
 
 
-def simulate(config):
-    rows = config['rows']
-    columns = config['columns']
-    step = config['step']
-
-    grid = np.full((rows, columns),  -1, dtype=np.int32)
-    cars = {}
-    # cars = {
-    # 0 : Car(5, 1, 1, (0,2)),
-    # 1 : Car(5, 1, 1, (2,2)),
-    # 2 : Car(2, 1, 1, (0,4)),
-    # 3 : Car(2, 1, 1, (2,4))
-    # }
-    # grid = np.array([[-1,-1,0,-1,2,-1,-1,-1,-1,-1],
-    #         [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
-    #         [-1,-1,1,-1,3,-1,-1,-1,-1,-1]])
-
-    for i in range(step):
-        updates = {}
-        gridTemp = copy.deepcopy(grid)
-
-        get_car_updates(cars, grid, gridTemp, updates)
-
-        # Update cars
-        update_cars(cars, updates)
-
-        # Generate auto only works for 1 car
-        generate_cars(cars, grid)
-
-        if i % 100 == 0 and i > 0:
-            remove_old_cars(cars, grid)
-
-        # If we want to animate the simulation, yield the grid for every step
-        yield grid, cars
+# def simulate(config):
+#     rows = config['rows']
+#     columns = config['columns']
+#     step = config['step']
+#
+#     grid = np.full((rows, columns),  -1, dtype=np.int32)
+#     cars = {}
+#     # cars = {
+#     # 0 : Car(5, 1, 1, (0,2)),
+#     # 1 : Car(5, 1, 1, (2,2)),
+#     # 2 : Car(2, 1, 1, (0,4)),
+#     # 3 : Car(2, 1, 1, (2,4))
+#     # }
+#     # grid = np.array([[-1,-1,0,-1,2,-1,-1,-1,-1,-1],
+#     #         [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+#     #         [-1,-1,1,-1,3,-1,-1,-1,-1,-1]])
+#
+#     for i in range(step):
+#         updates = {}
+#         gridTemp = copy.deepcopy(grid)
+#
+#         get_car_updates(cars, grid, gridTemp, updates)
+#
+#         # Update cars
+#         update_cars(cars, updates)
+#
+#         # Generate auto only works for 1 car
+#         generate_cars(cars, grid)
+#
+#         if i % 100 == 0 and i > 0:
+#             remove_old_cars(cars, grid)
+#
+#         # If we want to animate the simulation, yield the grid for every step
+#         yield grid, cars
 
 
 r1 = RoadSection(2, 10)
-r2 = RoadSection(5, 10)
+r2 = RoadSection(5, 10, True)
 
 outputMap = {
-    1: 5  # Lane 1 corresponds with lane 5.
+    0: 3,  # Lane 1 corresponds with lane 5.
+    1: 4   # Lane 2 corresponds with lane 5.
 }
 
 r1.set_output_mapping(r2, outputMap)
 
 simulation = Simulation(r1, [r2], 100)
 result = simulation.run()
-[print(r) for r in result]
+[r for r in result]

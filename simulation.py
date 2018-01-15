@@ -62,8 +62,8 @@ class Simulation:
                     v = np.random.randint(3, 5)
                     new_car_index = self.generated_cars
                     self.generated_cars += 1
-                    d = np.random.randint(2,4)
-                    if d == 3:
+                    d = np.random.randint(0,rows)
+                    if d >= 3:
                         color = 'black'
                     else:
                         color = 'r'
@@ -72,7 +72,7 @@ class Simulation:
                 break
 
             #ps = 1 / float(rows+2) * (i + 1)
-            ps = 1
+            ps = 0.2
             if np.random.random() < ps:
                 if i == 0:
                     v = 5
@@ -93,8 +93,8 @@ class Simulation:
                         v = 4
                 new_car_index = self.generated_cars
                 self.generated_cars += 1
-                d = np.random.randint(2,4)
-                if d == 3:
+                d = np.random.randint(0,rows)
+                if d >= 3:
                     color = 'black'
                 else:
                     color = 'r'
@@ -125,7 +125,7 @@ def move_car(car, road_section):
     grid_temp = road_section.grid_temp
 
     gap = calc_gap(car.position[0], car.position[1], grid_temp, 1, cars, road_section)
-    do_lane_change = (car.direction == 2 and car.position[0] > 2) or (car.direction == 3 and car.position[0] < 3)
+    do_lane_change = (car.speed > gap) or (car.position[0] != car.direction)
 
     if not do_lane_change:
         nasch(car, gap, road_section)
@@ -185,16 +185,16 @@ def lane_change(car, gap, road_section):
     columns = grid.shape[1]
     rows = grid.shape[0]
 
-    # When car isn't in the right lane after 80% of the track the change
+    # When car isn't in the right lane after 80% of the track the chanse
     # to change lane is 1.
-    if c > 80 and ((d == 2 and r > 2) or (d == 3 and r < 3)):
+    if c > (0.8)*columns and ((d <= 2 and r > 2) or (d >= 3 and r < 3)):
         p = 1
 
     # When the car is in the most left lane.
-    if r == 0 or (d == 3 and r < 3):
-        change_position(1, p, car, gap, road_section)
+    if r == 0 or (r < d):
+        change_position(r+1, p, car, gap, road_section)
     # Als de auto zich in de meest rechter rijstrook bevind.
-    elif r == rows - 1 or (d == 2 and r > 2):
+    elif r == rows - 1 or (r > d):
         change_position(r - 1, p, car, gap, road_section)
     # Als de auto zich in de vierde rijstrook bevind en ter hoogte van de oprit.
     elif r == 3 and c < 10:
@@ -246,7 +246,7 @@ def change_position(r, p, car, gap, road_section):
 #Whith a maximum gap of vmax and whith t=1 for in front and t=-1 for the back.
 def calc_gap(r, c, grid_temp, t, cars, road_section):
     array_check = []
-    
+
     for i in range(1, vmax+1):
         new_c = c + (i*t)
         if new_c >= 0 and new_c < grid_temp.shape[1]:

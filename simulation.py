@@ -20,7 +20,7 @@ class Simulation:
         self.start_road = start_road
         self.roads = [start_road, *rest_roads] # Pack into one list
         self.step = step
-        self.generated_cars = 0
+        self.generated_cars = 0  # Ensures unique ids/indices
 
     def run(self):
         for i in range(self.step):
@@ -28,10 +28,6 @@ class Simulation:
 
             for j in range(len(self.roads)):
                 road_section = self.roads[j]
-                grid = road_section.grid
-                cars = road_section.cars
-
-                # grid_temp = copy.deepcopy(grid)
                 road_section.set_temp_grid()
                 road_section.updates = {}
 
@@ -45,18 +41,20 @@ class Simulation:
                 # Generate auto only works for 1 car
                 # Only generate cars in the start section
                 if j == 0:
-                    self.generate_cars(cars, grid)
+                    self.generate_cars(road_section)
 
-                if i % 100 == 0 and i > 0:
-                    remove_old_cars(cars, grid)
+                # if i % 100 == 0 and i > 0:
+                #     remove_old_cars(cars, grid)
 
                 # If we want to animate the simulation, yield the grid for every step
                 # print_grid((grid, cars))
-                roads_steps[j] = (grid, cars)
+                roads_steps[j] = (road_section.grid, road_section.cars)
 
             yield roads_steps
 
-    def generate_cars(self, cars, grid):
+    def generate_cars(self, road_section):
+        cars = road_section.cars
+        grid = road_section.grid
         rows = grid.shape[0]
         for i in range(rows):
             if i == 4:
@@ -276,41 +274,7 @@ def calc_gap(r, c, grid_temp, t, cars, road_section):
         return next_car[0][0]
     else:
         return len(array_check)
-    
-        
-    
-    
-    '''
-    gap = 0
-    for k in range(1, vmax+1):
-        #Looking for a gap backwards
-        if t == -1:
-            if c < grid_temp.shape[1]:
-                #When out of grid
-                if c-k < 0:
-                    gap = vmax
-                    break
-                #when no car
-                elif grid_temp[r][c-k] == -1:
-                    gap += 1
-                #Found car
-                else:
-                    vback = cars[grid_temp[r][c-k]].speed
-                    break
-            else:
-                gap = c - grid_temp.shape[1]
-        #Looking for a gap infront
-        else:
-            #When out of grid
-            if c+k >= grid_temp.shape[1]:
-                gap += 1
-            #When no car
-            elif grid_temp[r][c+k] == -1:
-                gap += 1
-            #Found car
-            else:
-                break
-    '''
+
 
 if __name__ == '__main__':
     r1 = RoadSection(2, 10)

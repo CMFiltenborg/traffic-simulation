@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from traffic import simulate, print_grid
 from RoadSection import RoadSection
+import pylab as pl
 
 
 r1 = RoadSection(2, 50)
@@ -38,14 +39,18 @@ result = simulation.run()
 
 sections = next(result)
 number_of_roads = 2
-fig, axes = plt.subplots(nrows=1, ncols=2)
+fig, axes = plt.subplots(nrows=1, ncols=2, sharey=True)
 
 row_heights = {}
+row_heights = {
+    0: np.linspace(0.7, 0.4, 5)[3:5],
+    1: np.linspace(0.7, 0.4, 5)
+}
 for i in sections:
     grid, cars = sections[i]
     ax = axes[i]
     # Create lines for every row in the grid, the 'highways'
-    row_heights[i] = np.linspace(0.7, 0.3, grid.shape[0])
+    # row_heights[i] = np.linspace(0.7, 0.3, grid.shape[0])
     for row_height in row_heights[i]:
         l, = ax.plot([0, 1], [row_height, row_height], color='black')
 
@@ -76,12 +81,14 @@ def plot_grid(sections):
                 car_index = row[column]
                 x_placement = column / row.shape[0]  # Scale from 0 - 1
                 marker, = ax.plot(x_placement, row_height, color=cars[car_index].color, marker='o')
+                text = ax.text(x_placement, row_height, str(cars[car_index].index), color="red", fontsize=12)
                 markers.append(marker)
+                markers.append(text)
     
     return (*markers),  # Unpack all the new markers
 
 line_ani = animation.FuncAnimation(fig, plot_grid, result, fargs=(),
-                                   interval=100, blit=True)
+                                   interval=1000, blit=True)
 
 # To save the animation, use the command: line_ani.save('lines.mp4')
 

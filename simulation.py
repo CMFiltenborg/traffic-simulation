@@ -2,7 +2,7 @@ from RoadSection import RoadSection
 import numpy as np
 
 from car import Car
-from traffic import calc_gap, remove_old_cars, print_grid
+from traffic import remove_old_cars, print_grid
 import copy
 
 # TODO: remove
@@ -243,6 +243,73 @@ def change_posistion(r, p, car, gap, road_section):
         nasch(car, gap, road_section)
     grid[car.position[0]][c] = -1
 
+#This function calculates the gap infront of back from the place of (r,c).
+#Whith a maximum gap of vmax and whith t=1 for in front and t=-1 for the back.
+def calc_gap(r, c, grid_temp, t, cars):
+    array_check = []
+    
+    for i in range(vmax):
+        new_c = c + (i*t)
+        if new_c >= 0 and new_c < grid_temp.shape[1]:
+            array_check.append(grid_temp[r][new_c])
+        elif new_c < 0:
+            if road_section.input_road:
+                prev_road = road_section.input_road
+                prev_row = road_section.input_map[r]
+                prev_col = c + prev_road.columns
+                array_check.append(prev_road.grid_temp[prev_row][prev_col])
+            else:
+                array_check.append(-1)
+        else:
+            if road_section.output_road:
+                next_road = road_section.output_road
+                next_row = road_section.output_map[r]
+                next_col = c - grid_temp.shape[1]
+                array_check.append(next_road.grid[next_row][next_col])
+            else:
+                array.append(-1)
+
+    next_car = np.where(array_check != -1)[0]
+    if len(next_car) != 0:
+        return np.where(array_check != -1)[0]
+    else:
+        return len(array_check)
+    
+        
+    
+    
+    '''
+    gap = 0
+    for k in range(1, vmax+1):
+        #Looking for a gap backwards
+        if t == -1:
+            if c < grid_temp.shape[1]:
+                #When out of grid
+                if c-k < 0:
+                    gap = vmax
+                    break
+                #when no car
+                elif grid_temp[r][c-k] == -1:
+                    gap += 1
+                #Found car
+                else:
+                    vback = cars[grid_temp[r][c-k]].speed
+                    break
+            else:
+                gap = c - grid_temp.shape[1]
+        #Looking for a gap infront
+        else:
+            #When out of grid
+            if c+k >= grid_temp.shape[1]:
+                gap += 1
+            #When no car
+            elif grid_temp[r][c+k] == -1:
+                gap += 1
+            #Found car
+            else:
+                break
+    '''
+    return gap
 
 # def simulate(config):
 #     rows = config['rows']
@@ -289,6 +356,7 @@ outputMap = {
 }
 
 r1.set_output_mapping(r2, outputMap)
+r2.set_input_mapping(r1)
 
 simulation = Simulation(r1, [r2], 100)
 result = simulation.run()

@@ -31,7 +31,7 @@ class RoadSection:
     
     def set_input_mapping(self, input_road):
         self.input_road = input_road
-        self.input_map = {v: k for k, v self.input_road.output_map.items()}
+        self.input_map = {v: k for k, v in self.input_road.output_map.items()}
 
     def output_car(self, car, v):
         self.finished_cars += 1

@@ -50,7 +50,7 @@ class Simulation:
                     remove_old_cars(cars, grid)
 
                 # If we want to animate the simulation, yield the grid for every step
-                print_grid((grid, cars))
+                # print_grid((grid, cars))
                 roads_steps[j] = (grid, cars)
 
             yield roads_steps
@@ -126,7 +126,7 @@ def move_car(car, road_section):
     cars = road_section.cars
     grid_temp = road_section.grid_temp
 
-    gap = calc_gap(car.position[0], car.position[1], grid_temp, 1, cars)
+    gap = calc_gap(car.position[0], car.position[1], grid_temp, 1, cars, road_section)
     do_lane_change = (car.direction == 2 and car.position[0] > 2) or (car.direction == 3 and car.position[0] < 3)
 
     if not do_lane_change:
@@ -201,8 +201,8 @@ def lane_change(car, gap, road_section):
         change_posistion(2, p, car, gap, road_section)
     #Als de auto in een van de middelste rijstroken bevind.
     else:
-        gapoL = calc_gap(r-1, c, grid_temp, 1, cars)
-        gapoBackL = calc_gap(r-1, c+gap, grid_temp, -1, cars)
+        gapoL = calc_gap(r-1, c, grid_temp, 1, cars, road_section)
+        gapoBackL = calc_gap(r-1, c+gap, grid_temp, -1, cars, road_section)
         if gapoL >= v and gapoBackL > vback and np.random.random() < p and c+vh < columns:
             change_posistion(r-1, p, car, gap, road_section)
         else:
@@ -221,8 +221,8 @@ def change_posistion(r, p, car, gap, road_section):
     index = grid_temp[car.position[0]][c]
 
     columns = grid.shape[1]
-    gapo = calc_gap(r, c, grid_temp, 1, cars)
-    gapoBack = calc_gap(r, c+gap, grid_temp, -1, cars)
+    gapo = calc_gap(r, c, grid_temp, 1, cars, road_section)
+    gapoBack = calc_gap(r, c+gap, grid_temp, -1, cars, road_section)
 
     #If the car can change his lane.
     if gapo >= v and gapoBack > vback and np.random.random() < p and c+vh < columns:
@@ -232,7 +232,7 @@ def change_posistion(r, p, car, gap, road_section):
         else:
             if cars[grid[r][c+vh]].position[1] < c:
                 car2 = cars[grid[r][c+vh]]
-                gap2 = calc_gap(car2.position[0], car2.position[1], grid_temp, 1, cars)
+                gap2 = calc_gap(car2.position[0], car2.position[1], grid_temp, 1, cars, road_section)
                 nasch(car2, gap2, road_section)
                 grid[r][c+vh] = index
                 updates[index] = (vh, (r, c+vh))
@@ -245,10 +245,10 @@ def change_posistion(r, p, car, gap, road_section):
 
 #This function calculates the gap infront of back from the place of (r,c).
 #Whith a maximum gap of vmax and whith t=1 for in front and t=-1 for the back.
-def calc_gap(r, c, grid_temp, t, cars):
+def calc_gap(r, c, grid_temp, t, cars, road_section):
     array_check = []
     
-    for i in range(vmax):
+    for i in range(1, vmax+1):
         new_c = c + (i*t)
         if new_c >= 0 and new_c < grid_temp.shape[1]:
             array_check.append(grid_temp[r][new_c])
@@ -269,9 +269,10 @@ def calc_gap(r, c, grid_temp, t, cars):
             else:
                 array.append(-1)
 
-    next_car = np.where(array_check != -1)[0]
-    if len(next_car) != 0:
-        return np.where(array_check != -1)[0]
+    array_check = np.array(array_check).flatten()
+    next_car = np.where(array_check != -1)
+    if len(next_car[0]) > 0:
+        return next_car[0][0]
     else:
         return len(array_check)
     
@@ -309,7 +310,6 @@ def calc_gap(r, c, grid_temp, t, cars):
             else:
                 break
     '''
-    return gap
 
 # def simulate(config):
 #     rows = config['rows']
@@ -347,17 +347,19 @@ def calc_gap(r, c, grid_temp, t, cars):
 #         yield grid, cars
 
 
-r1 = RoadSection(2, 10)
-r2 = RoadSection(5, 10, True)
+if __name__ == '__main__':
+    r1 = RoadSection(2, 10)
+    r2 = RoadSection(5, 10, True)
 
-outputMap = {
-    0: 3,  # Lane 1 corresponds with lane 5.
-    1: 4   # Lane 2 corresponds with lane 5.
-}
+    outputMap = {
+        0: 3,  # Lane 1 corresponds with lane 5.
+        1: 4   # Lane 2 corresponds with lane 5.
+    }
 
-r1.set_output_mapping(r2, outputMap)
-r2.set_input_mapping(r1)
 
-simulation = Simulation(r1, [r2], 100)
-result = simulation.run()
-[r for r in result]
+    r1.set_output_mapping(r2, outputMap)
+    r2.set_input_mapping(r1)
+
+    simulation = Simulation(r1, [r2], 100)
+    result = simulation.run()
+    [r for r in result]

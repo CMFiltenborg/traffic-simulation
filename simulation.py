@@ -2,7 +2,7 @@ from RoadSection import RoadSection
 import numpy as np
 
 from car import Car
-from traffic import calc_gap, remove_old_cars, print_grid
+from traffic import remove_old_cars, print_grid
 import copy
 
 # TODO: remove
@@ -125,7 +125,7 @@ def move_car(car, road_section):
     cars = road_section.cars
     grid_temp = road_section.grid_temp
 
-    gap = calc_gap(car.position[0], car.position[1], grid_temp, 1, cars)
+    gap = calc_gap(car.position[0], car.position[1], grid_temp, 1, cars, road_section)
     do_lane_change = (car.direction == 2 and car.position[0] > 2) or (car.direction == 3 and car.position[0] < 3)
 
     if not do_lane_change:
@@ -202,8 +202,8 @@ def lane_change(car, gap, road_section):
         change_position(2, p, car, gap, road_section)
     # Als de auto zich in een van de middelste rijstroken bevind.
     else:
-        gapoL = calc_gap(r-1, c, grid_temp, 1, cars)
-        gapoBackL = calc_gap(r-1, c+gap, grid_temp, -1, cars)
+        gapoL = calc_gap(r-1, c, grid_temp, 1, cars, road_section)
+        gapoBackL = calc_gap(r-1, c+gap, grid_temp, -1, cars, road_section)
         if gapoL >= v and gapoBackL > vback and np.random.random() < p and c+vh < columns:
             change_position(r - 1, p, car, gap, road_section)
         else:
@@ -221,8 +221,8 @@ def change_position(r, p, car, gap, road_section):
     vh = car.get_vh()
     index = grid_temp[car.position[0]][c]
     columns = grid.shape[1]
-    gapo = calc_gap(r, c, grid_temp, 1, cars)
-    gapoBack = calc_gap(r, c+gap, grid_temp, -1, cars)
+    gapo = calc_gap(r, c, grid_temp, 1, cars, road_section)
+    gapoBack = calc_gap(r, c+gap, grid_temp, -1, cars, road_section)
 
     # If the car can change his lane.
     if gapo >= v and gapoBack > vback and np.random.random() < p and c+vh < columns:
@@ -232,7 +232,7 @@ def change_position(r, p, car, gap, road_section):
         else:
             if cars[grid[r][c+vh]].position[1] < c:
                 car2 = cars[grid[r][c+vh]]
-                gap2 = calc_gap(car2.position[0], car2.position[1], grid_temp, 1, cars)
+                gap2 = calc_gap(car2.position[0], car2.position[1], grid_temp, 1, cars, road_section)
                 nasch(car2, gap2, road_section)
                 grid[r][c+vh] = index
                 updates[index] = (vh, (r, c+vh))
@@ -243,6 +243,73 @@ def change_position(r, p, car, gap, road_section):
         nasch(car, gap, road_section)
     grid[car.position[0]][c] = -1
 
+#This function calculates the gap infront of back from the place of (r,c).
+#Whith a maximum gap of vmax and whith t=1 for in front and t=-1 for the back.
+def calc_gap(r, c, grid_temp, t, cars, road_section):
+    array_check = []
+    
+    for i in range(1, vmax+1):
+        new_c = c + (i*t)
+        if new_c >= 0 and new_c < grid_temp.shape[1]:
+            array_check.append(grid_temp[r][new_c])
+        elif new_c < 0:
+            if road_section.input_road:
+                prev_road = road_section.input_road
+                prev_row = road_section.input_map[r]
+                prev_col = c + prev_road.columns
+                array_check.append(prev_road.grid_temp[prev_row][prev_col])
+            else:
+                array_check.append(-1)
+        else:
+            if road_section.output_road:
+                next_road = road_section.output_road
+                next_row = road_section.output_map[r]
+                next_col = c - grid_temp.shape[1]
+                array_check.append(next_road.grid[next_row][next_col])
+            else:
+                array.append(-1)
+
+    array_check = np.array(array_check).flatten()
+    next_car = np.where(array_check != -1)
+    if len(next_car[0]) > 0:
+        return next_car[0][0]
+    else:
+        return len(array_check)
+    
+        
+    
+    
+    '''
+    gap = 0
+    for k in range(1, vmax+1):
+        #Looking for a gap backwards
+        if t == -1:
+            if c < grid_temp.shape[1]:
+                #When out of grid
+                if c-k < 0:
+                    gap = vmax
+                    break
+                #when no car
+                elif grid_temp[r][c-k] == -1:
+                    gap += 1
+                #Found car
+                else:
+                    vback = cars[grid_temp[r][c-k]].speed
+                    break
+            else:
+                gap = c - grid_temp.shape[1]
+        #Looking for a gap infront
+        else:
+            #When out of grid
+            if c+k >= grid_temp.shape[1]:
+                gap += 1
+            #When no car
+            elif grid_temp[r][c+k] == -1:
+                gap += 1
+            #Found car
+            else:
+                break
+    '''
 
 if __name__ == '__main__':
     r1 = RoadSection(2, 10)
@@ -253,7 +320,9 @@ if __name__ == '__main__':
         1: 4   # Lane 2 corresponds with lane 5.
     }
 
+
     r1.set_output_mapping(r2, outputMap)
+    r2.set_input_mapping(r1)
 
     simulation = Simulation(r1, [r2], 100)
     result = simulation.run()

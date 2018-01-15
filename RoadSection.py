@@ -13,6 +13,8 @@ class RoadSection:
         self.grid = np.full((rows, columns),  -1, dtype=np.int32)
         self.grid_temp = None
 
+        self.input_road = None
+        self.input_map = None
         self.output_road = None
         self.output_map = None
         self.cars = {}
@@ -26,6 +28,10 @@ class RoadSection:
     def set_output_mapping(self, output_road, output_map):
         self.output_road = output_road
         self.output_map = output_map
+    
+    def set_input_mapping(self, input_road):
+        self.input_road = input_road
+        self.input_map = {v: k for k, v in self.input_road.output_map.items()}
 
     def output_car(self, car, v):
         self.finished_cars += 1

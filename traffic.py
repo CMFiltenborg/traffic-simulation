@@ -186,9 +186,8 @@ def get_car_updates(cars, grid, gridTemp, updates):
         move_car(car, cars, grid, gridTemp, updates)
 
 
-def update_cars(road_section):
-    cars = road_section.cars
-    for x, y in road_section.updates.items():
+def update_cars(cars, updates):
+    for x, y in updates.items():
         cars[x].set_speed(y[0])
         cars[x].set_position(y[1])
 

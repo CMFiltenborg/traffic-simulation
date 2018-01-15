@@ -52,6 +52,13 @@ class Simulation:
             yield roads_steps
 
 
+def update_cars(road_section):
+    cars = road_section.cars
+    for x, y in road_section.updates.items():
+        cars[x].set_speed(y[0])
+        cars[x].set_position(y[1])
+
+
 def get_car_updates(road_section):
     coordinates = road_section.get_car_coordinates()
     cars = road_section.cars

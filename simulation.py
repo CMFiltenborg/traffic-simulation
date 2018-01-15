@@ -267,7 +267,7 @@ def calc_gap(r, c, grid_temp, t, cars, road_section):
                 next_col = c - grid_temp.shape[1]
                 array_check.append(next_road.grid[next_row][next_col])
             else:
-                array.append(-1)
+                array_check.append(-1)
 
     array_check = np.array(array_check).flatten()
     next_car = np.where(array_check != -1)

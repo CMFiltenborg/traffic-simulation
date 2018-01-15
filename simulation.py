@@ -103,7 +103,6 @@ class Simulation:
                 grid[i][0] = new_car_index
 
 
-
 def update_cars(road_section):
     cars = road_section.cars
     for x, y in road_section.updates.items():
@@ -149,17 +148,20 @@ def nasch(car, gap, road_section):
 
     # acceleration
     v = min(v+1, vmax)
+
     # braking
     v = min(v, gap)
+
     # randomness
     if np.random.random() < pv:
         v = max(v-1, 0)
-    # update
+    # Update car
     if c+v < grid.shape[1]:
         grid[r][c+v] = index
         updates[index] = (v, (r, c+v))
         return
 
+    # Car goes out of the grid
     if c + v >= grid.shape[1]:
         road_section.output_car(car, v)
 
@@ -171,7 +173,6 @@ def lane_change(car, gap, road_section):
     cars = road_section.cars
     grid = road_section.grid
     grid_temp = road_section.grid_temp
-    updates = road_section.updates
 
     r = car.position[0]
     c = car.position[1]
@@ -185,32 +186,32 @@ def lane_change(car, gap, road_section):
     columns = grid.shape[1]
     rows = grid.shape[0]
 
-    #When car isn't in the right lane after 80% of the track the change
-    #to change lane is 1.
+    # When car isn't in the right lane after 80% of the track the change
+    # to change lane is 1.
     if c > 80 and ((d == 2 and r > 2) or (d == 3 and r < 3)):
         p = 1
 
-    #When the car is in the most left lane.
+    # When the car is in the most left lane.
     if r == 0 or (d == 3 and r < 3):
-        change_posistion(1, p, car, gap, road_section)
-    #Als de auto zich in de meest rechter rijstrook bevind.
+        change_position(1, p, car, gap, road_section)
+    # Als de auto zich in de meest rechter rijstrook bevind.
     elif r == rows - 1 or (d == 2 and r > 2):
-        change_posistion(r-1, p, car, gap, road_section)
-    #Als de auto zich in de vierde rijstrook bevind en ter hoogte van de oprit.
+        change_position(r - 1, p, car, gap, road_section)
+    # Als de auto zich in de vierde rijstrook bevind en ter hoogte van de oprit.
     elif r == 3 and c < 10:
-        change_posistion(2, p, car, gap, road_section)
-    #Als de auto in een van de middelste rijstroken bevind.
+        change_position(2, p, car, gap, road_section)
+    # Als de auto zich in een van de middelste rijstroken bevind.
     else:
         gapoL = calc_gap(r-1, c, grid_temp, 1, cars)
         gapoBackL = calc_gap(r-1, c+gap, grid_temp, -1, cars)
         if gapoL >= v and gapoBackL > vback and np.random.random() < p and c+vh < columns:
-            change_posistion(r-1, p, car, gap, road_section)
+            change_position(r - 1, p, car, gap, road_section)
         else:
-            change_posistion(r+1, p, car, gap, road_section)
+            change_position(r + 1, p, car, gap, road_section)
 
 
-#r is the lane the car wants to go to
-def change_posistion(r, p, car, gap, road_section):
+# r is the lane the car wants to go to
+def change_position(r, p, car, gap, road_section):
     cars = road_section.cars
     grid = road_section.grid
     grid_temp = road_section.grid_temp
@@ -219,12 +220,11 @@ def change_posistion(r, p, car, gap, road_section):
     v = car.speed
     vh = car.get_vh()
     index = grid_temp[car.position[0]][c]
-
     columns = grid.shape[1]
     gapo = calc_gap(r, c, grid_temp, 1, cars)
     gapoBack = calc_gap(r, c+gap, grid_temp, -1, cars)
 
-    #If the car can change his lane.
+    # If the car can change his lane.
     if gapo >= v and gapoBack > vback and np.random.random() < p and c+vh < columns:
         if grid[r][c+vh] == -1:
             grid[r][c+vh] = index
@@ -242,42 +242,6 @@ def change_posistion(r, p, car, gap, road_section):
     else:
         nasch(car, gap, road_section)
     grid[car.position[0]][c] = -1
-
-
-# def simulate(config):
-#     rows = config['rows']
-#     columns = config['columns']
-#     step = config['step']
-#
-#     grid = np.full((rows, columns),  -1, dtype=np.int32)
-#     cars = {}
-#     # cars = {
-#     # 0 : Car(5, 1, 1, (0,2)),
-#     # 1 : Car(5, 1, 1, (2,2)),
-#     # 2 : Car(2, 1, 1, (0,4)),
-#     # 3 : Car(2, 1, 1, (2,4))
-#     # }
-#     # grid = np.array([[-1,-1,0,-1,2,-1,-1,-1,-1,-1],
-#     #         [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
-#     #         [-1,-1,1,-1,3,-1,-1,-1,-1,-1]])
-#
-#     for i in range(step):
-#         updates = {}
-#         gridTemp = copy.deepcopy(grid)
-#
-#         get_car_updates(cars, grid, gridTemp, updates)
-#
-#         # Update cars
-#         update_cars(cars, updates)
-#
-#         # Generate auto only works for 1 car
-#         generate_cars(cars, grid)
-#
-#         if i % 100 == 0 and i > 0:
-#             remove_old_cars(cars, grid)
-#
-#         # If we want to animate the simulation, yield the grid for every step
-#         yield grid, cars
 
 
 if __name__ == '__main__':

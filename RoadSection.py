@@ -30,6 +30,7 @@ class RoadSection:
     def output_car(self, car, v):
         self.finished_cars += 1
 
+        del self.cars[car.index]
         if self.is_end_road:
             return
 
@@ -37,7 +38,6 @@ class RoadSection:
         output_row = self.output_map[car.position[0]]
         output_column = car.position[1] + v - self.grid.shape[1]
 
-        del self.cars[car.index]
         output_road.add_car(car, output_row, output_column, v)
 
     def set_temp_grid(self):

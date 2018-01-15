@@ -50,7 +50,7 @@ class Simulation:
                     remove_old_cars(cars, grid)
 
                 # If we want to animate the simulation, yield the grid for every step
-                print_grid((grid, cars))
+                # print_grid((grid, cars))
                 roads_steps[j] = (grid, cars)
 
             yield roads_steps
@@ -280,16 +280,17 @@ def change_posistion(r, p, car, gap, road_section):
 #         yield grid, cars
 
 
-r1 = RoadSection(2, 10)
-r2 = RoadSection(5, 10, True)
+if __name__ == '__main__':
+    r1 = RoadSection(2, 10)
+    r2 = RoadSection(5, 10, True)
 
-outputMap = {
-    0: 3,  # Lane 1 corresponds with lane 5.
-    1: 4   # Lane 2 corresponds with lane 5.
-}
+    outputMap = {
+        0: 3,  # Lane 1 corresponds with lane 5.
+        1: 4   # Lane 2 corresponds with lane 5.
+    }
 
-r1.set_output_mapping(r2, outputMap)
+    r1.set_output_mapping(r2, outputMap)
 
-simulation = Simulation(r1, [r2], 100)
-result = simulation.run()
-[r for r in result]
+    simulation = Simulation(r1, [r2], 100)
+    result = simulation.run()
+    [r for r in result]

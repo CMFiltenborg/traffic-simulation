@@ -18,6 +18,7 @@ config = {
     'rows': 5,
     'columns': 100,
     'step': 100,
+    'gemSnelheid': 1,
 }
 
 states = simulate(config)

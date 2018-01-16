@@ -25,7 +25,7 @@ outputMap = {
     1: 4   # Lane 2 corresponds with lane 5.
 }
 
-r1.set_output_mapping(r2, outputMap)
+r1.set_output_mapping(outputMap)
 
 simulation = Simulation(r2, [], 100)
 result = simulation.run()

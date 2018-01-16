@@ -22,6 +22,15 @@ class Simulation:
         self.step = step
         self.generated_cars = 0  # Ensures unique ids/indices
 
+    def speedaverage(self, grid, cars, road_section):
+        totalSpeed = 0
+        for car in cars:
+            totalSpeed += cars[car].speed
+        
+        if len(cars) > 0:
+            gemSpeed = totalSpeed/len(cars)
+        return gemSpeed
+
     def run(self):
         for i in range(self.step):
             roads_steps = {}
@@ -29,13 +38,14 @@ class Simulation:
             for j in range(len(self.roads)):
                 road_section = self.roads[j]
                 road_section.set_temp_grid()
-                road_section.updates = {}
+
+                # Update cars
+                update_cars(road_section)
 
                 # Generates the updates for all cars
                 get_car_updates(road_section)
 
-                # Update cars
-                update_cars(road_section)
+                # Add new cars added from 'previous' road_section
                 road_section.add_new_cars()
 
                 # Generate auto only works for 1 car
@@ -49,6 +59,12 @@ class Simulation:
                 # If we want to animate the simulation, yield the grid for every step
                 # print_grid((grid, cars))
                 roads_steps[j] = (road_section.grid, road_section.cars)
+
+                # Calculate the average speed in the middel of the section.
+                # if self.avSpeed:
+                #     grid = road_section.grid
+                #     cars = road_section.cars
+                #     gemSpeed = self.speedaverage(grid, cars, road_section)
 
             yield roads_steps
 
@@ -105,8 +121,11 @@ class Simulation:
 def update_cars(road_section):
     cars = road_section.cars
     for x, y in road_section.updates.items():
+        print('Update car[{}]:'.format(cars[x].index), y[1])
         cars[x].set_speed(y[0])
         cars[x].set_position(y[1])
+
+    road_section.updates = {}
 
 
 def get_car_updates(road_section):
@@ -116,6 +135,7 @@ def get_car_updates(road_section):
         row = coordinates[0][j]
         column = coordinates[1][j]
         car = cars[road_section.grid_temp[row][column]]
+        print(road_section.name, 'GCU position:', row, column, car.position)
 
         move_car(car, road_section)
 
@@ -124,6 +144,7 @@ def move_car(car, road_section):
     cars = road_section.cars
     grid_temp = road_section.grid_temp
 
+    print(road_section.name, 'Move car', car.position)
     gap = calc_gap(car.position[0], car.position[1], grid_temp, 1, cars, road_section)
     do_lane_change = (car.speed > gap) or (car.position[0] != car.direction)
 
@@ -158,6 +179,7 @@ def nasch(car, gap, road_section):
     if c+v < grid.shape[1]:
         grid[r][c+v] = index
         updates[index] = (v, (r, c+v))
+        print(road_section.name, 'nasch Update car[{}]'.format(car.index),  (r, c+v))
         return
 
     # Car goes out of the grid
@@ -181,7 +203,6 @@ def lane_change(car, gap, road_section):
     d = car.direction
 
     vback = -1
-    index = grid_temp[r][c]
     columns = grid.shape[1]
     rows = grid.shape[0]
 
@@ -190,22 +211,28 @@ def lane_change(car, gap, road_section):
     if c > (0.8)*columns and ((d <= 2 and r > 2) or (d >= 3 and r < 3)):
         p = 1
 
+    print('lane-change', r, c)
     # When the car is in the most left lane.
-    if r == 0 or (r < d):
+    if r + 1 < road_section.grid.shape[0] and (r == 0 or (r < d)):
+        print('change_pos r+1')
         change_position(r+1, p, car, gap, road_section)
     # Als de auto zich in de meest rechter rijstrook bevind.
     elif r == rows - 1 or (r > d):
+        print('change_pos r-1')
         change_position(r - 1, p, car, gap, road_section)
     # Als de auto zich in de vierde rijstrook bevind en ter hoogte van de oprit.
     elif r == 3 and c < 10:
+        print('change_pos 2')
         change_position(2, p, car, gap, road_section)
     # Als de auto zich in een van de middelste rijstroken bevind.
     else:
         gapoL = calc_gap(r-1, c, grid_temp, 1, cars, road_section)
         gapoBackL = calc_gap(r-1, c+gap, grid_temp, -1, cars, road_section)
         if gapoL >= v and gapoBackL > vback and np.random.random() < p and c+vh < columns:
+            print('change_pos r-1 (middelste)')
             change_position(r - 1, p, car, gap, road_section)
         else:
+            print('change_pos r+1 (middelste)')
             change_position(r + 1, p, car, gap, road_section)
 
 
@@ -214,7 +241,6 @@ def change_position(r, p, car, gap, road_section):
     cars = road_section.cars
     grid = road_section.grid
     grid_temp = road_section.grid_temp
-    updates = road_section.updates
     c = car.position[1]
     v = car.speed
     vh = car.get_vh()
@@ -222,35 +248,40 @@ def change_position(r, p, car, gap, road_section):
     columns = grid.shape[1]
     gapo = calc_gap(r, c, grid_temp, 1, cars, road_section)
     gapoBack = calc_gap(r, c+gap, grid_temp, -1, cars, road_section)
+    
+    if c+vh >= columns:
+        if not road_section.is_end_road:
+            current_road, row_index = road_section.output_map[r]
+            col_index = c+vh - columns
+        else:
+            nasch(car, gap, road_section)
+            grid[car.position[0]][c] = -1
+            return
+    else:
+        row_index = r
+        col_index = c+vh
+        current_road = road_section
 
     # If the car can change his lane.
-    if gapo >= v and gapoBack > vback and np.random.random() < p and c+vh < columns:
-        if grid[r][c+vh] == -1:
-            grid[r][c+vh] = index
-            updates[index] = (vh, (r, c+vh))
-        else:
-            if cars[grid[r][c+vh]].position[1] < c:
-                car2 = cars[grid[r][c+vh]]
-                gap2 = calc_gap(car2.position[0], car2.position[1], grid_temp, 1, cars, road_section)
-                nasch(car2, gap2, road_section)
-                grid[r][c+vh] = index
-                updates[index] = (vh, (r, c+vh))
-            else:
-                nasch(car, gap, road_section)
-
+    if gapo >= v and gapoBack > vback and np.random.random() < p and current_road.grid[row_index][col_index] == -1:
+        current_road.grid[row_index][col_index] = index
+        current_road.updates[index] = (vh, (row_index, col_index))
+        current_road.cars[index] = car
+        print(road_section.name, 'LC Update:', (row_index, col_index))
     else:
         nasch(car, gap, road_section)
-    grid[car.position[0]][c] = -1
 
+    grid[car.position[0]][c] = -1
 #This function calculates the gap infront of back from the place of (r,c).
 #Whith a maximum gap of vmax and whith t=1 for in front and t=-1 for the back.
 def calc_gap(r, c, grid_temp, t, cars, road_section):
     array_check = []
+    print(road_section.rows, road_section.columns, road_section.name, r, c)
 
     for i in range(1, vmax+1):
         new_c = c + (i*t)
         if new_c >= 0 and new_c < grid_temp.shape[1]:
-            array_check.append(grid_temp[r][new_c])
+            array_check.append(grid_temp[r, new_c])
         elif new_c < 0:
             if road_section.input_road:
                 prev_road = road_section.input_road
@@ -260,9 +291,8 @@ def calc_gap(r, c, grid_temp, t, cars, road_section):
             else:
                 array_check.append(-1)
         else:
-            if road_section.output_road:
-                next_road = road_section.output_road
-                next_row = road_section.output_map[r]
+            if not road_section.is_end_road:
+                next_road, next_row = road_section.output_map[r]
                 next_col = c - grid_temp.shape[1]
                 array_check.append(next_road.grid[next_row][next_col])
             else:
@@ -285,8 +315,7 @@ if __name__ == '__main__':
         1: 4   # Lane 2 corresponds with lane 5.
     }
 
-
-    r1.set_output_mapping(r2, outputMap)
+    r1.set_output_mapping(outputMap)
     r2.set_input_mapping(r1)
 
     simulation = Simulation(r1, [r2], 100)

@@ -16,20 +16,21 @@ pc = 1
 
 
 class Simulation:
-    def __init__(self, start_road, rest_roads, step):
+    def __init__(self, start_road, rest_roads, step, avSpeed):
         self.start_road = start_road
         self.roads = [start_road, *rest_roads] # Pack into one list
         self.step = step
         self.generated_cars = 0  # Ensures unique ids/indices
+        self.avSpeed = avSpeed
 
     def speedaverage(self, grid, cars, road_section):
         totalSpeed = 0
-        for car in cars:
-            totalSpeed += cars[car].speed
-        
         if len(cars) > 0:
-            gemSpeed = totalSpeed/len(cars)
-        return gemSpeed
+            for car in cars:
+                totalSpeed += cars[car].speed
+            averageSpeed = totalSpeed/len(cars)
+            return averageSpeed
+        return 0
 
     def run(self):
         for i in range(self.step):
@@ -61,10 +62,10 @@ class Simulation:
                 roads_steps[j] = (road_section.grid, road_section.cars)
 
                 # Calculate the average speed in the middel of the section.
-                # if self.avSpeed:
-                #     grid = road_section.grid
-                #     cars = road_section.cars
-                #     gemSpeed = self.speedaverage(grid, cars, road_section)
+                if self.avSpeed:
+                    grid = road_section.grid
+                    cars = road_section.cars
+                    averageSpeed = self.speedaverage(grid, cars, road_section)
 
             yield roads_steps
 
@@ -272,6 +273,7 @@ def change_position(r, p, car, gap, road_section):
         nasch(car, gap, road_section)
 
     grid[car.position[0]][c] = -1
+
 #This function calculates the gap infront of back from the place of (r,c).
 #Whith a maximum gap of vmax and whith t=1 for in front and t=-1 for the back.
 def calc_gap(r, c, grid_temp, t, cars, road_section):

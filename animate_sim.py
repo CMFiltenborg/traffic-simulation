@@ -17,7 +17,7 @@ from RoadSection import RoadSection
 import pylab as pl
 
 
-r1 = RoadSection(2, 50)
+r1 = RoadSection(2, 100)
 r2 = RoadSection(5, 100, True)
 
 outputMap = {

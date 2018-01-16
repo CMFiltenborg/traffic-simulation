@@ -25,12 +25,12 @@ class Simulation:
 
     def speedaverage(self, grid, cars, road_section):
         totalSpeed = 0
-        for car in cars:
-            totalSpeed += cars[car].speed
-        
         if len(cars) > 0:
-            gemSpeed = totalSpeed/len(cars)
-        return gemSpeed
+            for car in cars:
+                totalSpeed += cars[car].speed
+            averageSpeed = totalSpeed/len(cars)
+            return averageSpeed
+        return 0
 
     def run(self):
         for i in range(self.step):
@@ -64,7 +64,7 @@ class Simulation:
                 if self.avSpeed:
                     grid = road_section.grid
                     cars = road_section.cars
-                    gemSpeed = self.speedaverage(grid, cars, road_section)
+                    averageSpeed = self.speedaverage(grid, cars, road_section)
 
             yield roads_steps
 

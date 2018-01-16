@@ -22,6 +22,15 @@ class Simulation:
         self.step = step
         self.generated_cars = 0  # Ensures unique ids/indices
 
+    def speedaverage(self, grid, cars, road_section):
+        totalSpeed = 0
+        for car in cars:
+            totalSpeed += cars[car].speed
+        
+        if len(cars) > 0:
+            gemSpeed = totalSpeed/len(cars)
+        return gemSpeed
+
     def run(self):
         for i in range(self.step):
             roads_steps = {}
@@ -49,6 +58,12 @@ class Simulation:
                 # If we want to animate the simulation, yield the grid for every step
                 # print_grid((grid, cars))
                 roads_steps[j] = (road_section.grid, road_section.cars)
+
+                # Calculate the average speed in the middel of the section.
+                if self.avSpeed:
+                    grid = road_section.grid
+                    cars = road_section.cars
+                    gemSpeed = self.speedaverage(grid, cars, road_section)
 
             yield roads_steps
 

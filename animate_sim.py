@@ -5,7 +5,7 @@ Simple animation of the highway
 
 import matplotlib
 
-from simulation import Simulation
+from simulationBackup import Simulation
 
 matplotlib.use('TKAgg')
 
@@ -17,7 +17,7 @@ from RoadSection import RoadSection
 import pylab as pl
 
 
-r1 = RoadSection(2, 50)
+r1 = RoadSection(2, 100)
 r2 = RoadSection(5, 100, True)
 
 outputMap = {
@@ -27,7 +27,7 @@ outputMap = {
 
 r1.set_output_mapping(r2, outputMap)
 
-simulation = Simulation(r1, [r2], 100)
+simulation = Simulation(r1, [r2], 100, False)
 result = simulation.run()
 
 # config = {
@@ -88,7 +88,7 @@ def plot_grid(sections):
     return (*markers),  # Unpack all the new markers
 
 line_ani = animation.FuncAnimation(fig, plot_grid, result, fargs=(),
-                                   interval=1000, blit=True)
+                                   interval=50, blit=True)
 
 # To save the animation, use the command: line_ani.save('lines.mp4')
 

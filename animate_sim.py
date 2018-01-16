@@ -5,7 +5,7 @@ Simple animation of the highway
 
 import matplotlib
 
-from simulationBackup import Simulation
+from simulation import Simulation
 
 matplotlib.use('TKAgg')
 

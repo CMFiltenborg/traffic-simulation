@@ -16,11 +16,12 @@ pc = 1
 
 
 class Simulation:
-    def __init__(self, start_road, rest_roads, step):
+    def __init__(self, start_road, rest_roads, step, avSpeed):
         self.start_road = start_road
         self.roads = [start_road, *rest_roads] # Pack into one list
         self.step = step
         self.generated_cars = 0  # Ensures unique ids/indices
+        self.avSpeed = avSpeed
 
     def speedaverage(self, grid, cars, road_section):
         totalSpeed = 0

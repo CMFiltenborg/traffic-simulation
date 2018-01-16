@@ -27,7 +27,7 @@ outputMap = {
 
 r1.set_output_mapping(r2, outputMap)
 
-simulation = Simulation(r1, [r2], 100, False)
+simulation = Simulation(r1, [r2], 100, True)
 result = simulation.run()
 
 # config = {
@@ -88,7 +88,7 @@ def plot_grid(sections):
     return (*markers),  # Unpack all the new markers
 
 line_ani = animation.FuncAnimation(fig, plot_grid, result, fargs=(),
-                                   interval=50, blit=True)
+                                   interval=1000, blit=True)
 
 # To save the animation, use the command: line_ani.save('lines.mp4')
 

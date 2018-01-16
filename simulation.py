@@ -222,22 +222,25 @@ def change_position(r, p, car, gap, road_section):
     columns = grid.shape[1]
     gapo = calc_gap(r, c, grid_temp, 1, cars, road_section)
     gapoBack = calc_gap(r, c+gap, grid_temp, -1, cars, road_section)
+    
+    if c+vh >= columns:
+        if road_section.output_road:
+            row_index = road_section.output_map[r]
+            col_index = c+vh - columns
+            current_road = road_section.output_road
+        else:
+            nasch(car, gap, road_section)
+            grid[car.position[0]][c] = -1
+            return
+    else:
+        row_index = r
+        col_index = c+vh
+        current_road = road_section
 
     # If the car can change his lane.
-    if gapo >= v and gapoBack > vback and np.random.random() < p and c+vh < columns:
-        if grid[r][c+vh] == -1:
-            grid[r][c+vh] = index
-            updates[index] = (vh, (r, c+vh))
-        else:
-            if cars[grid[r][c+vh]].position[1] < c:
-                car2 = cars[grid[r][c+vh]]
-                gap2 = calc_gap(car2.position[0], car2.position[1], grid_temp, 1, cars, road_section)
-                nasch(car2, gap2, road_section)
-                grid[r][c+vh] = index
-                updates[index] = (vh, (r, c+vh))
-            else:
-                nasch(car, gap, road_section)
-
+    if gapo >= v and gapoBack > vback and np.random.random() < p and current_road.grid[row_index][col_index] == -1:
+        current_road.grid[row_index][col_index] = index
+        current_road.updates[index] = (vh, (row_index, col_index))
     else:
         nasch(car, gap, road_section)
     grid[car.position[0]][c] = -1

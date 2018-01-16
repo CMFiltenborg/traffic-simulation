@@ -17,17 +17,24 @@ from RoadSection import RoadSection
 import pylab as pl
 
 
-r1 = RoadSection(2, 50)
-r2 = RoadSection(5, 100, True)
+r1 = RoadSection(2, 10)
+# r1.set_output_mapping()
+
+r2 = RoadSection(2, 100, True)
+r3 = RoadSection(1, 100, True)
+
+
 
 outputMap = {
-    0: 3,  # Lane 1 corresponds with lane 5.
-    1: 4   # Lane 2 corresponds with lane 5.
+    0: (r2, 0),  # Lane 1 corresponds with lane 5.
+    1: (r2, 1)   # Lane 2 corresponds with lane 5.
 }
 
 r1.set_output_mapping(r2, outputMap)
 
-simulation = Simulation(r2, [], 100)
+
+
+simulation = Simulation(r1, [r2, r3], 100)
 result = simulation.run()
 
 # config = {
@@ -39,30 +46,37 @@ result = simulation.run()
 
 sections = next(result)
 number_of_roads = 1
-fig, axes = plt.subplots(nrows=1, ncols=1, sharey=True)
-axes = [axes]
-row_heights = {}
+fig, axes = plt.subplots(nrows=2, ncols=2, sharey=True)
+# axes = [axes]
+# row_heights = {}
 # row_heights = {
 #     0: np.linspace(0.7, 0.4, 5)[3:5],
 #     1: np.linspace(0.7, 0.4, 5)
 # }
 row_heights = {
-    0: np.linspace(0.7, 0.4, 5)
+    0: [0.4, 0.5],
+    1: [0.4, 0.5],
+    2: [0.5],
 }
+print(axes)
 
+axes = np.array(axes).flatten()
 for i in sections:
-    grid, cars = sections[i]
+    # more_axes = axes[i]
+    # for j in more_axes:
     ax = axes[i]
+
+    grid, cars = sections[i]
     # Create lines for every row in the grid, the 'highways'
     # row_heights[i] = np.linspace(0.7, 0.3, grid.shape[0])
     for row_height in row_heights[i]:
         l, = ax.plot([0, 1], [row_height, row_height], color='black')
 
     # Scale to plot 0 - 1
-    plt.xlim(0, 1)
-    plt.ylim(0, 1)
-    plt.xlabel('Position')
-    plt.title('Highway simulation')
+    # plt.xlim(0, 1)
+    # plt.ylim(0, 1)
+    # plt.xlabel('Position')
+    # plt.title('Highway simulation')
 
 
 def plot_grid(sections):

@@ -42,8 +42,7 @@ class RoadSection:
         if self.is_end_road:
             return
 
-        output_road = self.output_road
-        output_row = self.output_map[car.position[0]]
+        output_road, output_row = self.output_map[car.position[0]]
         output_column = car.position[1] + v - self.grid.shape[1]
 
         car.direction = np.random.randint(0, output_road.rows)

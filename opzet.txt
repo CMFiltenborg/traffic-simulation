@@ -13,3 +13,11 @@
 - Index grid maken / Auto object
 - Oprit / Auto's spawnen
 - Afrit
+
+
+- Lane change over sections
+- Juiste secties opzetten
+- Parameters fitten
+
+- Tests maken die gegevens verzamelen
+- Statistieken over de simulatie

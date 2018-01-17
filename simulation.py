@@ -40,11 +40,11 @@ class Simulation:
                 road_section = self.roads[j]
                 road_section.set_temp_grid()
 
-                # Update cars
-                update_cars(road_section)
-
                 # Generates the updates for all cars
                 get_car_updates(road_section)
+                
+                # Update cars
+                update_cars(road_section)
 
                 # Add new cars added from 'previous' road_section
                 road_section.add_new_cars()
@@ -122,7 +122,7 @@ class Simulation:
 def update_cars(road_section):
     cars = road_section.cars
     for x, y in road_section.updates.items():
-        print('Update car[{}]:'.format(cars[x].index), y[1])
+        #print('Update car[{}]:'.format(cars[x].index), y[1])
         cars[x].set_speed(y[0])
         cars[x].set_position(y[1])
 
@@ -136,8 +136,11 @@ def get_car_updates(road_section):
         row = coordinates[0][j]
         column = coordinates[1][j]
         car = cars[road_section.grid_temp[row][column]]
-        print(road_section.name, 'GCU position:', row, column, car.position)
-
+        
+        if (row, column) != car.position:
+            continue
+        
+        #print(road_section.name, 'GCU position:', row, column, car.position)
         move_car(car, road_section)
 
 
@@ -145,7 +148,7 @@ def move_car(car, road_section):
     cars = road_section.cars
     grid_temp = road_section.grid_temp
 
-    print(road_section.name, 'Move car', car.position)
+    #print(road_section.name, 'Move car', car.position)
     gap = calc_gap(car.position[0], car.position[1], grid_temp, 1, cars, road_section)
     do_lane_change = (car.speed > gap) or (car.position[0] != car.direction)
 
@@ -180,7 +183,7 @@ def nasch(car, gap, road_section):
     if c+v < grid.shape[1]:
         grid[r][c+v] = index
         updates[index] = (v, (r, c+v))
-        print(road_section.name, 'nasch Update car[{}]'.format(car.index),  (r, c+v))
+        #print(road_section.name, 'nasch Update car[{}]'.format(car.index),  (r, c+v))
         return
 
     # Car goes out of the grid
@@ -212,28 +215,22 @@ def lane_change(car, gap, road_section):
     if c > (0.8)*columns and ((d <= 2 and r > 2) or (d >= 3 and r < 3)):
         p = 1
 
-    print('lane-change', r, c)
     # When the car is in the most left lane.
     if r + 1 < road_section.grid.shape[0] and (r == 0 or (r < d)):
-        print('change_pos r+1')
         change_position(r+1, p, car, gap, road_section)
     # Als de auto zich in de meest rechter rijstrook bevind.
     elif r == rows - 1 or (r > d):
-        print('change_pos r-1')
         change_position(r - 1, p, car, gap, road_section)
     # Als de auto zich in de vierde rijstrook bevind en ter hoogte van de oprit.
     elif r == 3 and c < 10:
-        print('change_pos 2')
         change_position(2, p, car, gap, road_section)
     # Als de auto zich in een van de middelste rijstroken bevind.
     else:
         gapoL = calc_gap(r-1, c, grid_temp, 1, cars, road_section)
         gapoBackL = calc_gap(r-1, c+gap, grid_temp, -1, cars, road_section)
         if gapoL >= v and gapoBackL > vback and np.random.random() < p and c+vh < columns:
-            print('change_pos r-1 (middelste)')
             change_position(r - 1, p, car, gap, road_section)
         else:
-            print('change_pos r+1 (middelste)')
             change_position(r + 1, p, car, gap, road_section)
 
 
@@ -268,7 +265,7 @@ def change_position(r, p, car, gap, road_section):
         current_road.grid[row_index][col_index] = index
         current_road.updates[index] = (vh, (row_index, col_index))
         current_road.cars[index] = car
-        print(road_section.name, 'LC Update:', (row_index, col_index))
+        #print(road_section.name, 'LC Update:', (row_index, col_index))
     else:
         nasch(car, gap, road_section)
 
@@ -278,7 +275,7 @@ def change_position(r, p, car, gap, road_section):
 #Whith a maximum gap of vmax and whith t=1 for in front and t=-1 for the back.
 def calc_gap(r, c, grid_temp, t, cars, road_section):
     array_check = []
-    print(road_section.rows, road_section.columns, road_section.name, r, c)
+    #print(road_section.rows, road_section.columns, road_section.name, r, c)
 
     for i in range(1, vmax+1):
         new_c = c + (i*t)

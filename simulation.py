@@ -16,7 +16,7 @@ pc = 1
 
 
 class Simulation:
-    def __init__(self, start_road, rest_roads, step, avSpeed):
+    def __init__(self, start_road, rest_roads, step, avSpeed=False):
         self.start_road = start_road
         self.roads = [start_road, *rest_roads] # Pack into one list
         self.step = step
@@ -74,13 +74,14 @@ class Simulation:
         cars = road_section.cars
         grid = road_section.grid
         rows = grid.shape[0]
+        rightLane = road_section.rightLane
         for i in range(rows):
             if i == 4:
                 if np.random.random() < 0.5:
                     v = np.random.randint(3, 5)
                     new_car_index = self.generated_cars
                     self.generated_cars += 1
-                    d = np.random.randint(0,rows)
+                    d = np.random.randint(0,rightLane)
                     if d >= 3:
                         color = 'black'
                     else:
@@ -111,7 +112,7 @@ class Simulation:
                         v = 4
                 new_car_index = self.generated_cars
                 self.generated_cars += 1
-                d = np.random.randint(0,rows)
+                d = np.random.randint(0,rightLane)
                 if d >= 3:
                     color = 'black'
                 else:
@@ -210,6 +211,7 @@ def lane_change(car, gap, road_section):
     vback = -1
     columns = grid.shape[1]
     rows = grid.shape[0]
+    rightLane = road_section.rightLane
 
     # When car isn't in the right lane after 80% of the track the chanse
     # to change lane is 1.
@@ -217,10 +219,10 @@ def lane_change(car, gap, road_section):
         p = 1
 
     # When the car is in the most left lane.
-    if r + 1 < road_section.grid.shape[0] and (r == 0 or (r < d)):
+    if r + 1 < rightLane and (r == 0 or (r < d)):
         change_position(r+1, p, car, gap, road_section)
     # Als de auto zich in de meest rechter rijstrook bevind.
-    elif r == rows - 1 or (r > d):
+    elif r == rightLane - 1 or (r > d):
         change_position(r - 1, p, car, gap, road_section)
     # Als de auto zich in de vierde rijstrook bevind en ter hoogte van de oprit.
     elif r == 3 and c < 10:

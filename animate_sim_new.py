@@ -23,8 +23,8 @@ r3 = RoadSection(2, 100, name='R3')
 r4 = RoadSection(2, 40, name='R4')
 r5 = RoadSection(1, 20, name='R5')
 r6 = RoadSection(1, 120, name='R6')
-r7 = RoadSection(3, 80, is_end_road=True, name='R7')
-r8 = RoadSection(3, 40, is_end_road=True, name='R8')
+r7 = RoadSection(3, 80, is_end_road=True, name='R7', rightLane=2)
+r8 = RoadSection(3, 40, is_end_road=True, name='R8', rightLane=2)
 
 r1.set_output_mapping({
     0: (r3, 0),

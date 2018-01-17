@@ -156,7 +156,7 @@ def simulate(config):
     #         [-1,-1,1,-1,3,-1,-1,-1,-1,-1]])
     
     for i in range(step):
-        print_grid((grid, cars))
+        print_grid(grid)
         updates = {}
         grid_temp = copy.deepcopy(grid)
 
@@ -260,7 +260,6 @@ def generate_cars(cars, grid):
 
 
 def print_grid(grid):
-    grid, cars = grid
     print("---------------")
     print(grid)
     print("---------------")

@@ -27,7 +27,7 @@ outputMap = {
 
 r1.set_output_mapping(outputMap)
 
-simulation = Simulation(r2, [], 100)
+simulation = Simulation(r2, [], 100, 1)
 result = simulation.run()
 
 # config = {
@@ -51,7 +51,9 @@ row_heights = {
 }
 
 for i in sections:
-    grid, cars = sections[i]
+    road_section = sections[i]
+    grid = road_section.grid
+    cars = road_section.cars
     ax = axes[i]
     # Create lines for every row in the grid, the 'highways'
     # row_heights[i] = np.linspace(0.7, 0.3, grid.shape[0])
@@ -70,7 +72,9 @@ def plot_grid(sections):
     markers = []
     #print_grid(grid)
     for i in sections:
-        grid, cars = sections[i]
+        road_section = sections[i]
+        grid = road_section.grid
+        cars = road_section.cars
         ax = axes[i]
         print_grid(sections[i])
         for j in range(grid.shape[0]):

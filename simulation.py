@@ -35,7 +35,7 @@ class Simulation:
     def run(self):
         for i in range(self.step):
             roads_steps = {}
-
+            # update cars
             for j in range(len(self.roads)):
                 road_section = self.roads[j]
                 road_section.set_temp_grid()
@@ -59,7 +59,7 @@ class Simulation:
 
                 # If we want to animate the simulation, yield the grid for every step
                 # print_grid((grid, cars))
-                roads_steps[j] = (road_section.grid, road_section.cars)
+                roads_steps[j] = road_section
 
                 # Calculate the average speed in the middel of the section.
                 if self.avSpeed:

@@ -54,11 +54,7 @@ class Simulation:
                 if road_section.spawn:
                     self.generate_cars(road_section)
 
-                # if i % 100 == 0 and i > 0:
-                #     remove_old_cars(cars, grid)
-
                 # If we want to animate the simulation, yield the grid for every step
-                # print_grid((grid, cars))
                 roads_steps[j] = road_section
 
                 # Calculate the average speed in the middel of the section.
@@ -195,9 +191,7 @@ def nasch(car, gap, road_section):
     # Car goes out of the grid
     if c + v >= grid.shape[1]:
         road_section.output_car(car, v)
-
-
-generated_cars = 0
+        grid_temp[r, c] = -1
 
 
 def lane_change(car, gap, road_section):
@@ -272,6 +266,9 @@ def change_position(r, p, car, gap, road_section):
         current_road.grid[row_index][col_index] = index
         current_road.updates[index] = (vh, (row_index, col_index))
         current_road.cars[index] = car
+
+        if current_road.name != road_section.name:
+            del road_section.cars[index]
         #print(road_section.name, 'LC Update:', (row_index, col_index))
     else:
         nasch(car, gap, road_section)

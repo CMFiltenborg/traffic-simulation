@@ -60,7 +60,6 @@ simulation = Simulation(r1, [r2, r3, r7, r4, r5, r6, r8], 1000, 1)
 result = simulation.run()
 
 sections = next(result)
-fig, axes = plt.subplots(nrows=2, ncols=4, sharey=True)
 
 row_heights = {
     'R1': [0.7, 0.6, 0.5, 0.4],
@@ -72,25 +71,31 @@ row_heights = {
     'R7': [0.7, 0.6, 0.5],
     'R8': [0.7, 0.6, 0.5],
 }
-# }
-# print(axes)
 
+fig, axes = plt.subplots(nrows=2, ncols=4, sharey=True)
 axes = np.array(axes).flatten()
-for i in sections:
-    # more_axes = axes[i]
-    # for j in more_axes:
-    ax = axes[i]
 
-    road_section = sections[i]
-    grid = road_section.grid
-    cars = road_section.cars
 
-    title = '{}: {}'.format(road_section.name, road_section.columns)
-    ax.title.set_text(title)
-    # Create lines for every row in the grid, the 'highways'
-    # row_heights[i] = np.linspace(0.7, 0.3, grid.shape[0])
-    for row_height in row_heights[road_section.name]:
-        l, = ax.plot([0, 1], [row_height, row_height], color='black')
+def plot_lines(sections):
+    lines = []
+    for i in sections:
+        # more_axes = axes[i]
+        # for j in more_axes:
+        ax = axes[i]
+
+        road_section = sections[i]
+        grid = road_section.grid
+        cars = road_section.cars
+
+        title = '{}: {}'.format(road_section.name, road_section.columns)
+        ax.title.set_text(title)
+        # Create lines for every row in the grid, the 'highways'
+        # row_heights[i] = np.linspace(0.7, 0.3, grid.shape[0])
+        for row_height in row_heights[road_section.name]:
+            l, = ax.plot([0, 1], [row_height, row_height], color='black')
+            lines.append(l)
+
+    return lines
 
 # Scale to plot 0 - 1
 plt.xlim(0, 1)
@@ -100,9 +105,9 @@ plt.ylim(0, 1)
 
 
 def plot_grid(sections):
+    lines = plot_lines(sections)
 
-    markers = []
-    #print_grid(grid)
+    markers = lines
     for i in sections:
         road_section = sections[i]
         grid = road_section.grid
@@ -127,6 +132,7 @@ def plot_grid(sections):
     
     return (*markers),  # Unpack all the new markers
 
+plot_lines(sections)
 line_ani = animation.FuncAnimation(fig, plot_grid, result, fargs=(),
                                    interval=1000 / 4, blit=True)
 

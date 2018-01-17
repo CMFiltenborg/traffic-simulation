@@ -50,7 +50,7 @@ class RoadSection:
 
         car.direction = np.random.randint(0, output_road.rightLane)
 
-        print('Output car', (output_row, output_column))
+        # print('Output car', (output_row, output_column))
         output_road.add_car(car, output_row, output_column, v)
 
     def set_temp_grid(self):

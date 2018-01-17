@@ -5,13 +5,16 @@ from car import Car
 
 
 class RoadSection:
-    def __init__(self, rows, columns, is_end_road=False, name=None):
+    def __init__(self, rows, columns, is_end_road=False, name=None, rightLane=0):
         """
         Rows is the amount of lanes
         Columns is the length of the road
         """
+        if rightLane == 0:
+            rightLane = rows
         self.name = name
         self.rows = rows
+        self.rightLane = rightLane
         self.columns = columns
         self.grid = np.full((rows, columns),  -1, dtype=np.int32)
         self.grid_temp = None
@@ -44,7 +47,7 @@ class RoadSection:
         output_road, output_row = self.output_map[car.position[0]]
         output_column = car.position[1] + v - self.grid.shape[1]
 
-        car.direction = np.random.randint(0, output_road.rows)
+        car.direction = np.random.randint(0, output_road.rightLane)
 
         print('Output car', (output_row, output_column))
         output_road.add_car(car, output_row, output_column, v)

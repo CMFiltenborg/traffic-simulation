@@ -218,7 +218,7 @@ def lane_change(car, gap, road_section):
         p = 1
 
     # When the car is in the most left lane.
-    if r + 1 < road_section.grid.shape[0] and (r == 0 or (r < d)):
+    if r + 1 < rightLane and (r == 0 or (r < d)):
         change_position(r+1, p, car, gap, road_section)
     # Als de auto zich in de meest rechter rijstrook bevind.
     elif r == rightLane - 1 or (r > d):

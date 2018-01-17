@@ -26,7 +26,6 @@ r6 = RoadSection(1, 120, name='R6')
 r7 = RoadSection(3, 80, is_end_road=True, name='R7')
 r8 = RoadSection(3, 40, is_end_road=True, name='R8')
 
-
 r1.set_output_mapping({
     0: (r3, 0),
     1: (r3, 1),
@@ -57,7 +56,7 @@ r6.set_output_mapping({
 # })
 
 
-simulation = Simulation(r1, [r2, r3, r4, r5, r6, r7, r8], 100, 80)
+simulation = Simulation(r1, [r2, r3, r7, r4, r5, r6, r8], 100, 1)
 result = simulation.run()
 
 # config = {
@@ -69,18 +68,23 @@ result = simulation.run()
 
 sections = next(result)
 number_of_roads = 1
-fig, axes = plt.subplots(nrows=1, ncols=8, sharey=True)
+fig, axes = plt.subplots(nrows=2, ncols=4, sharey=True)
 # axes = [axes]
 # row_heights = {}
 # row_heights = {
 #     0: np.linspace(0.7, 0.4, 5)[3:5],
 #     1: np.linspace(0.7, 0.4, 5)
-# }
 row_heights = {
-    0: [0.4, 0.5],
-    1: [0.4, 0.5],
-    2: [0.4],
+    'R1': [0.7, 0.6, 0.5, 0.4],
+    'R2': [0.5, 0.4],
+    'R3': [0.7, 0.6],
+    'R4': [0.6, 0.5],
+    'R5': [0.6],
+    'R6': [0.5],
+    'R7': [0.7, 0.6, 0.5],
+    'R8': [0.7, 0.6, 0.5],
 }
+# }
 # print(axes)
 
 axes = np.array(axes).flatten()
@@ -89,17 +93,21 @@ for i in sections:
     # for j in more_axes:
     ax = axes[i]
 
-    grid, cars = sections[i]
+    road_section = sections[i]
+    grid = road_section.grid
+    cars = road_section.cars
+
+    ax.title.set_text(road_section.name)
     # Create lines for every row in the grid, the 'highways'
-    row_heights[i] = np.linspace(0.7, 0.3, grid.shape[0])
-    for row_height in row_heights[i]:
+    # row_heights[i] = np.linspace(0.7, 0.3, grid.shape[0])
+    for row_height in row_heights[road_section.name]:
         l, = ax.plot([0, 1], [row_height, row_height], color='black')
 
 # Scale to plot 0 - 1
 plt.xlim(0, 1)
 plt.ylim(0, 1)
-plt.xlabel('Position')
-plt.title('Highway simulation')
+# plt.xlabel('Position')
+# plt.title('Highway simulation')
 
 
 def plot_grid(sections):
@@ -107,14 +115,16 @@ def plot_grid(sections):
     markers = []
     #print_grid(grid)
     for i in sections:
-        grid, cars = sections[i]
+        road_section = sections[i]
+        grid = road_section.grid
+        cars = road_section.cars
         ax = axes[i]
         # print_grid(sections[i])
         for j in range(grid.shape[0]):
             row = grid[j]
 
             # Determines y placement
-            row_height = row_heights[i][j]
+            row_height = row_heights[road_section.name][j]
             column_coordinates, = np.where(row != -1)
 
             # For every car we plot it as a marker with its own color

@@ -51,7 +51,7 @@ class Simulation:
 
                 # Generate auto only works for 1 car
                 # Only generate cars in the start section
-                if j == 0:
+                if road_section.spawn:
                     self.generate_cars(road_section)
 
                 # if i % 100 == 0 and i > 0:

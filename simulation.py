@@ -154,6 +154,10 @@ def move_car(car, road_section):
     gap = calc_gap(car.position[0], car.position[1], grid_temp, 1, cars, road_section)
     do_lane_change = (car.speed > gap) or (car.position[0] != car.direction)
 
+    # If the road has one lane, always do nasch
+    if (road_section.grid_temp.shape[0] == 1):
+        do_lane_change = False
+
     if not do_lane_change:
         nasch(car, gap, road_section)
         return

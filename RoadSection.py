@@ -5,7 +5,7 @@ from car import Car
 
 
 class RoadSection:
-    def __init__(self, rows, columns, is_end_road=False, name=None, rightLane=0):
+    def __init__(self, rows, columns, is_end_road=False, name=None, rightLane=0, spawn=False):
         """
         Rows is the amount of lanes
         Columns is the length of the road
@@ -25,6 +25,7 @@ class RoadSection:
         self.cars = {}
         self.updates = {}
         self.new_car_updates = {}
+        self.spawn = spawn
 
         self.is_end_road = is_end_road
 

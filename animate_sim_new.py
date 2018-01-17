@@ -56,25 +56,12 @@ r6.set_output_mapping({
 # })
 
 
-# simulation = Simulation(r1, [r2, r3, r4, r5, r6, r7, r8], 100, 1)
-simulation = Simulation(r1, [r2, r3, r7, r4, r5, r6, r8], 100, 1)
+simulation = Simulation(r1, [r2, r3, r7, r4, r5, r6, r8], 1000, 1)
 result = simulation.run()
 
-# config = {
-#     'rows': 5,
-#     'columns': 100,
-#     'step': 100,
-# }
-# states = simulate(config)
-
 sections = next(result)
-number_of_roads = 1
 fig, axes = plt.subplots(nrows=2, ncols=4, sharey=True)
-# axes = [axes]
-# row_heights = {}
-# row_heights = {
-#     0: np.linspace(0.7, 0.4, 5)[3:5],
-#     1: np.linspace(0.7, 0.4, 5)
+
 row_heights = {
     'R1': [0.7, 0.6, 0.5, 0.4],
     'R2': [0.5, 0.4],
@@ -98,7 +85,8 @@ for i in sections:
     grid = road_section.grid
     cars = road_section.cars
 
-    ax.title.set_text(road_section.name)
+    title = '{}: {}'.format(road_section.name, road_section.columns)
+    ax.title.set_text(title)
     # Create lines for every row in the grid, the 'highways'
     # row_heights[i] = np.linspace(0.7, 0.3, grid.shape[0])
     for row_height in row_heights[road_section.name]:

@@ -66,6 +66,7 @@ class Simulation:
                     grid = road_section.grid
                     cars = road_section.cars
                     averageSpeed = self.speedaverage(grid, cars, road_section)
+                    self.avSpeed = averageSpeed
 
             yield roads_steps
 
@@ -212,7 +213,7 @@ def lane_change(car, gap, road_section):
 
     # When car isn't in the right lane after 80% of the track the chanse
     # to change lane is 1.
-    if c > (0.8)*columns and ((d <= 2 and r > 2) or (d >= 3 and r < 3)):
+    if c > (0.8) * columns and ((d <= 2 and r > 2) or (d >= 3 and r < 3)):
         p = 1
 
     # When the car is in the most left lane.

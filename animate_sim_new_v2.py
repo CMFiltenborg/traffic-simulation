@@ -17,10 +17,10 @@ from RoadSection import RoadSection
 import pylab as pl
 
 
-r1 = RoadSection(4, 20, name='R1', spawn=True)
+r1 = RoadSection(4, 20, name='R1', spawn=True, outputColors=['red','red', 'black', 'black'])
 r2 = RoadSection(2, 40, name='R2')
 r3 = RoadSection(2, 100, name='R3')
-r4 = RoadSection(2, 40, name='R4', spawn=True)
+r4 = RoadSection(2, 40, name='R4', spawn=True, outputColors=['black', 'red'])
 r5 = RoadSection(1, 20, name='R5')
 r6 = RoadSection(1, 120, name='R6')
 r7 = RoadSection(3, 80, is_end_road=True, name='R7', rightLane=2)

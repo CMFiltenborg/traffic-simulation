@@ -78,10 +78,7 @@ class Simulation:
                     new_car_index = self.generated_cars
                     self.generated_cars += 1
                     d = np.random.randint(0,rightLane)
-                    if d >= 3:
-                        color = 'black'
-                    else:
-                        color = 'r'
+                    color = road_section.outputColors[d]
                     cars[new_car_index] = Car(new_car_index, v, color, d, (i,0))
                     grid[i][0] = new_car_index
                 break
@@ -109,10 +106,7 @@ class Simulation:
                 new_car_index = self.generated_cars
                 self.generated_cars += 1
                 d = np.random.randint(0,rightLane)
-                if d >= 3:
-                    color = 'black'
-                else:
-                    color = 'r'
+                color = road_section.outputColors[d]
                 cars[new_car_index] = Car(new_car_index, v, color, d, (i,0))
                 grid[i][0] = new_car_index
 
@@ -148,7 +142,7 @@ def move_car(car, road_section):
 
     #print(road_section.name, 'Move car', car.position)
     gap = calc_gap(car.position[0], car.position[1], grid_temp, 1, cars, road_section)
-    do_lane_change = (car.speed > gap) or (car.position[0] != car.direction)
+    do_lane_change = (car.speed > gap and car.position[1] < (road_section.columns*0.8)) or (car.position[0] != car.direction)
 
     # If the road has one lane, always do nasch
     if (road_section.grid_temp.shape[0] == 1):
@@ -222,9 +216,6 @@ def lane_change(car, gap, road_section):
     # Als de auto zich in de meest rechter rijstrook bevind.
     elif r == rightLane - 1 or (r > d):
         change_position(r - 1, p, car, gap, road_section)
-    # Als de auto zich in de vierde rijstrook bevind en ter hoogte van de oprit.
-    elif r == 3 and c < 10:
-        change_position(2, p, car, gap, road_section)
     # Als de auto zich in een van de middelste rijstroken bevind.
     else:
         gapoL = calc_gap(r-1, c, grid_temp, 1, cars, road_section)
@@ -271,6 +262,7 @@ def change_position(r, p, car, gap, road_section):
             del road_section.cars[index]
         #print(road_section.name, 'LC Update:', (row_index, col_index))
     else:
+        car.speed -= 2
         nasch(car, gap, road_section)
 
     grid[car.position[0]][c] = -1

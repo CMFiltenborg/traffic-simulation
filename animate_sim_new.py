@@ -56,7 +56,6 @@ r6.set_output_mapping({
 # })
 
 
-# simulation = Simulation(r1, [r2, r3, r4, r5, r6, r7, r8], 100, 1)
 simulation = Simulation(r1, [r2, r3, r7, r4, r5, r6, r8], 100, 1)
 result = simulation.run()
 

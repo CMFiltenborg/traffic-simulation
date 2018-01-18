@@ -38,6 +38,13 @@ class RoadSection:
 
         self.finished_cars = 0
 
+        self.blocks = -2
+        for i in range(rightLane,rows):
+            new_car_index = self.blocks
+            self.blocks -= 1
+            self.cars[new_car_index] = Car(new_car_index, 0, 'white', i, (i,columns-1))
+            self.grid[i][columns-1] = new_car_index
+
     def set_output_mapping(self, output_map):
         self.output_map = output_map
     

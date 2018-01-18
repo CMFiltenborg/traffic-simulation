@@ -176,11 +176,8 @@ def move_car(car, road_section):
 
     #print(road_section.name, 'Move car', car.position)
     gap = calc_gap(car.position[0], car.position[1], grid_temp, 1, cars, road_section)
-    do_lane_change = (car.speed > gap and car.position[1] < (road_section.columns*0.8)) or (car.position[0] != car.direction)
-
-    # If the road has one lane, always do nasch
-    if (road_section.grid_temp.shape[0] == 1):
-        do_lane_change = False
+    do_lane_change = ((car.speed > gap and car.position[1] < (road_section.columns*0.8) and road_section.rightLane != 1) 
+                    or (car.position[0] != car.direction))
 
     if not do_lane_change:
         nasch(car, gap, road_section)
@@ -198,6 +195,10 @@ def nasch(car, gap, road_section):
     c = car.position[1]
     v = car.speed
     index = grid_temp[r][c]
+
+    if index < -1:
+        return
+
     grid[r][c] = -1
 
     # acceleration
@@ -296,7 +297,7 @@ def change_position(r, p, car, gap, road_section):
             del road_section.cars[index]
         #print(road_section.name, 'LC Update:', (row_index, col_index))
     else:
-        car.speed -= 2
+        car.speed = max(car.speed-2, 0)
         nasch(car, gap, road_section)
 
     grid[car.position[0]][c] = -1
@@ -315,14 +316,14 @@ def calc_gap(r, c, grid_temp, t, cars, road_section):
             if road_section.input_road:
                 prev_road = road_section.input_road
                 prev_row = road_section.input_map[r]
-                prev_col = c + prev_road.columns
+                prev_col = new_c + prev_road.columns
                 array_check.append(prev_road.grid_temp[prev_row][prev_col])
             else:
                 array_check.append(-1)
         else:
             if not road_section.is_end_road:
                 next_road, next_row = road_section.output_map[r]
-                next_col = c - grid_temp.shape[1]
+                next_col = new_c - grid_temp.shape[1]
                 array_check.append(next_road.grid[next_row][next_col])
             else:
                 array_check.append(-1)

@@ -3,6 +3,7 @@ from simulation import Simulation
 
 
 class CreateRoads:
+    @staticmethod
     def original_road(steps=100):
         spawn_r2 = [
             {0:0.5, 1:0.2, 2:0.2, 3:0.2, 4:0.2,},
@@ -22,6 +23,7 @@ class CreateRoads:
 
         return simulation
 
+    @staticmethod
     def new_design_road(steps=100, calculate_average_speed=False):
         spawn_r1 = [
             {0:0.5, 1:0.2, 2:0.2, 3:0.2,},

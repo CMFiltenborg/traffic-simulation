@@ -5,6 +5,7 @@ Simple animation of the highway
 
 import matplotlib
 
+from CreateRoads import CreateRoads
 from simulation import Simulation
 
 matplotlib.use('TKAgg')
@@ -17,46 +18,20 @@ from RoadSection import RoadSection
 import pylab as pl
 
 
-r1 = RoadSection(2, 100)
-r2 = RoadSection(5, 100, True)
-
-outputMap = {
-    0: 3,  # Lane 1 corresponds with lane 5.
-    1: 4   # Lane 2 corresponds with lane 5.
-}
-
-r1.set_output_mapping(outputMap)
-
-simulation = Simulation(r2, [], 100, 1)
+simulation = CreateRoads.original_road(100)
 result = simulation.run()
 
-# config = {
-#     'rows': 5,
-#     'columns': 100,
-#     'step': 100,
-# }
-# states = simulate(config)
-
 sections = next(result)
-number_of_roads = 1
-fig, axes = plt.subplots(nrows=1, ncols=1, sharey=True)
-axes = [axes]
-row_heights = {}
-# row_heights = {
-#     0: np.linspace(0.7, 0.4, 5)[3:5],
-#     1: np.linspace(0.7, 0.4, 5)
-# }
+fig, ax = plt.subplots(nrows=1, ncols=1, sharey=True)
 row_heights = {
-    0: np.linspace(0.7, 0.4, 5)
+    0: np.linspace(0.7, 0.4, 6)
 }
 
 for i in sections:
     road_section = sections[i]
     grid = road_section.grid
     cars = road_section.cars
-    ax = axes[i]
     # Create lines for every row in the grid, the 'highways'
-    # row_heights[i] = np.linspace(0.7, 0.3, grid.shape[0])
     for row_height in row_heights[i]:
         l, = ax.plot([0, 1], [row_height, row_height], color='black')
 
@@ -70,18 +45,15 @@ for i in sections:
 def plot_grid(sections):
 
     markers = []
-    #print_grid(grid)
     for i in sections:
         road_section = sections[i]
         grid = road_section.grid
         cars = road_section.cars
-        ax = axes[i]
-        print_grid(sections[i])
         for j in range(grid.shape[0]):
             row = grid[j]
 
             # Determines y placement
-            row_height = row_heights[i][j]
+            row_height = (row_heights[i][j] + row_heights[i][j+1]) / 2
             column_coordinates, = np.where(row != -1)
 
             # For every car we plot it as a marker with its own color
@@ -99,5 +71,4 @@ line_ani = animation.FuncAnimation(fig, plot_grid, result, fargs=(),
                                    interval=1000, blit=True)
 
 # To save the animation, use the command: line_ani.save('lines.mp4')
-
 plt.show()

@@ -15,11 +15,10 @@ from traffic import simulate, print_grid
 from RoadSection import RoadSection
 import pylab as pl
 
-simulation = CreateRoads.new_design_road(1000, calculate_average_speed=False)
+simulation = CreateRoads.new_design_road(calculate_average_speed=False)
 result = simulation.run()
 
 sections = next(result)
-
 
 x1 = 10
 x2 = 30
@@ -65,7 +64,6 @@ dotted_lines = [
 ]
 
 placements = {
-    # 'R1': ((0.5, 0.5), [0.7, 0.6, 0.5, 0.4]),
     'R1': ([0, 10], [110, 100, 90, 80, 70]),
     'R2': ([30, 50], [70, 60, 50]),
     'R3': ([30, 80], [110, 100, 90]),
@@ -88,18 +86,7 @@ def plot_lines(sections):
 
     lines = []
     for i in sections:
-        # more_axes = axes[i]
-        # for j in more_axes:
-
         road_section = sections[i]
-        grid = road_section.grid
-        cars = road_section.cars
-
-        # title = '{}: {}'.format(road_section.name, road_section.columns)
-        # ax.title.set_text(title)
-
-        # Create lines for every row in the grid, the 'highways'
-        # row_heights[i] = np.linspace(0.7, 0.3, grid.shape[0])
         if road_section.name not in placements:
             continue
 
@@ -115,7 +102,7 @@ def plot_lines(sections):
 # plt.xlim(0, 200)
 # plt.ylim(0, 100)
 # plt.xlabel('Position')
-# plt.title('Highway simulation')
+plt.title('Highway simulation')
 
 
 def plot_grid(sections):
@@ -152,7 +139,7 @@ def plot_grid(sections):
 
 plot_lines(sections)
 line_ani = animation.FuncAnimation(fig, plot_grid, result, fargs=(),
-                                   interval=1000 / 4, blit=True)
+                                   interval=1000 / 10, blit=True)
 
 # To save the animation, use the command: line_ani.save('lines.mp4')
 

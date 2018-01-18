@@ -63,7 +63,7 @@ class Simulation:
                     grid = road_section.grid
                     cars = road_section.cars
                     averageSpeed = self.speedaverage(grid, cars, road_section)
-                    self.avSpeed = averageSpeed
+                    #self.avSpeed = averageSpeed
 
             yield roads_steps
 

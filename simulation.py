@@ -50,8 +50,7 @@ class Simulation:
                 # Add new cars added from 'previous' road_section
                 road_section.add_new_cars()
 
-                # Generate auto only works for 1 car
-                # Only generate cars in the start section
+                # Only generates cars in the road_sections that are starting sections
                 if road_section.spawn:
                     self.generate_cars(road_section)
 
@@ -67,6 +66,39 @@ class Simulation:
 
             yield roads_steps
 
+    def generate_cars(self, road_section):
+        cars = road_section.cars
+        grid = road_section.grid
+        rows = grid.shape[0]
+        rightLane = road_section.rightLane
+        spawn_probabilities = road_section.spawn_probabilities[0]
+        speed_probabilities = road_section.spawn_probabilities[1]
+        for i in range(rows):
+            if i not in spawn_probabilities:
+                continue
+
+            p = spawn_probabilities[i]
+            if np.random.random() > p:
+                continue  # No car is spawned
+
+            n = np.random.random()
+            # Speed probabilities where the value is the lower/upper bound tuple of the probability
+            v_start = 1
+            for v in speed_probabilities:
+                lower_bound, upper_bound = speed_probabilities[v]
+                if lower_bound >= n < upper_bound:
+                    v_start = v
+                    break
+
+            new_car_index = self.generated_cars
+            self.generated_cars += 1
+            d = np.random.randint(0, rightLane)
+            color = road_section.outputColors[d]
+            cars[new_car_index] = Car(new_car_index, v_start, color, d, (i,0))
+            grid[i][0] = new_car_index
+
+
+    '''
     def generate_cars(self, road_section):
         cars = road_section.cars
         grid = road_section.grid
@@ -110,6 +142,7 @@ class Simulation:
                 color = road_section.outputColors[d]
                 cars[new_car_index] = Car(new_car_index, v, color, d, (i,0))
                 grid[i][0] = new_car_index
+    '''
 
 
 def update_cars(road_section):

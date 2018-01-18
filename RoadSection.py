@@ -5,7 +5,7 @@ from car import Car
 
 
 class RoadSection:
-    def __init__(self, rows, columns, is_end_road=False, name=None, rightLane=0, spawn=False, outputColors=[]):
+    def __init__(self, rows, columns, is_end_road=False, name=None, rightLane=0, spawn_probabilities=None, outputColors=[]):
         """
         Rows is the amount of lanes
         Columns is the length of the road
@@ -21,6 +21,8 @@ class RoadSection:
         self.grid = np.full((rows, columns),  -1, dtype=np.int32)
         self.grid_temp = None
         self.average_speed = 0
+        self.spawn_probabilities = spawn_probabilities
+        self.spawn = spawn_probabilities is not None
 
         self.input_road = None
         self.input_map = None
@@ -28,7 +30,7 @@ class RoadSection:
         self.cars = {}
         self.updates = {}
         self.new_car_updates = {}
-        self.spawn = spawn
+
 
         self.outputColors = outputColors
 

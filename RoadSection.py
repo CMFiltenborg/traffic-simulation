@@ -20,7 +20,7 @@ class RoadSection:
         self.columns = columns
         self.grid = np.full((rows, columns),  -1, dtype=np.int32)
         self.grid_temp = None
-        self.average_speed  = 0
+        self.average_speed = 0
 
         self.input_road = None
         self.input_map = None

@@ -58,7 +58,7 @@ class Simulation:
                 # If we want to animate the simulation, yield the grid for every step
                 roads_steps[j] = road_section
 
-                # Calculate the average speed in the middel of the section.
+                # Calculate the average speed in the middle of the section.
                 if self.avSpeed:
                     grid = road_section.grid
                     cars = road_section.cars

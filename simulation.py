@@ -60,7 +60,7 @@ class Simulation:
         cars = road_section.cars
         grid = road_section.grid
         rows = grid.shape[0]
-        rightLane = road_section.rightLane
+        right_lane = road_section.right_lane
         spawn_probabilities = road_section.spawn_probabilities[0]
         speed_probabilities = road_section.spawn_probabilities[1]
         for i in range(rows):
@@ -82,8 +82,8 @@ class Simulation:
 
             new_car_index = self.generated_cars
             self.generated_cars += 1
-            d = np.random.randint(0, rightLane)
-            color = road_section.outputColors[d]
+            d = np.random.randint(0, right_lane)
+            color = road_section.output_colors[d]
             cars[new_car_index] = Car(new_car_index, v_start, color, d, (i,0))
             grid[i][0] = new_car_index
 
@@ -92,15 +92,15 @@ class Simulation:
         cars = road_section.cars
         grid = road_section.grid
         rows = grid.shape[0]
-        rightLane = road_section.rightLane
+        right_lane = road_section.right_lane
         for i in range(rows):
             if i == 4:
                 if np.random.random() < 0.5:
                     v = np.random.randint(3, 5)
                     new_car_index = self.generated_cars
                     self.generated_cars += 1
-                    d = np.random.randint(0,rightLane)
-                    color = road_section.outputColors[d]
+                    d = np.random.randint(0,right_lane)
+                    color = road_section.output_colors[d]
                     cars[new_car_index] = Car(new_car_index, v, color, d, (i,0))
                     grid[i][0] = new_car_index
                 break
@@ -127,8 +127,8 @@ class Simulation:
                         v = 4
                 new_car_index = self.generated_cars
                 self.generated_cars += 1
-                d = np.random.randint(0,rightLane)
-                color = road_section.outputColors[d]
+                d = np.random.randint(0,right_lane)
+                color = road_section.output_colors[d]
                 cars[new_car_index] = Car(new_car_index, v, color, d, (i,0))
                 grid[i][0] = new_car_index
     '''
@@ -174,9 +174,13 @@ def move_car(car, road_section):
     cars = road_section.cars
     grid_temp = road_section.grid_temp
 
+    # Roadblocks are represented by numbers < -1. These can't move.
+    if car.index < -1:
+        return
+
     #print(road_section.name, 'Move car', car.position)
     gap = calc_gap(car.position[0], car.position[1], grid_temp, 1, cars, road_section)
-    do_lane_change = ((car.speed > gap and car.position[1] < (road_section.columns*0.8) and road_section.rightLane != 1) 
+    do_lane_change = ((car.speed > gap and car.position[1] < (road_section.columns*0.8) and road_section.right_lane != 1) 
                     or (car.position[0] != car.direction))
 
     if not do_lane_change:
@@ -195,9 +199,6 @@ def nasch(car, gap, road_section):
     c = car.position[1]
     v = car.speed
     index = grid_temp[r][c]
-
-    if index < -1:
-        return
 
     grid[r][c] = -1
 
@@ -238,18 +239,18 @@ def lane_change(car, gap, road_section):
     vback = -1
     columns = grid.shape[1]
     rows = grid.shape[0]
-    rightLane = road_section.rightLane
+    right_lane = road_section.right_lane
 
     # When car isn't in the right lane after 80% of the track the chanse
     # to change lane is 1.
     if c > (0.8) * columns and ((d <= 2 and r > 2) or (d >= 3 and r < 3)):
         p = 1
 
-    # When the car is in the most left lane.
-    if r + 1 < rightLane and (r == 0 or (r < d)):
+    # When the car is in the most left lane or wants to go right.
+    if r + 1 < right_lane and (r == 0 or (r < d)):
         change_position(r+1, p, car, gap, road_section)
-    # Als de auto zich in de meest rechter rijstrook bevind.
-    elif r == rightLane - 1 or (r > d):
+    # Als de auto zich in de meest rechter rijstrook bevind or wants to go left..
+    elif r == right_lane - 1 or (r > d):
         change_position(r - 1, p, car, gap, road_section)
     # Als de auto zich in een van de middelste rijstroken bevind.
     else:
@@ -296,8 +297,9 @@ def change_position(r, p, car, gap, road_section):
         if current_road.name != road_section.name:
             del road_section.cars[index]
         #print(road_section.name, 'LC Update:', (row_index, col_index))
+    # The car will slowdown when he can't change lane when he wants to.
     else:
-        car.speed = max(car.speed-2, 0)
+        car.speed = max(car.speed-2, 2)
         nasch(car, gap, road_section)
 
     grid[car.position[0]][c] = -1

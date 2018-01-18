@@ -5,18 +5,18 @@ from car import Car
 
 
 class RoadSection:
-    def __init__(self, rows, columns, is_end_road=False, name=None, rightLane=0, spawn_probabilities=None, outputColors=[]):
+    def __init__(self, rows, columns, is_end_road=False, name=None, right_lane=0, spawn_probabilities=None, output_colors=[]):
         """
         Rows is the amount of lanes
         Columns is the length of the road
         """
-        if rightLane == 0:
-            rightLane = rows
-        if len(outputColors) == 0:
-            outputColors = ['blue']*rows
+        if right_lane == 0:
+            right_lane = rows
+        if len(output_colors) == 0:
+            output_colors = ['blue']*rows
         self.name = name
         self.rows = rows
-        self.rightLane = rightLane
+        self.right_lane = right_lane
         self.columns = columns
         self.grid = np.full((rows, columns),  -1, dtype=np.int32)
         self.grid_temp = None
@@ -32,14 +32,14 @@ class RoadSection:
         self.new_car_updates = {}
 
 
-        self.outputColors = outputColors
+        self.output_colors = output_colors
 
         self.is_end_road = is_end_road
 
         self.finished_cars = 0
 
         self.blocks = -2
-        for i in range(rightLane,rows):
+        for i in range(right_lane,rows):
             new_car_index = self.blocks
             self.blocks -= 1
             self.cars[new_car_index] = Car(new_car_index, 0, 'white', i, (i,columns-1))
@@ -62,7 +62,7 @@ class RoadSection:
         output_road, output_row = self.output_map[car.position[0]]
         output_column = car.position[1] + v - self.grid.shape[1]
 
-        car.direction = np.random.randint(0, output_road.rightLane)
+        car.direction = np.random.randint(0, output_road.right_lane)
 
 
         #print('Output car', (output_row, output_column))

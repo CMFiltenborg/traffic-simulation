@@ -34,14 +34,14 @@ class CreateRoads:
             {5:(0,0.2),4:(0.2,0.4),3:(0.4,1),}
         ]
 
-        r1 = RoadSection(4, 20, name='R1', spawn_probabilities=spawn_r1, outputColors=['red', 'red', 'black', 'black'])
+        r1 = RoadSection(4, 20, name='R1', spawn_probabilities=spawn_r1, output_colors=['red', 'red', 'black', 'black'])
         r2 = RoadSection(2, 40, name='R2')
         r3 = RoadSection(2, 100, name='R3')
-        r4 = RoadSection(2, 40, name='R4', spawn_probabilities=spawn_r4, outputColors=['black', 'red'])
+        r4 = RoadSection(2, 40, name='R4', spawn_probabilities=spawn_r4, output_colors=['black', 'red'])
         r5 = RoadSection(1, 20, name='R5')
         r6 = RoadSection(1, 120, name='R6')
-        r7 = RoadSection(3, 80, is_end_road=True, name='R7', rightLane=2)
-        r8 = RoadSection(3, 40, is_end_road=True, name='R8', rightLane=2)
+        r7 = RoadSection(3, 80, is_end_road=True, name='R7', right_lane=2)
+        r8 = RoadSection(3, 40, is_end_road=True, name='R8', right_lane=2)
 
         r1.set_output_mapping({
             0: (r3, 0),
@@ -84,7 +84,7 @@ class CreateRoads:
 
         r1 = RoadSection(1, 10, is_end_road=False, name='R1', spawn_probabilities=spawn_r1)
         r2 = RoadSection(1, 10, is_end_road=False, name='R2', spawn_probabilities=spawn_r2)
-        r3 = RoadSection(2, 10, is_end_road=True, name='R3', rightLane=1)
+        r3 = RoadSection(2, 10, is_end_road=True, name='R3', right_lane=1)
 
         r1.set_output_mapping({
             0: (r3, 0),

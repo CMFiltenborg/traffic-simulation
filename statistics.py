@@ -9,8 +9,13 @@ from RoadSection import RoadSection
 type, ammount = int(sys.argv[1]), int(sys.argv[2])
 
 def original_road(ammount):
+    spawn_r2 = [
+        {0:0.5, 1:0.2, 2:0.2, 3:0.2, 4:0.2,},
+        {5:(0,0.2),4:(0.2,0.4),3:(0.4,1),}
+    ]
+
     r1 = RoadSection(2, 100, name='R1')
-    r2 = RoadSection(5, 100, is_end_road=True, name='R2', spawn=True)
+    r2 = RoadSection(5, 100, is_end_road=True, name='R2', spawn_probabilities=spawn_r2)
 
     outputMap = {
         0: 3,  # Lane 1 corresponds with lane 5.

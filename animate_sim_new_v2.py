@@ -62,6 +62,23 @@ dotted_lines = [
     (50, 160, 40, 20, 'r'),
     (50, 160, 30, 10, 'r'),
 ]
+arrows = [
+
+    #1
+    (151, 155, 83, 87, 'c'),
+    (152, 155, 87, 87, 'c'),
+    (155, 155, 85, 87, 'c'),
+
+    #2
+    (171, 175, 83, 87, 'c'),
+    (172, 175, 87, 87, 'c'),
+    (175, 175, 85, 87, 'c'),
+
+    #3
+    (171, 175, 13, 17, 'c'),
+    (172, 175, 17, 17, 'c'),
+    (175, 175, 15, 17, 'c'),
+]
 
 placements = {
     'R1': ([0, 10], [110, 100, 90, 80, 70]),
@@ -82,6 +99,12 @@ def plot_lines(sections):
 
         x1, x2, y1, y2, color = position
         style = color + '--'
+        ax.plot([x1, x2], [y1, y2], style)
+    
+    for position in arrows:
+
+        x1, x2, y1, y2, color = position
+        style = color
         ax.plot([x1, x2], [y1, y2], style)
 
     lines = []

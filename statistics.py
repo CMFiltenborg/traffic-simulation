@@ -1,16 +1,17 @@
 #This file wil run one of the two scrips a given ammount of times.
 #Type 0 is the original road, type 1 is theself made road.
+#use: python statistics.py type ammount
 
 import sys
 from simulation import Simulation
 from RoadSection import RoadSection
 
-type, ammount = sys.argv[1:]
+type, ammount = int(sys.argv[1]), int(sys.argv[2])
 
 #original road
-if int(type) == 0:
-    r1 = RoadSection(2, 100)
-    r2 = RoadSection(5, 100, True)
+if type == 0:
+    r1 = RoadSection(2, 100, name='R1')
+    r2 = RoadSection(5, 100, is_end_road=True, name='R2')
 
     outputMap = {
         0: 3,  # Lane 1 corresponds with lane 5.
@@ -19,9 +20,16 @@ if int(type) == 0:
 
     r1.set_output_mapping(outputMap)
 
-    av_speed = 4
-    simulation = Simulation(r2, [], ammount, av_speed)
+    simulation = Simulation(r2, [r1], ammount, 1)
     result = simulation.run()
+    
+    [0 for r in result]
+    
+    print("Average speed R2", r2.average_speed/ammount)
+    print("Ammount of cars finished R2", r2.finished_cars)
+    print("Flow of system", r2.finished_cars/ammount)
+    print("Density of system", "probabilty of cars generated")
+#print([r[i].average_speed for r in result for i in r])
 #self-made road
 else:
     r1 = RoadSection(4, 20, name='R1')
@@ -58,11 +66,62 @@ else:
     r6.set_output_mapping({
                           0: (r7, 2),
                           })
-    # r7.set_output_mapping({
-    #     0: (r7, 2),
-    #     1: (r7, 2),
-    # })
 
-    av_speed = 4
-    simulation = Simulation(r1, [r2, r3, r4, r5, r6, r7, r8], ammount, av_speed)
+    simulation = Simulation(r1, [r2, r3, r7, r4, r5, r6, r8], ammount, 1)
     result = simulation.run()
+
+    [0 for r in result]
+
+    average_speed_r1 = r1.average_speed/ammount
+    average_speed_r2 = r2.average_speed/ammount
+    average_speed_r3 = r3.average_speed/ammount
+    average_speed_r4 = r4.average_speed/ammount
+    average_speed_r5 = r5.average_speed/ammount
+    average_speed_r6 = r6.average_speed/ammount
+    average_speed_r7 = r7.average_speed/ammount
+    average_speed_r8 = r8.average_speed/ammount
+    
+    average_speed = (r1.average_speed/ammount + r2.average_speed/ammount +
+                    r3.average_speed/ammount + r4.average_speed/ammount +
+                    r5.average_speed/ammount + r6.average_speed/ammount +
+                    r7.average_speed/ammount + r8.average_speed/ammount) / 8
+    
+
+    print("Average speed R1", average_speed_r1)
+    print("Average speed R2", average_speed_r2)
+    print("Average speed R3", average_speed_r3)
+    print("Average speed R4", average_speed_r4)
+    print("Average speed R5", average_speed_r5)
+    print("Average speed R6", average_speed_r6)
+    print("Average speed R7", average_speed_r7)
+    print("Average speed R8", average_speed_r8)
+
+    print("Total average speed", average_speed)
+    print("Ammount of cars finished R7", r7.finished_cars)
+    print("Ammount of cars finished R8", r8.finished_cars)
+    print("Flow of system", (r7.finished_cars + r8.finished_cars)/ammount)
+    print("Density of system", "probabilty of cars generated")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

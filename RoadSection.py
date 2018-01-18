@@ -15,6 +15,7 @@ class RoadSection:
         self.columns = columns
         self.grid = np.full((rows, columns),  -1, dtype=np.int32)
         self.grid_temp = None
+        self.average_speed  = 0
 
         self.input_road = None
         self.input_map = None
@@ -46,7 +47,7 @@ class RoadSection:
 
         car.direction = np.random.randint(0, output_road.rows)
 
-        print('Output car', (output_row, output_column))
+        #print('Output car', (output_row, output_column))
         output_road.add_car(car, output_row, output_column, v)
 
     def set_temp_grid(self):

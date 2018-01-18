@@ -29,6 +29,7 @@ class Simulation:
             for car in cars:
                 totalSpeed += cars[car].speed
             averageSpeed = totalSpeed/len(cars)
+            road_section.average_speed += averageSpeed
             return averageSpeed
         return 0
 

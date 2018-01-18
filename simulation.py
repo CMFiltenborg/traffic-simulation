@@ -23,16 +23,6 @@ class Simulation:
         self.generated_cars = 0  # Ensures unique ids/indices
         self.avSpeed = avSpeed
 
-    def speedaverage(self, grid, cars, road_section):
-        totalSpeed = 0
-        if len(cars) > 0:
-            for car in cars:
-                totalSpeed += cars[car].speed
-            averageSpeed = totalSpeed/len(cars)
-            road_section.average_speed += averageSpeed
-            return averageSpeed
-        return 0
-
     def run(self):
         for i in range(self.step):
             roads_steps = {}
@@ -43,7 +33,7 @@ class Simulation:
 
                 # Generates the updates for all cars
                 get_car_updates(road_section)
-                
+
                 # Update cars
                 update_cars(road_section)
 
@@ -97,7 +87,6 @@ class Simulation:
             cars[new_car_index] = Car(new_car_index, v_start, color, d, (i,0))
             grid[i][0] = new_car_index
 
-
     '''
     def generate_cars(self, road_section):
         cars = road_section.cars
@@ -143,6 +132,17 @@ class Simulation:
                 cars[new_car_index] = Car(new_car_index, v, color, d, (i,0))
                 grid[i][0] = new_car_index
     '''
+
+
+    def speedaverage(self, grid, cars, road_section):
+        totalSpeed = 0
+        if len(cars) > 0:
+            for car in cars:
+                totalSpeed += cars[car].speed
+            averageSpeed = totalSpeed/len(cars)
+            road_section.average_speed += averageSpeed
+            return averageSpeed
+        return 0
 
 
 def update_cars(road_section):

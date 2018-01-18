@@ -8,10 +8,9 @@ from RoadSection import RoadSection
 
 type, ammount = int(sys.argv[1]), int(sys.argv[2])
 
-#original road
-if type == 0:
+def original_road(ammount):
     r1 = RoadSection(2, 100, name='R1')
-    r2 = RoadSection(5, 100, is_end_road=True, name='R2')
+    r2 = RoadSection(5, 100, is_end_road=True, name='R2', spawn=True)
 
     outputMap = {
         0: 3,  # Lane 1 corresponds with lane 5.
@@ -20,28 +19,24 @@ if type == 0:
 
     r1.set_output_mapping(outputMap)
 
-    simulation = Simulation(r2, [r1], ammount, 1)
+    simulation = Simulation(r2, [], ammount, 1)
     result = simulation.run()
     
     [0 for r in result]
-    
-    print("Average speed R2", r2.average_speed/ammount)
-    print("Ammount of cars finished R2", r2.finished_cars)
-    print("Flow of system", r2.finished_cars/ammount)
-    print("Density of system", "probabilty of cars generated")
-#print([r[i].average_speed for r in result for i in r])
-#self-made road
-else:
-    r1 = RoadSection(4, 20, name='R1')
+
+    return (r1, r2)
+
+def self_made_road(ammount):
+    r1 = RoadSection(4, 20, name='R1', spawn=True)
     r2 = RoadSection(2, 40, name='R2')
     r3 = RoadSection(2, 100, name='R3')
-    r4 = RoadSection(2, 40, name='R4')
+    r4 = RoadSection(2, 40, name='R4', spawn=True)
     r5 = RoadSection(1, 20, name='R5')
     r6 = RoadSection(1, 120, name='R6')
     r7 = RoadSection(3, 80, is_end_road=True, name='R7')
     r8 = RoadSection(3, 40, is_end_road=True, name='R8')
-
-
+    
+    
     r1.set_output_mapping({
                           0: (r3, 0),
                           1: (r3, 1),
@@ -72,6 +67,26 @@ else:
 
     [0 for r in result]
 
+    return (r1, r2, r3, r4, r5, r6, r7, r8)
+
+def calculate_density(roads, places):
+    ammount_cars = 0
+    for i in range(len(roads)):
+        ammount_cars += len(roads[i].cars)
+    return ammount_cars/(places*5)
+
+#original road
+if type == 0:
+    r1, r2 = original_road(ammount)
+    
+    print("Average speed R2", r2.average_speed/ammount)
+    print("Ammount of cars finished R2", r2.finished_cars)
+    print("Flow of system", r2.finished_cars/ammount)
+    print("Density of system (cars/meter)", calculate_density((r1, r2), 100))
+#self-made road
+else:
+    r1, r2, r3, r4, r5, r6, r7, r8 = self_made_road(ammount)
+
     average_speed_r1 = r1.average_speed/ammount
     average_speed_r2 = r2.average_speed/ammount
     average_speed_r3 = r3.average_speed/ammount
@@ -86,7 +101,6 @@ else:
                     r5.average_speed/ammount + r6.average_speed/ammount +
                     r7.average_speed/ammount + r8.average_speed/ammount) / 8
     
-
     print("Average speed R1", average_speed_r1)
     print("Average speed R2", average_speed_r2)
     print("Average speed R3", average_speed_r3)
@@ -100,7 +114,7 @@ else:
     print("Ammount of cars finished R7", r7.finished_cars)
     print("Ammount of cars finished R8", r8.finished_cars)
     print("Flow of system", (r7.finished_cars + r8.finished_cars)/ammount)
-    print("Density of system", "probabilty of cars generated")
+    print("Density of system (cars/meter)", calculate_density((r1, r2, r3, r4, r5, r6, r7, r8), 460))
 
 
 

@@ -87,53 +87,6 @@ class Simulation:
             cars[new_car_index] = Car(new_car_index, v_start, color, d, (i,0))
             grid[i][0] = new_car_index
 
-    '''
-    def generate_cars(self, road_section):
-        cars = road_section.cars
-        grid = road_section.grid
-        rows = grid.shape[0]
-        right_lane = road_section.right_lane
-        for i in range(rows):
-            if i == 4:
-                if np.random.random() < 0.5:
-                    v = np.random.randint(3, 5)
-                    new_car_index = self.generated_cars
-                    self.generated_cars += 1
-                    d = np.random.randint(0,right_lane)
-                    color = road_section.output_colors[d]
-                    cars[new_car_index] = Car(new_car_index, v, color, d, (i,0))
-                    grid[i][0] = new_car_index
-                break
-
-            #ps = 1 / float(rows+2) * (i + 1)
-            ps = 0.2
-            if np.random.random() < ps:
-                if i == 0:
-                    v = 5
-                elif i == 1:
-                    if np.random.random() < 0.75:
-                        v = 5
-                    else:
-                        v = 4
-                elif i == 2:
-                    if np.random.random() < 0.65:
-                        v = 5
-                    else:
-                        v = 4
-                elif i == 3:
-                    if np.random.random() < 0.55:
-                        v = 5
-                    else:
-                        v = 4
-                new_car_index = self.generated_cars
-                self.generated_cars += 1
-                d = np.random.randint(0,right_lane)
-                color = road_section.output_colors[d]
-                cars[new_car_index] = Car(new_car_index, v, color, d, (i,0))
-                grid[i][0] = new_car_index
-    '''
-
-
     def speedaverage(self, grid, cars, road_section):
         totalSpeed = 0
         if len(cars) > 0:

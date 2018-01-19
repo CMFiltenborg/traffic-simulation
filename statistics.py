@@ -16,7 +16,7 @@ def original_road(steps):
     
     [0 for r in result]
 
-    return simulation.roads
+    return simulation
 
 def self_made_road(steps):
     simulation = CreateRoads.new_design_road(steps, True)
@@ -24,7 +24,7 @@ def self_made_road(steps):
 
     [0 for r in result]
 
-    return simulation.roads
+    return simulation
 
 def calculate_density(roads, places):
     ammount_cars = 0
@@ -33,10 +33,28 @@ def calculate_density(roads, places):
     return ammount_cars/(places*5)
 
 x, y = [], []
+
+
+def calculate_car_difference(simulation):
+    generated_cars = simulation.generated_cars
+    cars_still_on_roads = 0
+    roads = simulation.roads
+    finished_cars = sum([road.finished_cars for road in roads if road.is_end_road])
+
+    for road in roads:
+        coords = road.get_car_coordinates()
+        cars_still_on_roads += len(coords[0])
+
+    difference = generated_cars - (finished_cars + cars_still_on_roads)
+    print('Cars generated:{} Car:{} difference between generated and finished/still on road'.format(generated_cars, difference))
+
+
 #original road
 if type == 0:
     for i in range(times):
-        roads = original_road(steps)
+        simulation = original_road(steps)
+        calculate_car_difference(simulation)
+        roads = simulation.roads
         flow = roads[0].finished_cars/steps
         density = calculate_density(roads, 100)
         if i == 0:
@@ -50,7 +68,8 @@ if type == 0:
 #self-made road
 else:
     for i in range(times):
-        roads = self_made_road(steps)
+        simulation = self_made_road(steps)
+        roads = simulation.roads
         r1 = roads[0]
         r2 = roads[1]
         r3 = roads[2]
@@ -59,6 +78,10 @@ else:
         r6 = roads[6]
         r7 = roads[3]
         r8 = roads[7]
+
+        # Car difference
+        calculate_car_difference(simulation)
+
         flow = (r7.finished_cars + r8.finished_cars)/steps
         density = calculate_density(roads, 460)
         if i == 0:

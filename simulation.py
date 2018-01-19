@@ -138,8 +138,9 @@ class Simulation:
         totalSpeed = 0
         if len(cars) > 0:
             for car in cars:
-                totalSpeed += cars[car].speed
-            averageSpeed = totalSpeed/len(cars)
+                if car.index >= 0:
+                    totalSpeed += cars[car].speed
+            averageSpeed = totalSpeed/(len(cars) + (road_section.blocks+2))
             road_section.average_speed += averageSpeed
             return averageSpeed
         return 0

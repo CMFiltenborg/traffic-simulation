@@ -27,6 +27,30 @@ row_heights = {
     0: np.linspace(0.7, 0.4, 6)
 }
 
+dotted_lines = [
+    # Main-road
+    (-0.15, 0, 0.7, 0.7, 'b'),
+    (-0.15, 0, 0.64, 0.64, 'b'),
+    (-0.15, 0, 0.58, 0.58, 'b'),
+    (-0.15, 0, 0.52, 0.52, 'b'),
+    (-0.15, 0, 0.46, 0.46, 'b'),
+
+    # Oprid
+    (-0.15, 0, 0.40, 0.46, 'b'),
+    (-0.15, 0, 0.34, 0.4, 'b'),
+
+    # Vervolg ring
+    (1, 1.15, 0.7, 0.75, 'r'),
+    (1, 1.15, 0.64, 0.69, 'r'),
+    (1, 1.15, 0.58, 0.63, 'r'),
+    (1, 1.15, 0.52, 0.57, 'r'),
+
+    # Richting Utrecht
+    (1, 1.15, 0.52, 0.47, 'k'),
+    (1, 1.15, 0.46, 0.41, 'k'),
+    (1, 1.15, 0.40, 0.35, 'k'),
+]
+
 for i in sections:
     road_section = sections[i]
     grid = road_section.grid
@@ -36,13 +60,19 @@ for i in sections:
         l, = ax.plot([0, 1], [row_height, row_height], color='black')
 
     # Scale to plot 0 - 1
-    plt.xlim(0, 1)
+    plt.xlim(-0.1, 1.1)
     plt.ylim(0, 1)
     plt.xlabel('Position')
     plt.title('Highway simulation')
 
 
 def plot_grid(sections):
+
+    for position in dotted_lines:
+
+        x1, x2, y1, y2, color = position
+        style = color + '--'
+        ax.plot([x1, x2], [y1, y2], style)
 
     markers = []
     for i in sections:

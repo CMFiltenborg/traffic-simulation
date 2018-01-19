@@ -11,7 +11,7 @@ class CreateRoads:
         ]
 
         r1 = RoadSection(2, 100, name='R1')
-        r2 = RoadSection(5, 100, is_end_road=True, name='R2', spawn_probabilities=spawn_r2)
+        r2 = RoadSection(5, 100, is_end_road=True, name='R2', spawn_probabilities=spawn_r2, output_colors=['red', 'red', 'red', 'black', 'black'])
 
         outputMap = {
             0: 3,  # Lane 1 corresponds with lane 5.

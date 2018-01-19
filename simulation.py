@@ -138,7 +138,7 @@ class Simulation:
         totalSpeed = 0
         if len(cars) > 0:
             for car in cars:
-                if car.index >= 0:
+                if car >= 0:
                     totalSpeed += cars[car].speed
             averageSpeed = totalSpeed/(len(cars) + (road_section.blocks+2))
             road_section.average_speed += averageSpeed
@@ -301,6 +301,7 @@ def change_position(r, p, car, gap, road_section):
     # The car will slowdown when he can't change lane when he wants to.
     else:
         car.speed = max(car.speed-2, 2)
+        print(road_section.grid_temp)
         nasch(car, gap, road_section)
 
     grid[car.position[0]][c] = -1

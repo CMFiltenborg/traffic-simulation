@@ -136,7 +136,7 @@ def move_car(car, road_section):
     gap = calc_gap(car.position[0], car.position[1], grid_temp, 1, cars, road_section)
     do_lane_change = ((car.speed > gap and car.position[1] < (road_section.columns*0.8) and road_section.right_lane != 1) 
                     or (car.position[0] != car.direction))
-
+    
     if not do_lane_change:
         nasch(car, gap, road_section)
         return
@@ -171,7 +171,7 @@ def nasch(car, gap, road_section):
         updates[index] = (v, (r, c+v))
         #print(road_section.name, 'nasch Update car[{}]'.format(car.index),  (r, c+v))
         return
-
+    
     # Car goes out of the grid
     if c + v >= grid.shape[1]:
         road_section.output_car(car, v)
@@ -204,10 +204,10 @@ def lane_change(car, gap, road_section):
     if r + 1 < right_lane and (r == 0 or (r < d)):
         change_position(r+1, p, car, gap, road_section)
     # Als de auto zich in de meest rechter rijstrook bevind or wants to go left..
-    elif r == right_lane - 1 or (r > d):
+    elif r-1 >= 0 and (r == right_lane - 1 or (r > d)):
         change_position(r - 1, p, car, gap, road_section)
     # Als de auto zich in een van de middelste rijstroken bevind.
-    else:
+    elif r + 1 < right_lane and r-1 >= 0:
         gapoL = calc_gap(r-1, c, grid_temp, 1, cars, road_section)
         gapoBackL = calc_gap(r-1, c+gap, grid_temp, -1, cars, road_section)
         if gapoL >= v and gapoBackL > vback and np.random.random() < p and c+vh < columns:
@@ -232,6 +232,7 @@ def change_position(r, p, car, gap, road_section):
     if c+vh >= columns:
         if not road_section.is_end_road:
             current_road, row_index = road_section.output_map[r]
+            car.direction = np.random.randint(0, current_road.right_lane)
             col_index = c+vh - columns
         else:
             nasch(car, gap, road_section)
@@ -243,7 +244,7 @@ def change_position(r, p, car, gap, road_section):
         current_road = road_section
 
     # If the car can change his lane.
-    if gapo >= v and gapoBack > vback and np.random.random() < p and current_road.grid[row_index][col_index] == -1:
+    if gapo >= v and gapoBack > vback and np.random.random() < p and current_road.grid[row_index][col_index] == -1:       
         current_road.grid[row_index][col_index] = index
         current_road.updates[index] = (vh, (row_index, col_index))
         current_road.cars[index] = car

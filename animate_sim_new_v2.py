@@ -15,7 +15,7 @@ from traffic import simulate, print_grid
 from RoadSection import RoadSection
 import pylab as pl
 
-simulation = CreateRoads.new_design_road(calculate_average_speed=False)
+simulation = CreateRoads.new_design_road(calculate_average_speed=True)
 result = simulation.run()
 
 sections = next(result)
@@ -162,7 +162,7 @@ def plot_grid(sections):
 
 plot_lines(sections)
 line_ani = animation.FuncAnimation(fig, plot_grid, result, fargs=(),
-                                   interval=1000 / 10, blit=True)
+                                   interval=1000 / 20, blit=True)
 
 # To save the animation, use the command: line_ani.save('lines.mp4')
 

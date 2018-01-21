@@ -26,7 +26,7 @@ class CreateRoads:
     @staticmethod
     def new_design_road(steps=100, calculate_average_speed=False):
         spawn_r1 = [
-            {0:0.5, 1:0.2, 2:0.2, 3:0.2,},
+            {0:1, 1:0.2, 2:0.2, 3:0.2,},
             {5:(0,0.2),4:(0.2,0.4),3:(0.4,1),}
         ]
         spawn_r4 = [

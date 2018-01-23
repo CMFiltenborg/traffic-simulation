@@ -66,15 +66,25 @@ if type == 0:
         x.append(density)
         y.append(flow)
 elif type == 2:
-    road = RoadSection(3, 10)
+    road = RoadSection(5, 10, is_end_road=True)
     road.cars = {
-        0: Car(0, 3, 1, 1, (0,3)),
-        1: Car(1, 3, 1, 1, (1,3)),
-        2: Car(2, 2, 1, 1, (0,4)),
+        53: Car(53, 2, 1, 1, (0,0)),
+        54: Car(54, 2, 1, 1, (1,0)),
+        51: Car(51, 0, 1, 1, (2,0)),
+        50: Car(50, 5, 1, 1, (1,1)),
+        49: Car(49, 3, 1, 1, (1,5)),
+        48: Car(48, 2, 1, 1, (2,5)),
+        47: Car(47, 3, 1, 1, (3,7)),
+        52: Car(52, 3, 1, 1, (4,3)),
     }
-    road.grid[0,3] = 0
-    road.grid[1,3] = 1
-    road.grid[0,4] = 2
+    road.grid[0,0] = 53
+    road.grid[1,0] = 54
+    road.grid[2,0] = 51
+    road.grid[1,1] = 50
+    road.grid[1,5] = 49
+    road.grid[2,5] = 48
+    road.grid[3,7] = 47
+    road.grid[4,3] = 52
     simulation = Simulation(road, [], 1)
     print(road.grid)
     print("----------")

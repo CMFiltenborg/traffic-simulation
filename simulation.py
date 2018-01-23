@@ -159,7 +159,7 @@ def move_car(car, road_section):
 
 
 def nasch(car, gap, road_section):
-    #print("nash", car.index, gap)
+    #print("nash", car.index, gap, car.speed)
     grid = road_section.grid
     grid_temp = road_section.grid_temp
     updates = road_section.updates
@@ -279,7 +279,7 @@ def change_position(r, p, car, gap, road_section):
         #print(road_section.name, 'LC Update:', (row_index, col_index))
     # The car will slowdown when he can't change lane when he wants to.
     else:
-        car.speed = max(car.speed-2, 2)
+        car.speed = max(car.speed-2, 1)
         nasch(car, gap, road_section)
         return
 

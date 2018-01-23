@@ -11,16 +11,9 @@ class CreateRoads:
             {0:(0,2/9.0), 1:(2/9.0, 4/9), 2:(4/9.0, 6/9.0), 3:(6/9.0, 7.5/9.0), 4:(7.5/9.0,1),}
         ]
 
-        r1 = RoadSection(2, 100, name='R1')
-        r2 = RoadSection(5, 100, is_end_road=True, name='R2', spawn_probabilities=spawn_r2, output_colors=['red', 'red', 'red', 'black', 'black'])
+        r = RoadSection(5, 100, is_end_road=True, name='R1', spawn_probabilities=spawn_r2, output_colors=['red', 'red', 'red', 'black', 'black'])
 
-        outputMap = {
-            0: 3,  # Lane 1 corresponds with lane 5.
-            1: 4   # Lane 2 corresponds with lane 5.
-        }
-
-        r1.set_output_mapping(outputMap)
-        simulation = Simulation(r2, [], steps, 1)
+        simulation = Simulation(r, [], steps, 1)
 
         return simulation
 

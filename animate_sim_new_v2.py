@@ -15,7 +15,7 @@ from traffic import simulate, print_grid
 from RoadSection import RoadSection
 import pylab as pl
 
-simulation = CreateRoads.new_design_road(calculate_average_speed=True)
+simulation = CreateRoads.new_design_road(calculate_average_speed=False)
 result = simulation.run()
 
 sections = next(result)

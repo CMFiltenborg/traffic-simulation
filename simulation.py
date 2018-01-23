@@ -159,7 +159,7 @@ def move_car(car, road_section):
 
 
 def nasch(car, gap, road_section):
-    print("nash", car.index, gap)
+    #print("nash", car.index, gap)
     grid = road_section.grid
     grid_temp = road_section.grid_temp
     updates = road_section.updates
@@ -176,7 +176,7 @@ def nasch(car, gap, road_section):
 
     # braking
     v = min(v, gap)
-    print(v)
+    #print(v)
 
     # randomness
     if np.random.random() < pv:
@@ -218,7 +218,7 @@ def lane_change(car, gap, road_section):
 
     # When the car is in the most left lane or wants to go right.
     if r + 1 < right_lane and (r == 0 or (r < d)):
-        print("most left or wants right", gap)
+        #print("most left or wants right", gap)
         change_position(r+1, p, car, gap, road_section)
     # Als de auto zich in de meest rechter rijstrook bevind or wants to go left..
     elif r-1 >= 0 and (r == right_lane - 1 or (r > d)):
@@ -228,10 +228,10 @@ def lane_change(car, gap, road_section):
         gapoL, _ = calc_gap(r - 1, c, grid_temp, 1, road_section)
         gapoBackL, vback = calc_gap(r - 1, c + gap, grid_temp, -1, road_section)
         if gapoL >= v and gapoBackL > vback and np.random.random() < p and c+vh < columns:
-            if gapoBackL != 5:
-                print(gapoBackL, vback)
-            if gapoBackL < vback:
-                print(gapoBackL, vback)
+#            if gapoBackL != 5:
+#                print(gapoBackL, vback)
+#            if gapoBackL < vback:
+#                print(gapoBackL, vback)
             change_position(r - 1, p, car, gap, road_section)
         else:
             change_position(r + 1, p, car, gap, road_section)
@@ -244,12 +244,13 @@ def change_position(r, p, car, gap, road_section):
     c = car.position[1]
     v = car.speed
     vh = car.get_vh()
-    print(vh)
+    #print(vh)
     index = grid_temp[car.position[0], c]
     gapo, _ = calc_gap(r, c, grid_temp, 1, road_section)
+    #vh = min(vh, gapo)
     gapoBack, vback = calc_gap(r, c + vh, grid_temp, -1, road_section)
-    print("r, c", r, c)
-    print("gapoBack", gapoBack)
+    #print("r, c", r, c)
+    #print("gapoBack", gapoBack)
     
     if c + vh >= grid.shape[1]:
         if not road_section.is_end_road:
@@ -266,9 +267,9 @@ def change_position(r, p, car, gap, road_section):
         current_road = road_section
 
     # If the car can change his lane.
-    print("vback", vback)
+    #print("vback", vback)
     if gapo >= v and gapoBack > vback and np.random.random() < p and current_road.grid[row_index][col_index] == -1:
-        print("ja")
+        #print("ja")
         current_road.grid[row_index][col_index] = index
         current_road.updates[index] = (vh, (row_index, col_index))
         current_road.cars[index] = car
@@ -280,6 +281,7 @@ def change_position(r, p, car, gap, road_section):
     else:
         car.speed = max(car.speed-2, 2)
         nasch(car, gap, road_section)
+        return
 
     grid[car.position[0], c] = -1
 

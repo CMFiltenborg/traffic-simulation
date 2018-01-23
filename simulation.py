@@ -159,6 +159,7 @@ def move_car(car, road_section):
 
 
 def nasch(car, gap, road_section):
+    print("nash", car.index, gap)
     grid = road_section.grid
     grid_temp = road_section.grid_temp
     updates = road_section.updates
@@ -175,6 +176,7 @@ def nasch(car, gap, road_section):
 
     # braking
     v = min(v, gap)
+    print(v)
 
     # randomness
     if np.random.random() < pv:
@@ -245,7 +247,7 @@ def change_position(r, p, car, gap, road_section):
     print(vh)
     index = grid_temp[car.position[0], c]
     gapo, _ = calc_gap(r, c, grid_temp, 1, road_section)
-    gapoBack, vback = calc_gap(r, c + gap, grid_temp, -1, road_section)
+    gapoBack, vback = calc_gap(r, c + vh, grid_temp, -1, road_section)
     print("r, c", r, c)
     print("gapoBack", gapoBack)
     
@@ -264,7 +266,7 @@ def change_position(r, p, car, gap, road_section):
         current_road = road_section
 
     # If the car can change his lane.
-    print(vback)
+    print("vback", vback)
     if gapo >= v and gapoBack > vback and np.random.random() < p and current_road.grid[row_index][col_index] == -1:
         print("ja")
         current_road.grid[row_index][col_index] = index
@@ -315,7 +317,7 @@ def calc_gap(r, c, grid_temp, t, road_section):
         gap = next_car[0][0]
         car_index = array_check[gap]
         if car_index in road_section.cars:
-            vback = road_section.cars[car_index].speed + 1
+            vback = min(road_section.cars[car_index].speed + 1, vmax)
 
         return gap, vback
 

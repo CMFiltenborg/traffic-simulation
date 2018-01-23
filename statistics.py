@@ -68,17 +68,20 @@ if type == 0:
 elif type == 2:
     road = RoadSection(3, 10)
     road.cars = {
-        0: Car(0, 2, 1, 1, (0,3)),
-        1: Car(1, 5, 1, 1, (1,1))
+        0: Car(0, 3, 1, 1, (0,3)),
+        1: Car(1, 3, 1, 1, (1,3)),
+        2: Car(2, 2, 1, 1, (0,4)),
     }
     road.grid[0,3] = 0
-    road.grid[1,1] = 1
+    road.grid[1,3] = 1
+    road.grid[0,4] = 2
     simulation = Simulation(road, [], 1)
     print(road.grid)
     print("----------")
     result = simulation.run()
     [0 for r in result]
     print("----------")
+    print(['{}, {}'.format(c.index, c.position) for k,c in road.cars.items()])
     print(road.grid)
 #self-made road
 else:

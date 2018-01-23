@@ -62,6 +62,7 @@ class Simulation:
         right_lane = road_section.right_lane
         spawn_probabilities = road_section.spawn_probabilities[0]
         speed_probabilities = road_section.spawn_probabilities[1]
+        direction_probabilities = road_section.spawn_probabilities[2]
         for i in range(rows):
             # Cannot spawn a car if the spot is already occupied
             if grid[i][0] != -1:
@@ -80,13 +81,22 @@ class Simulation:
             v_start = 1
             for v in speed_probabilities:
                 lower_bound, upper_bound = speed_probabilities[v]
-                if lower_bound >= n < upper_bound:
+                if lower_bound > n <= upper_bound:
                     v_start = v
                     break
 
             new_car_index = self.generated_cars
             self.generated_cars += 1
             d = np.random.randint(0, right_lane)
+            if len(direction_probabilities) != 0:
+                n = np.random.random()
+                # Direction probabilities where the value is the lower/upper bound tuple of the probability
+                d = 0
+                for direction in direction_probabilities:
+                    lower_bound, upper_bound = direction_probabilities[direction]
+                    if lower_bound >= n < upper_bound:
+                        d = direction
+                        break
             color = road_section.output_colors[d]
             cars[new_car_index] = Car(new_car_index, v_start, color, d, (i,0))
             grid[i][0] = new_car_index

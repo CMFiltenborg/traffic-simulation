@@ -245,7 +245,8 @@ def change_position(r, p, car, gap, road_section):
     print(vh)
     index = grid_temp[car.position[0], c]
     gapo, _ = calc_gap(r, c, grid_temp, 1, road_section)
-    gapoBack, vback = calc_gap(r, c + gap, grid_temp, -1, road_section)
+    vh = min(vh, gapo)
+    gapoBack, vback = calc_gap(r, c + vh, grid_temp, -1, road_section)
     print("r, c", r, c)
     print("gapoBack", gapoBack)
     
@@ -278,6 +279,7 @@ def change_position(r, p, car, gap, road_section):
     else:
         car.speed = max(car.speed-2, 2)
         nasch(car, gap, road_section)
+        return
 
     grid[car.position[0], c] = -1
 

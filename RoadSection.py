@@ -30,10 +30,7 @@ class RoadSection:
         self.cars = {}
         self.updates = {}
         self.new_car_updates = {}
-
-
         self.output_colors = output_colors
-
         self.is_end_road = is_end_road
 
         self.finished_cars = 0
@@ -87,7 +84,7 @@ class RoadSection:
             self.cars[index].set_position(y[2])
 
             row, column = y[2]
-            self.grid[row][column] = index
+            self.grid[row, column] = index
 
         self.new_car_updates = {}
 

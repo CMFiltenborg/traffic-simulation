@@ -202,6 +202,7 @@ def lane_change(car, gap, road_section):
 
     # When the car is in the most left lane or wants to go right.
     if r + 1 < right_lane and (r == 0 or (r < d)):
+        print("most left or wants right", gap)
         change_position(r+1, p, car, gap, road_section)
     # Als de auto zich in de meest rechter rijstrook bevind or wants to go left..
     elif r-1 >= 0 and (r == right_lane - 1 or (r > d)):
@@ -224,10 +225,13 @@ def change_position(r, p, car, gap, road_section):
     c = car.position[1]
     v = car.speed
     vh = car.get_vh()
+    print(vh)
     index = grid_temp[car.position[0]][c]
     columns = grid.shape[1]
     gapo = calc_gap(r, c, grid_temp, 1, cars, road_section)
-    gapoBack = calc_gap(r, c+gap, grid_temp, -1, cars, road_section)
+    gapoBack = calc_gap(r, c+vh, grid_temp, -1, cars, road_section)
+    print("r, c", r, c)
+    print("gapoBack", gapoBack)
     
     if c+vh >= columns:
         if not road_section.is_end_road:
@@ -244,7 +248,9 @@ def change_position(r, p, car, gap, road_section):
         current_road = road_section
 
     # If the car can change his lane.
-    if gapo >= v and gapoBack > vback and np.random.random() < p and current_road.grid[row_index][col_index] == -1:       
+    print(vback)
+    if gapo >= v and gapoBack > vback and np.random.random() < p and current_road.grid[row_index][col_index] == -1:
+        print("ja")
         current_road.grid[row_index][col_index] = index
         current_road.updates[index] = (vh, (row_index, col_index))
         current_road.cars[index] = car

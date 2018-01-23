@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from simulation import Simulation
 from RoadSection import RoadSection
 from CreateRoads import CreateRoads
+from car import Car
 
 type, steps, times = int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3])
 
@@ -64,7 +65,21 @@ if type == 0:
             print("Density of system (cars/meter)", density)
         x.append(density)
         y.append(flow)
-
+elif type == 2:
+    road = RoadSection(3, 10)
+    road.cars = {
+        0: Car(0, 2, 1, 1, (0,3)),
+        1: Car(1, 5, 1, 1, (1,1))
+    }
+    road.grid[0,3] = 0
+    road.grid[1,1] = 1
+    simulation = Simulation(road, [], 1)
+    print(road.grid)
+    print("----------")
+    result = simulation.run()
+    [0 for r in result]
+    print("----------")
+    print(road.grid)
 #self-made road
 else:
     for i in range(times):
@@ -121,7 +136,7 @@ else:
 plt.plot(x, y, "o")
 plt.xlabel("Density (cars/meters)")
 plt.ylabel("Flow (cars/step)")
-plt.show()
+#plt.show()
 
 
 

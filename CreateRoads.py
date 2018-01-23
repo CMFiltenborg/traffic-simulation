@@ -128,12 +128,14 @@ class CreateRoads:
     def acces_road(steps=100, calculate_average_speed=False):
         spawn_r1 = [
             {0:1,},
-            {5:(0,0.2),4:(0.2,0.4),3:(0.4,1),}
+            {5:(0,0.2),4:(0.2,0.4),3:(0.4,1),},
+            {0:(1,1)}
         ]
 
         spawn_r2 = [
             {0:1,},
-            {5:(0,0.2),4:(0.2,0.4),3:(0.4,1),}
+            {5:(0,0.2),4:(0.2,0.4),3:(0.4,1),},
+            {0:(1,1)}
         ]
 
         r1 = RoadSection(1, 10, is_end_road=False, name='R1', spawn_probabilities=spawn_r1)

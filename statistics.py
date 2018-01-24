@@ -9,7 +9,11 @@ from RoadSection import RoadSection
 from CreateRoads import CreateRoads
 from car import Car
 
-type, steps, times, hour = int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3]), (int(sys.argv[4]) % 24)
+type = int(sys.argv[1])
+steps = int(sys.argv[2])
+times = int(sys.argv[3])
+hour = int(sys.argv[4]) % 24
+sim_24hours = int(sys.argv[5])
 
 def original_road(steps):
     simulation = CreateRoads.original_road(steps)
@@ -90,15 +94,20 @@ def calculate_road_probabilities(road, hour):
     text_file_directions.close()
     text_file_spawn.close()
 
+if sim_24hours == 1:
+    times *= 24
 
 #original road
 if type == 0:
     for i in range(times):
+        hours = i % 24
         simulation = original_road(steps)
         calculate_car_difference(simulation)
         roads = simulation.roads
         flow = roads[0].finished_cars/steps
         density = calculate_density(roads, 100)
+        print("Average speed R2", roads[0].average_speed/steps)
+        print(hours)
         if i == 0:
             print("Average speed R2", roads[0].average_speed/steps)
             print("Ammount of cars finished R2", roads[0].finished_cars)

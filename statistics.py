@@ -62,7 +62,6 @@ def calculate_road_probabilities(road, hour):
     directions = lines[hour].rstrip().replace(" ","").split(';')
     for prob in directions:
         (key, value) = prob.split(':')
-
         probabilities[2][int(key)] = tuple(map(float,value.split(',')))
         print(probabilities[2])
     print("------")

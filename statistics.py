@@ -20,7 +20,7 @@ def original_road(steps):
     return simulation
 
 def self_made_road(steps):
-    simulation = CreateRoads.new_design_road(steps, True)
+    simulation = CreateRoads.new_road(steps, True)
     result = simulation.run()
 
     [0 for r in result]
@@ -66,33 +66,38 @@ if type == 0:
         x.append(density)
         y.append(flow)
 elif type == 2:
-    road = RoadSection(5, 10, is_end_road=True)
-    road.cars = {
-        53: Car(53, 2, 1, 1, (0,0)),
-        54: Car(54, 2, 1, 1, (1,0)),
-        51: Car(51, 0, 1, 1, (2,0)),
-        50: Car(50, 5, 1, 1, (1,1)),
-        49: Car(49, 3, 1, 1, (1,5)),
-        48: Car(48, 2, 1, 1, (2,5)),
-        47: Car(47, 3, 1, 1, (3,7)),
-        52: Car(52, 3, 1, 1, (4,3)),
+    road1 = RoadSection(1, 10)
+    road2 = RoadSection(2, 10, is_end_road=True)
+    road1.cars = {
+        55: Car(55, 5, 1, 1, (0, 8))
     }
-    road.grid[0,0] = 53
-    road.grid[1,0] = 54
-    road.grid[2,0] = 51
-    road.grid[1,1] = 50
-    road.grid[1,5] = 49
-    road.grid[2,5] = 48
-    road.grid[3,7] = 47
-    road.grid[4,3] = 52
-    simulation = Simulation(road, [], 1)
-    print(road.grid)
+    road2.cars = {
+        33: Car(33, 2, 1, 1, (0,0)),
+    }
+    road2.grid[0,0] = 33
+    road1.grid[0,8] = 55
+
+    road1.set_output_mapping({
+        0: (road2, 1)
+    })
+
+    road2.set_input_mapping({
+        1: (road1, 0)
+    })
+
+    simulation = Simulation(road1, [road2], 1)
+    print(road1.grid)
+    print("----------")
+    print(road2.grid)
     print("----------")
     result = simulation.run()
     [0 for r in result]
     print("----------")
-    print(['{}, {}'.format(c.index, c.position) for k,c in road.cars.items()])
-    print(road.grid)
+#print(['{}, {}'.format(c.index, c.position) for k,c in road.cars.items()])
+    print(road1.grid)
+    print("----------")
+    print(road2.grid)
+
 #self-made road
 else:
     for i in range(times):

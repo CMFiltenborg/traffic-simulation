@@ -14,7 +14,18 @@ type, steps, times, hour = int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3]),
 def original_road(steps):
     simulation = CreateRoads.original_road(steps)
     for road in simulation.roads:
-        if road.spawn != None:
+        if road.spawn:
+            calculate_road_probabilities(road, hour)
+    result = simulation.run()
+
+    [0 for r in result]
+
+    return simulation
+
+def new_road(steps):
+    simulation = CreateRoads.new_road(steps,calculate_average_speed=True)
+    for road in simulation.roads:
+        if road.spawn:
             calculate_road_probabilities(road, hour)
     result = simulation.run()
 
@@ -24,6 +35,10 @@ def original_road(steps):
 
 def self_made_road(steps):
     simulation = CreateRoads.new_design_road(steps, True)
+    for road in simulation.roads:
+        if road.spawn:
+            calculate_road_probabilities(road, hour)
+    result = simulation.run()
     result = simulation.run()
 
     [0 for r in result]
@@ -55,21 +70,25 @@ def calculate_car_difference(simulation):
 def calculate_road_probabilities(road, hour):
     probabilities = road.spawn_probabilities
     directions = [0.33]
-    text_file_directions = open("directions.csv", "r")
+    if road.name == 'R1':
+        text_file_directions = open("directions.csv", "r")
+        text_file_spawn = open("spawn.csv", "r")
+    else:
+        text_file_directions = open("directions2.csv", "r")
+        text_file_spawn = open("spawn2.csv", "r")
     lines_direction = text_file_directions.readlines()
     directions = lines_direction[hour].rstrip().replace(" ","").split(';')
     for prob in directions:
-        (key, value) = prob.split(':')
-        probabilities[2][int(key)] = tuple(map(float,value.split(',')))
-    text_file_directions.close()
+        if (int)(prob[0]) < road.rows:
+            (key, value) = prob.split(':')
+            probabilities[2][int(key)] = tuple(map(float,value.split(',')))
 
-    text_file_spawn = open("spawn.csv", "r")
     lines_spawn = text_file_spawn.readlines()
     spawns = lines_spawn[hour].rstrip().replace(" ","").split(';')
     for prob in spawns:
         (key, value) = prob.split(':')
         probabilities[0][int(key)] = (float)(value)
-    print(probabilities[0])
+    text_file_directions.close()
     text_file_spawn.close()
 
 
@@ -89,33 +108,55 @@ if type == 0:
         x.append(density)
         y.append(flow)
 elif type == 2:
-    road = RoadSection(5, 10, is_end_road=True)
-    road.cars = {
-        53: Car(53, 2, 1, 1, (0,0)),
-        54: Car(54, 2, 1, 1, (1,0)),
-        51: Car(51, 0, 1, 1, (2,0)),
-        50: Car(50, 5, 1, 1, (1,1)),
-        49: Car(49, 3, 1, 1, (1,5)),
-        48: Car(48, 2, 1, 1, (2,5)),
-        47: Car(47, 3, 1, 1, (3,7)),
-        52: Car(52, 3, 1, 1, (4,3)),
-    }
-    road.grid[0,0] = 53
-    road.grid[1,0] = 54
-    road.grid[2,0] = 51
-    road.grid[1,1] = 50
-    road.grid[1,5] = 49
-    road.grid[2,5] = 48
-    road.grid[3,7] = 47
-    road.grid[4,3] = 52
-    simulation = Simulation(road, [], 1)
-    print(road.grid)
-    print("----------")
-    result = simulation.run()
-    [0 for r in result]
-    print("----------")
-    print(['{}, {}'.format(c.index, c.position) for k,c in road.cars.items()])
-    print(road.grid)
+    for i in range(times):
+        simulation = new_road(steps)
+        roads = simulation.roads
+        r1 = roads[0]
+        r2 = roads[1]
+        r5 = roads[2]
+        r6 = roads[3]
+        r7 = roads[4]
+        r8 = roads[5]
+        r9 = roads[6]
+        r10 = roads[7]
+
+        # Car difference
+        calculate_car_difference(simulation)
+
+        flow = (r5.finished_cars + r7.finished_cars + r10.finished_cars)/steps
+        density = calculate_density(roads, 460)
+        if i == 0:
+            average_speed_r1 = r1.average_speed/steps
+            average_speed_r2 = r2.average_speed/steps
+            average_speed_r5 = r5.average_speed/steps
+            average_speed_r6 = r6.average_speed/steps
+            average_speed_r7 = r7.average_speed/steps
+            average_speed_r8 = r8.average_speed/steps
+            average_speed_r9 = r9.average_speed/steps
+            average_speed_r10 = r10.average_speed/steps
+
+            average_speed = (r1.average_speed/steps + r2.average_speed/steps +
+                            r5.average_speed/steps + r6.average_speed/steps +
+                            r7.average_speed/steps + r8.average_speed/steps +
+                            r9.average_speed/steps + r10.average_speed/steps) / 8
+
+            print("Average speed R1", average_speed_r1)
+            print("Average speed R2", average_speed_r2)
+            print("Average speed R5", average_speed_r5)
+            print("Average speed R6", average_speed_r6)
+            print("Average speed R7", average_speed_r7)
+            print("Average speed R8", average_speed_r8)
+            print("Average speed R9", average_speed_r9)
+            print("Average speed R10", average_speed_r10)
+
+            print("Total average speed", average_speed)
+            print("Ammount of cars finished R5", r5.finished_cars)
+            print("Ammount of cars finished R7", r7.finished_cars)
+            print("Ammount of cars finished R10", r10.finished_cars)
+            print("Flow of system", flow)
+            print("Density of system (cars/meter)", density)
+        x.append(density)
+        y.append(flow)
 #self-made road
 else:
     for i in range(times):

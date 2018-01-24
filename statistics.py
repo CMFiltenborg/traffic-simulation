@@ -39,7 +39,6 @@ def self_made_road(steps):
         if road.spawn:
             calculate_road_probabilities(road, hour)
     result = simulation.run()
-    result = simulation.run()
 
     [0 for r in result]
 
@@ -157,6 +156,38 @@ elif type == 2:
             print("Density of system (cars/meter)", density)
         x.append(density)
         y.append(flow)
+elif type == 3:
+    road1 = RoadSection(1, 10)
+    road2 = RoadSection(2, 10, is_end_road=True)
+    road1.cars = {
+        55: Car(55, 5, 1, 1, (0, 8))
+    }
+    road2.cars = {
+        33: Car(33, 2, 1, 1, (0,0)),
+    }
+    road2.grid[0,0] = 33
+    road1.grid[0,8] = 55
+
+    road1.set_output_mapping({
+        0: (road2, 1)
+    })
+
+    road2.set_input_mapping({
+        1: (road1, 0)
+    })
+
+    simulation = Simulation(road1, [road2], 1)
+    print(road1.grid)
+    print("----------")
+    print(road2.grid)
+    print("----------")
+    result = simulation.run()
+    [0 for r in result]
+    print("----------")
+#print(['{}, {}'.format(c.index, c.position) for k,c in road.cars.items()])
+    print(road1.grid)
+    print("----------")
+    print(road2.grid)
 #self-made road
 else:
     for i in range(times):
@@ -185,12 +216,12 @@ else:
             average_speed_r6 = r6.average_speed/steps
             average_speed_r7 = r7.average_speed/steps
             average_speed_r8 = r8.average_speed/steps
-            
+
             average_speed = (r1.average_speed/steps + r2.average_speed/steps +
                             r3.average_speed/steps + r4.average_speed/steps +
                             r5.average_speed/steps + r6.average_speed/steps +
                             r7.average_speed/steps + r8.average_speed/steps) / 8
-            
+
             print("Average speed R1", average_speed_r1)
             print("Average speed R2", average_speed_r2)
             print("Average speed R3", average_speed_r3)

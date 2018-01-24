@@ -29,12 +29,13 @@ class CreateRoads:
             {0:0.2,},
             {5:(0,0.2), 4:(0.2, 0.4), 3:(0.4, 1),},
             {0:(0,1)}
+
         ]
 
         r1 = RoadSection(4, 10, name='R1', spawn_probabilities=spawn_r1,
-                         output_colors =['red', 'red', 'black', 'black'])
+                         output_colors =['red', 'red', 'red', 'black', 'black'])
         r2 = RoadSection(1, 10, name='R2', spawn_probabilities=spawn_r2,
-                         output_colors=['red'])
+                         output_colors=['red', 'red', 'red', 'black', 'black'])
         r5 = RoadSection(2, 90, name='R5', is_end_road=True)
         r6 = RoadSection(2, 30, name='R6')
         r7 = RoadSection(1, 60, name='R7', is_end_road=True)
@@ -52,24 +53,53 @@ class CreateRoads:
         r2.set_output_mapping({
             0: (r6, 1),
         })
-    
+
         r6.set_output_mapping({
             0: (r7, 0),
             1: (r8, 0),
         })
-    
+
         r8.set_output_mapping({
             0: (r10, 2),
         })
-    
+
         r9.set_output_mapping({
             0: (r10, 0),
             1: (r10, 1),
         })
+
+        r5.set_input_mapping({
+            0: (r1, 0),
+            1: (r1, 1),
+        })
+
+        r6.set_input_mapping({
+            1: (r2, 0),
+        })
+
+        r7.set_input_mapping({
+            0: (r6, 0),
+        })
+
+        r8.set_input_mapping({
+            0: (r6, 1),
+        })
+
+        r9.set_input_mapping({
+            0: (r1, 2),
+            1: (r1, 3),
+        })
+
+        r10.set_input_mapping({
+            0: (r9, 0),
+            1: (r9, 1),
+            2: (r8, 0),
+        })
+
         simulation = Simulation(r1, [r2, r5, r6, r7, r8, r9, r10], steps, calculate_average_speed)
-        
+
         return simulation
-        
+
     @staticmethod
     def new_design_road(steps=100, calculate_average_speed=False):
         spawn_r1 = [

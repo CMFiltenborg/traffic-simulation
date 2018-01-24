@@ -1,5 +1,6 @@
 import numpy as np
 import copy
+import sys
 
 from car import Car
 
@@ -23,8 +24,8 @@ class RoadSection:
         self.average_speed = 0
         self.spawn_probabilities = spawn_probabilities
         self.spawn = spawn_probabilities is not None
+        self.start_road = self.spawn
 
-        self.input_road = None
         self.input_map = None
         self.output_map = None
         self.cars = {}
@@ -45,14 +46,13 @@ class RoadSection:
     def set_output_mapping(self, output_map):
         self.output_map = output_map
     
-    def set_input_mapping(self, input_road):
-        self.input_road = input_road
-        self.input_map = {v: k for k, v in self.input_road.output_map.items()}
+    def set_input_mapping(self, input_map):
+        self.input_map = input_map
 
     def output_car(self, car, v):
         self.finished_cars += 1
 
-        del self.cars[car.index]
+#del self.cars[car.index]
         if self.is_end_road:
             return
 
@@ -63,27 +63,37 @@ class RoadSection:
 
 
         #print('Output car', (output_row, output_column))
-        output_road.add_car(car, output_row, output_column, v)
+        output_road.add_car(car, output_row, output_column, v, self)
 
     def set_temp_grid(self):
         self.grid_temp = copy.deepcopy(self.grid)
 
     def get_car_coordinates(self):
-        return np.where(self.grid != -1)
+        return np.where(self.grid_temp > -1)
 
-    def add_car(self, car, row, column, v):
+    def add_car(self, car, row, column, v, prev_road):
 
-        self.new_car_updates[car.index] = (car, v, (row, column))
+        self.new_car_updates[car.index] = (car, v, (row, column), prev_road)
 
         # self.cars[car.index] = car
 
     def add_new_cars(self):
         for index, y in self.new_car_updates.items():
+            del y[3].cars[index]
+            
+            
             self.cars[index] = y[0]
             self.cars[index].set_speed(y[1])
             self.cars[index].set_position(y[2])
 
             row, column = y[2]
+            if self.grid[row, column] != -1:
+                print("Ocupied", row, column, y[0].index)
+                print("-------------")
+                print(self.grid)
+                print("-------------")
+                print(self.grid_temp)
+                sys.exit("Dissapearing car")
             self.grid[row, column] = index
 
         self.new_car_updates = {}

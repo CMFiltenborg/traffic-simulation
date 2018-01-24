@@ -52,6 +52,7 @@ class Simulation:
                     cars = road_section.cars
                     averageSpeed = self.speedaverage(grid, cars, road_section)
                     #self.avSpeed = averageSpeed
+                    
 
             yield roads_steps
 
@@ -197,6 +198,7 @@ def nasch(car, gap, road_section):
 
 
 def lane_change(car, gap, road_section):
+    #print("lane change", car.index)
     cars = road_section.cars
     grid = road_section.grid
     grid_temp = road_section.grid_temp
@@ -220,11 +222,15 @@ def lane_change(car, gap, road_section):
     if r + 1 < right_lane and (r == 0 or (r < d)):
         #print("most left or wants right", gap)
         change_position(r+1, p, car, gap, road_section)
+        return
     # Als de auto zich in de meest rechter rijstrook bevind or wants to go left..
     elif r-1 >= 0 and (r == right_lane - 1 or (r > d)):
+        #print("most right or wants left")
         change_position(r - 1, p, car, gap, road_section)
+        return
     # Als de auto zich in een van de middelste rijstroken bevind.
     elif r + 1 < right_lane and r - 1 >= 0:
+        #print("middle")
         gapoL, _ = calc_gap(r - 1, c, grid_temp, 1, road_section)
         gapoBackL, vback = calc_gap(r - 1, c + gap, grid_temp, -1, road_section)
         if gapoL >= v and gapoBackL > vback and np.random.random() < p and c+vh < columns:
@@ -235,7 +241,9 @@ def lane_change(car, gap, road_section):
             change_position(r - 1, p, car, gap, road_section)
         else:
             change_position(r + 1, p, car, gap, road_section)
-
+        return
+    nasch(car, gap, road_section)
+    #print("print geen ene k**")
 
 # r is the lane the car wants to go to
 def change_position(r, p, car, gap, road_section):
@@ -250,7 +258,7 @@ def change_position(r, p, car, gap, road_section):
     #vh = min(vh, gapo)
     gapoBack, vback = calc_gap(r, c + vh, grid_temp, -1, road_section)
     #print("r, c", r, c)
-    #print("gapoBack", gapoBack)
+    #print("gapoBack", gapoBack, vback)
     
     if c + vh >= grid.shape[1]:
         if not road_section.is_end_road:
@@ -291,6 +299,9 @@ def change_position(r, p, car, gap, road_section):
 def calc_gap(r, c, grid_temp, t, road_section):
     array_check = []
     vback = -1
+    prev_road = None
+    next_road = None
+    car = None
     # print(road_section.rows, road_section.columns, road_section.name, r, c)
 
     for i in range(1, vmax+1):
@@ -298,9 +309,8 @@ def calc_gap(r, c, grid_temp, t, road_section):
         if new_c >= 0 and new_c < grid_temp.shape[1]:
             array_check.append(grid_temp[r, new_c])
         elif new_c < 0:
-            if road_section.input_road:
-                prev_road = road_section.input_road
-                prev_row = road_section.input_map[r]
+            if not road_section.start_road and r in road_section.input_map:
+                prev_road, prev_row = road_section.input_map[r]
                 prev_col = new_c + prev_road.columns
                 array_check.append(prev_road.grid_temp[prev_row][prev_col])
             else:
@@ -319,8 +329,16 @@ def calc_gap(r, c, grid_temp, t, road_section):
         gap = next_car[0][0]
         car_index = array_check[gap]
         if car_index in road_section.cars:
-            vback = min(road_section.cars[car_index].speed + 1, vmax)
-
+            car = road_section.cars[car_index]
+        elif prev_road and car_index in prev_road.cars:
+            car = prev_road.cars[car_index]
+        elif next_road and car_index in next_road.cars:
+            car = next_road.cars[car_index]
+        
+        if car:
+            vback = min(car.speed + 1, vmax)
+        
+        
         return gap, vback
 
     return vmax, vback

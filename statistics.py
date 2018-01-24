@@ -54,18 +54,23 @@ def calculate_car_difference(simulation):
 
 def calculate_road_probabilities(road, hour):
     probabilities = road.spawn_probabilities
-    print("hour", hour)
-    print(probabilities[2])
     directions = [0.33]
-    text_file = open("directions.csv", "r")
-    lines = text_file.readlines()
-    directions = lines[hour].rstrip().replace(" ","").split(';')
+    text_file_directions = open("directions.csv", "r")
+    lines_direction = text_file_directions.readlines()
+    directions = lines_direction[hour].rstrip().replace(" ","").split(';')
     for prob in directions:
         (key, value) = prob.split(':')
         probabilities[2][int(key)] = tuple(map(float,value.split(',')))
-        print(probabilities[2])
-    print("------")
-    text_file.close()
+    text_file_directions.close()
+
+    text_file_spawn = open("spawn.csv", "r")
+    lines_spawn = text_file_spawn.readlines()
+    spawns = lines_spawn[hour].rstrip().replace(" ","").split(';')
+    for prob in spawns:
+        (key, value) = prob.split(':')
+        probabilities[0][int(key)] = (float)(value)
+    print(probabilities[0])
+    text_file_spawn.close()
 
 
 #original road

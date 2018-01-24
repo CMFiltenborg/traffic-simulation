@@ -8,6 +8,7 @@ class Car:
         self.position = position # position is a tuple of (row, collum)
 
     def set_speed(self, speed):
+        #print("in car", self.index, self.speed, speed)
         self.speed = speed
 
     def set_position(self, position):

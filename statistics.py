@@ -1,6 +1,6 @@
 #This file wil run one of the two scrips a given ammount of times.
 #Type 0 is the original road, type 1 is theself made road.
-#use: python statistics.py type steps times
+#use: python statistics.py type steps times hour
 
 import sys
 import matplotlib.pyplot as plt
@@ -9,12 +9,15 @@ from RoadSection import RoadSection
 from CreateRoads import CreateRoads
 from car import Car
 
-type, steps, times = int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3])
+type, steps, times, hour = int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3]), (int(sys.argv[4]) % 24)
 
 def original_road(steps):
     simulation = CreateRoads.original_road(steps)
+    for road in simulation.roads:
+        if road.spawn != None:
+            calculate_road_probabilities(road, hour)
     result = simulation.run()
-    
+
     [0 for r in result]
 
     return simulation
@@ -48,6 +51,26 @@ def calculate_car_difference(simulation):
 
     difference = generated_cars - (finished_cars + cars_still_on_roads)
     print('Cars generated:{} Car:{} difference between generated and finished/still on road'.format(generated_cars, difference))
+
+def calculate_road_probabilities(road, hour):
+    probabilities = road.spawn_probabilities
+    directions = [0.33]
+    text_file_directions = open("directions.csv", "r")
+    lines_direction = text_file_directions.readlines()
+    directions = lines_direction[hour].rstrip().replace(" ","").split(';')
+    for prob in directions:
+        (key, value) = prob.split(':')
+        probabilities[2][int(key)] = tuple(map(float,value.split(',')))
+    text_file_directions.close()
+
+    text_file_spawn = open("spawn.csv", "r")
+    lines_spawn = text_file_spawn.readlines()
+    spawns = lines_spawn[hour].rstrip().replace(" ","").split(';')
+    for prob in spawns:
+        (key, value) = prob.split(':')
+        probabilities[0][int(key)] = (float)(value)
+    print(probabilities[0])
+    text_file_spawn.close()
 
 
 #original road

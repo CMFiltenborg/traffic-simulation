@@ -17,7 +17,7 @@ def original_road(steps):
         if road.spawn != None:
             calculate_road_probabilities(road, hour)
     result = simulation.run()
-    
+
     [0 for r in result]
 
     return simulation

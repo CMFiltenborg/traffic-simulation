@@ -52,7 +52,7 @@ class Simulation:
                     cars = road_section.cars
                     averageSpeed = self.speedaverage(grid, cars, road_section)
                     #self.avSpeed = averageSpeed
-                    
+
 
             yield roads_steps
 
@@ -110,6 +110,7 @@ class Simulation:
                     totalSpeed += cars[car].speed
             averageSpeed = totalSpeed/(len(cars) + (road_section.blocks+2))
             road_section.average_speed += averageSpeed
+            road_section.average_speed_steps += 1
             return averageSpeed
         return 0
 
@@ -131,10 +132,10 @@ def get_car_updates(road_section):
         row = coordinates[0][j]
         column = coordinates[1][j]
         car = cars[road_section.grid_temp[row][column]]
-        
+
         if (row, column) != car.position:
             continue
-        
+
         #print(road_section.name, 'GCU position:', row, column, car.position)
         move_car(car, road_section)
 
@@ -259,7 +260,7 @@ def change_position(r, p, car, gap, road_section):
     gapoBack, vback = calc_gap(r, c + vh, grid_temp, -1, road_section)
     #print("r, c", r, c)
     #print("gapoBack", gapoBack, vback)
-    
+
     if c + vh >= grid.shape[1]:
         if not road_section.is_end_road:
             current_road, row_index = road_section.output_map[r]
@@ -334,11 +335,10 @@ def calc_gap(r, c, grid_temp, t, road_section):
             car = prev_road.cars[car_index]
         elif next_road and car_index in next_road.cars:
             car = next_road.cars[car_index]
-        
+
         if car:
             vback = min(car.speed + 1, vmax)
-        
-        
+
         return gap, vback
 
     return vmax, vback

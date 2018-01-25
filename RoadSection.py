@@ -22,6 +22,7 @@ class RoadSection:
         self.grid = np.full((rows, columns),  -1, dtype=np.int32)
         self.grid_temp = None
         self.average_speed = 0
+        self.average_speed_steps = 0
         self.spawn_probabilities = spawn_probabilities
         self.spawn = spawn_probabilities is not None
         self.start_road = self.spawn
@@ -45,7 +46,7 @@ class RoadSection:
 
     def set_output_mapping(self, output_map):
         self.output_map = output_map
-    
+
     def set_input_mapping(self, input_map):
         self.input_map = input_map
 
@@ -80,8 +81,7 @@ class RoadSection:
     def add_new_cars(self):
         for index, y in self.new_car_updates.items():
             del y[3].cars[index]
-            
-            
+
             self.cars[index] = y[0]
             self.cars[index].set_speed(y[1])
             self.cars[index].set_position(y[2])

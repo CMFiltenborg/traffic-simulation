@@ -4,6 +4,8 @@
 
 import sys
 import matplotlib.pyplot as plt
+import os
+import pandas as pd
 from simulation import Simulation
 from RoadSection import RoadSection
 from CreateRoads import CreateRoads
@@ -55,10 +57,10 @@ def self_made_road(steps):
     return simulation
 
 def calculate_density(roads, places):
-    ammount_cars = 0
+    amount_cars = 0
     for i in range(len(roads)):
-        ammount_cars += len(roads[i].cars)
-    return ammount_cars/(places*5)
+        amount_cars += len(roads[i].cars)
+    return amount_cars/(places*5)
 
 x, y, z = [], [], []
 
@@ -124,12 +126,44 @@ def plot_multiple_runs(hour, z):
 if sim_24hours == 1:
     times *= 24
 
-#original road
+
+def calculate_average_speed(simulation):
+    average_speeds = {'average_speed:{}'.format(road.name): road.average_speed / simulation.step for road in simulation.roads}
+    average_speeds['total_average_speed'] = sum(average_speeds.values()) / len(simulation.roads)
+
+    return average_speeds
+
+
+def create_result_table(simulations):
+    df = pd.DataFrame(columns=['total_output', 'density'], index=simulations.keys())
+    for hour, simulation in simulations.items():
+        total_output = sum([r.finished_cars for r in simulation.roads if r.is_end_road])
+        df.set_value(hour, 'total_output', total_output)
+
+        # TODO: Fix density calculation...
+        density = calculate_density(simulation.roads, 100)
+        df.set_value(hour, 'density', density)
+
+        average_speeds = calculate_average_speed(simulation)
+        for column, value in average_speeds.items():
+            df.set_value(hour, column, value)
+
+    print(df)
+    dir = './results/'
+    path = './results/results.csv'
+    if not os.path.exists(dir):
+        os.makedirs(dir)
+
+    df.to_csv(path)
+
+
 if type == 0:
+    simulations = {}
     for i in range(times):
         if sim_24hours == 1:
             hour = i % 24
         simulation = original_road(steps)
+        simulations[hour] = simulation
         #calculate_car_difference(simulation)
         roads = simulation.roads
         flow = roads[0].finished_cars/steps
@@ -144,10 +178,16 @@ if type == 0:
         x.append(density)
         y.append(flow)
         z.append(roads[0].average_speed/steps)
+
+    create_result_table(simulations)
     plot_multiple_runs(hour, z)
 elif type == 2:
+    simulations = {}
     for i in range(times):
+        if sim_24hours == 1:
+            hour = i % 24
         simulation = new_road(steps)
+        simulations[hour] = simulation
         roads = simulation.roads
         r1 = roads[0]
         r2 = roads[1]
@@ -195,6 +235,8 @@ elif type == 2:
             print("Density of system (cars/meter)", density)
         x.append(density)
         y.append(flow)
+
+    create_result_table(simulations)
 elif type == 3:
     road1 = RoadSection(1, 10)
     road2 = RoadSection(2, 10, is_end_road=True)

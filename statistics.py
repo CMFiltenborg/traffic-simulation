@@ -14,6 +14,9 @@ from car import Car
 if len(sys.argv) < 5:
     raise Exception('Missing arguments {type} {steps} {times} {hour} {?sim_24hours}')
 
+if int(sys.argv[5]) < 0 or int(sys.argv[5]) > 1:
+    raise Exception('sim_ 24 only works with argument 0 or 1')
+
 type = int(sys.argv[1])
 steps = int(sys.argv[2])
 times = int(sys.argv[3])

@@ -69,7 +69,7 @@ class RoadSection:
         self.grid_temp = copy.deepcopy(self.grid)
 
     def get_car_coordinates(self):
-        return np.where(self.grid_temp > -1)
+        return np.where(self.grid > -1)
 
     def add_car(self, car, row, column, v, prev_road):
 

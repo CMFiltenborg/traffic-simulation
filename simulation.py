@@ -95,7 +95,7 @@ class Simulation:
                 d = 0
                 for direction in direction_probabilities:
                     lower_bound, upper_bound = direction_probabilities[direction]
-                    if lower_bound >= n < upper_bound:
+                    if lower_bound < n <= upper_bound:
                         d = direction
                         break
             color = road_section.output_colors[d]

@@ -9,11 +9,17 @@ from RoadSection import RoadSection
 from CreateRoads import CreateRoads
 from car import Car
 
+if len(sys.argv) < 5:
+    raise Exception('Missing arguments {type} {steps} {times} {hour} {?sim_24hours}')
+
 type = int(sys.argv[1])
 steps = int(sys.argv[2])
 times = int(sys.argv[3])
 hour = int(sys.argv[4]) % 24
-sim_24hours = int(sys.argv[5])
+
+sim_24hours = False
+if len(sys.argv) >= 6:
+    sim_24hours = int(sys.argv[5])
 
 def original_road(steps):
     simulation = CreateRoads.original_road(steps)
@@ -91,7 +97,7 @@ def calculate_road_probabilities(road, hour):
     spawns = lines_spawn[hour].rstrip().replace(" ","").split(';')
     for prob in spawns:
         (key, value) = prob.split(':')
-        probabilities[0][int(key)] = (float)(value)
+        probabilities[0][int(key)] = float(value)
     text_file_directions.close()
     text_file_spawn.close()
 

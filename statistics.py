@@ -4,6 +4,7 @@
 
 import sys
 import matplotlib.pyplot as plt
+import os
 import pandas as pd
 from simulation import Simulation
 from RoadSection import RoadSection
@@ -148,6 +149,12 @@ def create_result_table(simulations):
             df.set_value(hour, column, value)
 
     print(df)
+    dir = './results/'
+    path = './results/results.csv'
+    if not os.path.exists(dir):
+        os.makedirs(dir)
+
+    df.to_csv(path)
 
 
 if type == 0:
@@ -175,8 +182,12 @@ if type == 0:
     create_result_table(simulations)
     plot_multiple_runs(hour, z)
 elif type == 2:
+    simulations = {}
     for i in range(times):
+        if sim_24hours == 1:
+            hour = i % 24
         simulation = new_road(steps)
+        simulations[hour] = simulation
         roads = simulation.roads
         r1 = roads[0]
         r2 = roads[1]
@@ -224,6 +235,8 @@ elif type == 2:
             print("Density of system (cars/meter)", density)
         x.append(density)
         y.append(flow)
+
+    create_result_table(simulations)
 elif type == 3:
     road1 = RoadSection(1, 10)
     road2 = RoadSection(2, 10, is_end_road=True)

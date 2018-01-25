@@ -82,7 +82,7 @@ class Simulation:
             v_start = 1
             for v in speed_probabilities:
                 lower_bound, upper_bound = speed_probabilities[v]
-                if lower_bound > n <= upper_bound:
+                if lower_bound < n <= upper_bound:
                     v_start = v
                     break
 

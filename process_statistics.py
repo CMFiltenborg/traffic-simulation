@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+import matplotlib.pyplot as plt
 
 
 def read_data(type):
@@ -12,15 +13,18 @@ def read_data(type):
             dataframe = pd.read_csv('{}/{}'.format(path, file))
             yield dataframe
 
-def plot_density_flow(dataframes, type):
+def plot_density_flow(type):
     dataframes = read_data(0)
     base = next(dataframes)
     for df in dataframes:
         base = base.append(df)
 
-    group = base.groupby(['hour'])
-            print(group['density'][:10])
+    groups = base.groupby(['hour'])
+    for group_name,group in groups:
+            plt.scatter(group['density'], group['total_average_speed'])
+    plt.show()
 
 
+plot_density_flow(0)
 dataframes = read_data(0)
 #print([d for d in dataframes][0])

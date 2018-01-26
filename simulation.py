@@ -107,7 +107,7 @@ class Simulation:
         coordinates = np.where(road_section.grid > -1)
         if i == self.step - 1:
             road_section.average_speed_steps = max(road_section.average_speed_steps, 1)
-        if (len(coordinates[0])+road_section.blocks+2) > 0:
+        if (len(coordinates[0])) > 0:
             for j in range(len(coordinates[0])):
                 row = coordinates[0][j]
                 column = coordinates[1][j]

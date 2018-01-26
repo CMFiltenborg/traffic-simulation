@@ -14,6 +14,8 @@ from car import Car
 if len(sys.argv) < 5:
     raise Exception('Missing arguments {type} {steps} {times} {hour} {?sim_24hours}')
 
+
+
 type = int(sys.argv[1])
 steps = int(sys.argv[2])
 times = int(sys.argv[3])
@@ -81,12 +83,21 @@ def calculate_car_difference(simulation):
 def calculate_road_probabilities(road, hour):
     probabilities = road.spawn_probabilities
     directions = [0.33]
-    if road.name == 'R1':
-        text_file_directions = open("directions.csv", "r")
-        text_file_spawn = open("spawn.csv", "r")
+
+    if sim_24hours == 2:
+        if road.name == 'R1':
+            text_file_directions = open("directions.csv", "r")
+            text_file_spawn = open("spawn3.csv", "r")
+        else:
+            text_file_directions = open("directions2.csv", "r")
+            text_file_spawn = open("spawn3.csv", "r")
     else:
-        text_file_directions = open("directions2.csv", "r")
-        text_file_spawn = open("spawn2.csv", "r")
+        if road.name == 'R1':
+            text_file_directions = open("directions.csv", "r")
+            text_file_spawn = open("spawn.csv", "r")
+        else:
+            text_file_directions = open("directions2.csv", "r")
+            text_file_spawn = open("spawn2.csv", "r")
 
     lines_direction = text_file_directions.readlines()
     directions = lines_direction[hour].rstrip().replace(" ","").split(';')
@@ -123,7 +134,7 @@ def plot_multiple_runs(hour, z):
     plt.xlim([0,x_range])
     plt.show()
 
-if sim_24hours == 1:
+if sim_24hours:
     times *= 24
 
 
@@ -142,7 +153,7 @@ def calculate_average_speed(simulation):
     return average_speeds
 
 
-def create_result_table(simulations):
+def create_result_table(simulations, type, run_number):
     df = pd.DataFrame(columns=['total_output', 'density'], index=simulations.keys())
     for hour, simulation in simulations.items():
         total_output = sum([r.finished_cars for r in simulation.roads if r.is_end_road])
@@ -156,20 +167,23 @@ def create_result_table(simulations):
         for column, value in average_speeds.items():
             df.set_value(hour, column, value)
 
-    print(df)
-    dir = './results/'
-    path = './results/results.csv'
+    dir = './results/type_{}/'.format(type)
+    path = dir + 'results_{}.csv'.format(run_number)
     if not os.path.exists(dir):
         os.makedirs(dir)
 
     df.to_csv(path)
 
-
 if type == 0:
     simulations = {}
-    for i in range(times):
-        if sim_24hours == 1:
+    for i in range(times+1):
+        if i % 24 == 0 and i > 0:
+            run_number = int(i / 24)
+            create_result_table(simulations, type=type, run_number=run_number)
+
+        if sim_24hours:
             hour = i % 24
+
         simulation = original_road(steps)
         simulations[hour] = simulation
         #calculate_car_difference(simulation)
@@ -187,11 +201,16 @@ if type == 0:
         y.append(flow)
         z.append(roads[0].average_speed/roads[0].average_speed_steps)
 
-    create_result_table(simulations)
-    plot_multiple_runs(hour, z)
+        print(i)
+
+            # plot_multiple_runs(hour, z)
 elif type == 2:
     simulations = {}
     for i in range(times):
+        if i % 24 == 0 and i > 0:
+            run_number = int(i / 24)
+            create_result_table(simulations, type=type, run_number=run_number)
+
         if sim_24hours == 1:
             hour = i % 24
         simulation = new_road(steps)
@@ -250,7 +269,6 @@ elif type == 2:
         y.append(flow)
         z.append(average_speed)
 
-    create_result_table(simulations)
     plot_multiple_runs(hour, z)
 elif type == 3:
     road1 = RoadSection(1, 10)

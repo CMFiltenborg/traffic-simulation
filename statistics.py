@@ -11,19 +11,6 @@ from RoadSection import RoadSection
 from CreateRoads import CreateRoads
 from car import Car
 
-if len(sys.argv) < 5:
-    raise Exception('Missing arguments {type} {steps} {times} {hour} {?sim_24hours}')
-
-
-
-type = int(sys.argv[1])
-steps = int(sys.argv[2])
-times = int(sys.argv[3])
-hour = int(sys.argv[4]) % 24
-
-sim_24hours = False
-if len(sys.argv) >= 6:
-    sim_24hours = int(sys.argv[5])
 
 def original_road(steps):
     simulation = CreateRoads.original_road(steps)
@@ -62,7 +49,8 @@ def calculate_density(roads, places):
     amount_cars = 0
     for i in range(len(roads)):
         amount_cars += len(roads[i].cars)
-    return amount_cars/(places*5)
+
+    return amount_cars / (places * 5)
 
 x, y, z = [], [], []
 
@@ -114,34 +102,12 @@ def calculate_road_probabilities(road, hour):
     text_file_directions.close()
     text_file_spawn.close()
 
-def plot_multiple_runs(hour, z):
-    average_speed_array = [0]*24
-    if sim_24hours:
-        for i in range(len(z)):
-            average_speed_array[i%24] += z[i]
-        print(times)
-        average_speed_array[:] = [x / (times/24) for x in average_speed_array]
-    else:
-        average_speed_array = z
-    average_speed_array[:] = [x * 20 for x in average_speed_array]
-    print(average_speed_array)
-    x = range(len(average_speed_array))
-    plt.bar(x,average_speed_array, 0.93, color='blue')
-    plt.ylim([0,100])
-    x_range = times
-    if sim_24hours:
-        x_range = 24
-    plt.xlim([0,x_range])
-    plt.show()
-
-if sim_24hours:
-    times *= 24
 
 
 def calculate_average_speed(simulation):
     average_speed = 0
     number_roads_cars_driven = 0
-    for road in roads:
+    for road in simulation.roads:
         if road.average_speed != 0:
             average_speed += road.average_speed/(road.average_speed_steps)
             number_roads_cars_driven += 1
@@ -156,12 +122,18 @@ def calculate_average_speed(simulation):
 def create_result_table(simulations, type, run_number):
     df = pd.DataFrame(columns=['total_output', 'density'], index=simulations.keys())
     for hour, simulation in simulations.items():
+        # Add total output of cars
         total_output = sum([r.finished_cars for r in simulation.roads if r.is_end_road])
         df.set_value(hour, 'total_output', total_output)
+
+        # Add flow
+        flow = total_output / simulation.step
+        df.set_value(hour, 'flow', flow)
 
         # TODO: Fix density calculation...
         density = calculate_density(simulation.roads, 100)
         df.set_value(hour, 'density', density)
+
 
         average_speeds = calculate_average_speed(simulation)
         for column, value in average_speeds.items():
@@ -175,191 +147,45 @@ def create_result_table(simulations, type, run_number):
     df['hour'] = df.index
     df.to_csv(path, index=False)
 
-if type == 0:
+if __name__ == '__main__':
+    if len(sys.argv) < 5:
+        raise Exception('Missing arguments {type} {steps} {times} {hour} {?sim_24hours}')
+
+    road_type = int(sys.argv[1])
+    steps = int(sys.argv[2])
+    times = int(sys.argv[3])
+    hour = int(sys.argv[4]) % 24
+
+    sim_24hours = False
+    if len(sys.argv) >= 6:
+        sim_24hours = int(sys.argv[5])
+
+    if sim_24hours:
+        times *= 24
+
+    road_fn = None
+    if road_type == 0:
+        road_fn = original_road
+    if road_type == 2:
+        road_fn = new_road
+
+    if road_fn is None:
+        raise Exception('No valid road type')
+
     simulations = {}
     for i in range(times+1):
         if i % 24 == 0 and i > 0:
             run_number = int(i / 24)
-            create_result_table(simulations, type=type, run_number=run_number)
+            create_result_table(simulations, type=road_type, run_number=run_number)
 
         if sim_24hours:
             hour = i % 24
 
-        simulation = original_road(steps)
+        simulation = road_fn(steps)
         simulations[hour] = simulation
-        #calculate_car_difference(simulation)
-        roads = simulation.roads
-        flow = roads[0].finished_cars/steps
-        density = calculate_density(roads, 100)
-        #print("Average speed R2", roads[0].average_speed/steps)
-        #print(hour)
-        if i == 0:
-            print("Average speed R2", roads[0].average_speed/roads[0].average_speed_steps)
-            print("Ammount of cars finished R2", roads[0].finished_cars)
-            print("Flow of system", flow)
-            print("Density of system (cars/meter)", density)
-        x.append(density)
-        y.append(flow)
-        z.append(roads[0].average_speed/roads[0].average_speed_steps)
-
-        print(i)
-
-            # plot_multiple_runs(hour, z)
-elif type == 2:
-    simulations = {}
-    for i in range(times):
-        if i % 24 == 0 and i > 0:
-            run_number = int(i / 24)
-            create_result_table(simulations, type=type, run_number=run_number)
-
-        if sim_24hours == 1:
-            hour = i % 24
-        simulation = new_road(steps)
-        simulations[hour] = simulation
-        roads = simulation.roads
-        r1 = roads[0]
-        r2 = roads[1]
-        r5 = roads[2]
-        r6 = roads[3]
-        r7 = roads[4]
-        r8 = roads[5]
-        r9 = roads[6]
-        r10 = roads[7]
-
-        # Car difference
-        calculate_car_difference(simulation)
-
-        flow = (r5.finished_cars + r7.finished_cars + r10.finished_cars)/steps
-        density = calculate_density(roads, 460)
-
-        average_speed = 0
-        number_roads_cars_driven = 0
-        for road in roads:
-            if road.average_speed != 0:
-                average_speed += road.average_speed/(road.average_speed_steps)
-                number_roads_cars_driven += 1
-
-        average_speed = average_speed/number_roads_cars_driven
-
-        if i == 0:
-            average_speed_r1 = r1.average_speed/(r1.average_speed_steps)
-            average_speed_r2 = r2.average_speed/(r2.average_speed_steps)
-            average_speed_r5 = r5.average_speed/(r5.average_speed_steps)
-            average_speed_r6 = r6.average_speed/(r6.average_speed_steps)
-            average_speed_r7 = r7.average_speed/(r7.average_speed_steps)
-            average_speed_r8 = r8.average_speed/(r8.average_speed_steps)
-            average_speed_r9 = r9.average_speed/(r9.average_speed_steps)
-            average_speed_r10 = r10.average_speed/(r10.average_speed_steps)
-
-            print("Average speed R1", average_speed_r1)
-            print("Average speed R2", average_speed_r2)
-            print("Average speed R5", average_speed_r5)
-            print("Average speed R6", average_speed_r6)
-            print("Average speed R7", average_speed_r7)
-            print("Average speed R8", average_speed_r8)
-            print("Average speed R9", average_speed_r9)
-            print("Average speed R10", average_speed_r10)
-
-            print("Total average speed", average_speed)
-            print("Ammount of cars finished R5", r5.finished_cars)
-            print("Ammount of cars finished R7", r7.finished_cars)
-            print("Ammount of cars finished R10", r10.finished_cars)
-            print("Flow of system", flow)
-            print("Density of system (cars/meter)", density)
-        x.append(density)
-        y.append(flow)
-        z.append(average_speed)
-
-    plot_multiple_runs(hour, z)
-elif type == 3:
-    road1 = RoadSection(1, 10)
-    road2 = RoadSection(2, 10, is_end_road=True)
-    road1.cars = {
-        55: Car(55, 5, 1, 1, (0, 8))
-    }
-    road2.cars = {
-        33: Car(33, 2, 1, 1, (0,0)),
-    }
-    road2.grid[0,0] = 33
-    road1.grid[0,8] = 55
-
-    road1.set_output_mapping({
-        0: (road2, 1)
-    })
-
-    road2.set_input_mapping({
-        1: (road1, 0)
-    })
-
-    simulation = Simulation(road1, [road2], 1)
-    print(road1.grid)
-    print("----------")
-    print(road2.grid)
-    print("----------")
-    result = simulation.run()
-    [0 for r in result]
-    print("----------")
-#print(['{}, {}'.format(c.index, c.position) for k,c in road.cars.items()])
-    print(road1.grid)
-    print("----------")
-    print(road2.grid)
-#self-made road
-else:
-    for i in range(times):
-        simulation = self_made_road(steps)
-        roads = simulation.roads
-        r1 = roads[0]
-        r2 = roads[1]
-        r3 = roads[2]
-        r4 = roads[4]
-        r5 = roads[5]
-        r6 = roads[6]
-        r7 = roads[3]
-        r8 = roads[7]
-
-        # Car difference
-        calculate_car_difference(simulation)
-
-        flow = (r7.finished_cars + r8.finished_cars)/steps
-        density = calculate_density(roads, 460)
-        if i == 0:
-            average_speed_r1 = r1.average_speed/steps
-            average_speed_r2 = r2.average_speed/steps
-            average_speed_r3 = r3.average_speed/steps
-            average_speed_r4 = r4.average_speed/steps
-            average_speed_r5 = r5.average_speed/steps
-            average_speed_r6 = r6.average_speed/steps
-            average_speed_r7 = r7.average_speed/steps
-            average_speed_r8 = r8.average_speed/steps
-
-            average_speed = (r1.average_speed/steps + r2.average_speed/steps +
-                            r3.average_speed/steps + r4.average_speed/steps +
-                            r5.average_speed/steps + r6.average_speed/steps +
-                            r7.average_speed/steps + r8.average_speed/steps) / 8
-
-            print("Average speed R1", average_speed_r1)
-            print("Average speed R2", average_speed_r2)
-            print("Average speed R3", average_speed_r3)
-            print("Average speed R4", average_speed_r4)
-            print("Average speed R5", average_speed_r5)
-            print("Average speed R6", average_speed_r6)
-            print("Average speed R7", average_speed_r7)
-            print("Average speed R8", average_speed_r8)
-
-            print("Total average speed", average_speed)
-            print("Ammount of cars finished R7", r7.finished_cars)
-            print("Ammount of cars finished R8", r8.finished_cars)
-            print("Flow of system", flow)
-            print("Density of system (cars/meter)", density)
-        x.append(density)
-        y.append(flow)
-
-
-
-plt.plot(x, y, "o")
-plt.xlabel("Density (cars/meters)")
-plt.ylabel("Flow (cars/step)")
-#plt.show()
+        # calculate_car_difference(simulation)
+        if i % 24 == 0:
+            print('Simulation run: {}'.format(i))
 
 
 

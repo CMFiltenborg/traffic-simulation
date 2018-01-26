@@ -33,20 +33,24 @@ def calculate_average_values(type):
     average = base / counter
 
     print(average)
-    base.to_csv('./results/averages_type_{}.csv')
+    average.to_csv('./results/averages_type_{}.csv'.format(type))
 
 
 def calculate_difference(path, path_other):
-    if not os.path.isdir(path) or not os.path.isdir(path_other):
+    if not os.path.exists(path) or not os.path.exists(path_other):
         raise Exception('Invalid paths provided...')
 
     df = pd.read_csv(path)
     df_other = pd.read_csv(path_other)
 
-    difference = df - df_other
+    difference = df.subtract(df_other, fill_value=0)
+    difference.to_csv('./results/difference.csv')
     print(difference)
+    print(difference.sum())
 
 
 
 
-calculate_average_values(0)
+# calculate_average_values(0)
+# calculate_average_values(2)
+calculate_difference('./results/averages_type_2.csv', './results/averages_type_0.csv')

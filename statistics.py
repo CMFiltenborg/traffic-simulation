@@ -139,7 +139,15 @@ if sim_24hours:
 
 
 def calculate_average_speed(simulation):
-    average_speeds = {'average_speed:{}'.format(road.name): road.average_speed / simulation.step for road in simulation.roads}
+    average_speed = 0
+    number_roads_cars_driven = 0
+    for road in roads:
+        if road.average_speed != 0:
+            average_speed += road.average_speed/(road.average_speed_steps)
+            number_roads_cars_driven += 1
+    average_speed = average_speed/number_roads_cars_driven
+
+    average_speeds = {'average_speed:{}'.format(road.name): road.average_speed / road.average_speed_steps for road in simulation.roads}
     average_speeds['total_average_speed'] = sum(average_speeds.values()) / len(simulation.roads)
 
     return average_speeds
@@ -164,7 +172,8 @@ def create_result_table(simulations, type, run_number):
     if not os.path.exists(dir):
         os.makedirs(dir)
 
-    df.to_csv(path)
+    df['hour'] = df.index
+    df.to_csv(path, index=False)
 
 if type == 0:
     simulations = {}
@@ -185,13 +194,13 @@ if type == 0:
         #print("Average speed R2", roads[0].average_speed/steps)
         #print(hour)
         if i == 0:
-            print("Average speed R2", roads[0].average_speed/steps)
+            print("Average speed R2", roads[0].average_speed/roads[0].average_speed_steps)
             print("Ammount of cars finished R2", roads[0].finished_cars)
             print("Flow of system", flow)
             print("Density of system (cars/meter)", density)
         x.append(density)
         y.append(flow)
-        z.append(roads[0].average_speed/steps)
+        z.append(roads[0].average_speed/roads[0].average_speed_steps)
 
         print(i)
 
@@ -223,12 +232,16 @@ elif type == 2:
         flow = (r5.finished_cars + r7.finished_cars + r10.finished_cars)/steps
         density = calculate_density(roads, 460)
 
-        average_speed = (r1.average_speed/(r1.average_speed_steps) + r2.average_speed/(r2.average_speed_steps) +
-                            r5.average_speed/(r5.average_speed_steps) + r6.average_speed/(r6.average_speed_steps) +
-                            r7.average_speed/(r7.average_speed_steps) + r8.average_speed/(r8.average_speed_steps) +
-                            r9.average_speed/(r9.average_speed_steps) + r10.average_speed/(r10.average_speed_steps)) / 8
+        average_speed = 0
+        number_roads_cars_driven = 0
+        for road in roads:
+            if road.average_speed != 0:
+                average_speed += road.average_speed/(road.average_speed_steps)
+                number_roads_cars_driven += 1
 
-        if i == 0 or True:
+        average_speed = average_speed/number_roads_cars_driven
+
+        if i == 0:
             average_speed_r1 = r1.average_speed/(r1.average_speed_steps)
             average_speed_r2 = r2.average_speed/(r2.average_speed_steps)
             average_speed_r5 = r5.average_speed/(r5.average_speed_steps)

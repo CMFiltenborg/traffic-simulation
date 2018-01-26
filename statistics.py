@@ -134,7 +134,7 @@ def calculate_average_speed(simulation):
     return average_speeds
 
 
-def create_result_table(simulations):
+def create_result_table(simulations, type, run_number):
     df = pd.DataFrame(columns=['total_output', 'density'], index=simulations.keys())
     for hour, simulation in simulations.items():
         total_output = sum([r.finished_cars for r in simulation.roads if r.is_end_road])
@@ -148,20 +148,24 @@ def create_result_table(simulations):
         for column, value in average_speeds.items():
             df.set_value(hour, column, value)
 
-    print(df)
-    dir = './results/'
-    path = './results/results.csv'
+    dir = './results/type_{}/'.format(type)
+    path = dir + 'results_{}.csv'.format(run_number)
     if not os.path.exists(dir):
         os.makedirs(dir)
 
     df.to_csv(path)
 
-
 if type == 0:
     simulations = {}
-    for i in range(times):
-        if sim_24hours == 1:
+    day = 0
+    for i in range(times+1):
+        if i % 24 == 0 and i > 0:
+            run_number = int(i / 24)
+            create_result_table(simulations, type=type, run_number=run_number)
+
+        if sim_24hours:
             hour = i % 24
+
         simulation = original_road(steps)
         simulations[hour] = simulation
         #calculate_car_difference(simulation)
@@ -179,11 +183,16 @@ if type == 0:
         y.append(flow)
         z.append(roads[0].average_speed/steps)
 
-    create_result_table(simulations)
-    plot_multiple_runs(hour, z)
+        print(i)
+
+            # plot_multiple_runs(hour, z)
 elif type == 2:
     simulations = {}
     for i in range(times):
+        if i % 24 == 0 and i > 0:
+            run_number = int(i / 24)
+            create_result_table(simulations, type=type, run_number=run_number)
+
         if sim_24hours == 1:
             hour = i % 24
         simulation = new_road(steps)
@@ -238,7 +247,7 @@ elif type == 2:
         y.append(flow)
         z.append(average_speed)
 
-    create_result_table(simulations)
+    create_result_table(simulations, type, )
     plot_multiple_runs(hour, z)
 elif type == 3:
     road1 = RoadSection(1, 10)

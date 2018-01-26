@@ -214,20 +214,21 @@ elif type == 2:
 
         flow = (r5.finished_cars + r7.finished_cars + r10.finished_cars)/steps
         density = calculate_density(roads, 460)
-        if i == 0:
-            average_speed_r1 = r1.average_speed/steps
-            average_speed_r2 = r2.average_speed/steps
-            average_speed_r5 = r5.average_speed/steps
-            average_speed_r6 = r6.average_speed/steps
-            average_speed_r7 = r7.average_speed/steps
-            average_speed_r8 = r8.average_speed/steps
-            average_speed_r9 = r9.average_speed/steps
-            average_speed_r10 = r10.average_speed/steps
 
-            average_speed = (r1.average_speed/steps + r2.average_speed/steps +
-                            r5.average_speed/steps + r6.average_speed/steps +
-                            r7.average_speed/steps + r8.average_speed/steps +
-                            r9.average_speed/steps + r10.average_speed/steps) / 8
+        average_speed = (r1.average_speed/(r1.average_speed_steps) + r2.average_speed/(r2.average_speed_steps) +
+                            r5.average_speed/(r5.average_speed_steps) + r6.average_speed/(r6.average_speed_steps) +
+                            r7.average_speed/(r7.average_speed_steps) + r8.average_speed/(r8.average_speed_steps) +
+                            r9.average_speed/(r9.average_speed_steps) + r10.average_speed/(r10.average_speed_steps)) / 8
+
+        if i == 0 or True:
+            average_speed_r1 = r1.average_speed/(r1.average_speed_steps)
+            average_speed_r2 = r2.average_speed/(r2.average_speed_steps)
+            average_speed_r5 = r5.average_speed/(r5.average_speed_steps)
+            average_speed_r6 = r6.average_speed/(r6.average_speed_steps)
+            average_speed_r7 = r7.average_speed/(r7.average_speed_steps)
+            average_speed_r8 = r8.average_speed/(r8.average_speed_steps)
+            average_speed_r9 = r9.average_speed/(r9.average_speed_steps)
+            average_speed_r10 = r10.average_speed/(r10.average_speed_steps)
 
             print("Average speed R1", average_speed_r1)
             print("Average speed R2", average_speed_r2)
@@ -246,8 +247,10 @@ elif type == 2:
             print("Density of system (cars/meter)", density)
         x.append(density)
         y.append(flow)
+        z.append(average_speed)
 
     create_result_table(simulations)
+    plot_multiple_runs(hour, z)
 elif type == 3:
     road1 = RoadSection(1, 10)
     road2 = RoadSection(2, 10, is_end_road=True)

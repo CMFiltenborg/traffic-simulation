@@ -141,14 +141,12 @@ if sim_24hours:
 def calculate_average_speed(simulation):
     average_speed = 0
     number_roads_cars_driven = 0
-    for road in roads:
-        if road.average_speed != 0:
-            average_speed += road.average_speed/(road.average_speed_steps)
+    for road in simulation.roads:
+        if road.average_speed > 0:
             number_roads_cars_driven += 1
-    average_speed = average_speed/number_roads_cars_driven
 
     average_speeds = {'average_speed:{}'.format(road.name): road.average_speed / road.average_speed_steps for road in simulation.roads}
-    average_speeds['total_average_speed'] = sum(average_speeds.values()) / len(simulation.roads)
+    average_speeds['total_average_speed'] = sum(average_speeds.values()) / number_roads_cars_driven
 
     return average_speeds
 
@@ -227,7 +225,7 @@ elif type == 2:
         r10 = roads[7]
 
         # Car difference
-        calculate_car_difference(simulation)
+        #calculate_car_difference(simulation)
 
         flow = (r5.finished_cars + r7.finished_cars + r10.finished_cars)/steps
         density = calculate_density(roads, 460)

@@ -32,15 +32,15 @@ class CreateRoads:
 
         ]
 
-        r1 = RoadSection(4, 10, name='R1', spawn_probabilities=spawn_r1,
+        r1 = RoadSection(4, 30, name='R1', spawn_probabilities=spawn_r1,
                          output_colors =['red', 'red', 'red', 'black', 'black'])
         r2 = RoadSection(1, 10, name='R2', spawn_probabilities=spawn_r2,
                          output_colors=['red', 'red', 'red', 'black', 'black'])
-        r5 = RoadSection(2, 90, name='R5', is_end_road=True)
+        r5 = RoadSection(2, 70, name='R5', is_end_road=True)
         r6 = RoadSection(2, 30, name='R6')
         r7 = RoadSection(1, 60, name='R7', is_end_road=True)
         r8 = RoadSection(1, 30, name='R8')
-        r9 = RoadSection(2, 60, name='R9')
+        r9 = RoadSection(2, 40, name='R9')
         r10 = RoadSection(3, 30, name='R10', is_end_road=True, right_lane=2)
 
         r1.set_output_mapping({

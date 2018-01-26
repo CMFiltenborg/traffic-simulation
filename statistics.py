@@ -164,7 +164,8 @@ def create_result_table(simulations, type, run_number):
     if not os.path.exists(dir):
         os.makedirs(dir)
 
-    df.to_csv(path)
+    df['hour'] = df.index
+    df.to_csv(path, index=False)
 
 if type == 0:
     simulations = {}

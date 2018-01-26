@@ -50,7 +50,7 @@ class Simulation:
                 if self.avSpeed:
                     grid = road_section.grid
                     cars = road_section.cars
-                    averageSpeed = self.speedaverage(grid, cars, road_section)
+                    averageSpeed = self.speedaverage(grid, cars, road_section,i)
                     #self.avSpeed = averageSpeed
 
 
@@ -102,13 +102,26 @@ class Simulation:
             cars[new_car_index] = Car(new_car_index, v_start, color, d, (i,0))
             grid[i][0] = new_car_index
 
-    def speedaverage(self, grid, cars, road_section):
+    def speedaverage(self, grid, cars, road_section, i):
         totalSpeed = 0
-        if (len(cars)+road_section.blocks+2) > 0:
+        coordinates = np.where(road_section.grid > -1)
+        if i == self.step - 1:
+            road_section.average_speed_steps = max(road_section.average_speed_steps, 1)
+        if (len(coordinates[0])+road_section.blocks+2) > 0:
+            for j in range(len(coordinates[0])):
+                row = coordinates[0][j]
+                column = coordinates[1][j]
+                car = road_section.cars[road_section.grid[row][column]]
+                #if (row, column) != car.position:
+                #    continue
+                totalSpeed += car.speed
+
+            '''
             for car in cars:
                 if car >= 0:
                     totalSpeed += cars[car].speed
-            averageSpeed = totalSpeed/(len(cars) + (road_section.blocks+2))
+                    '''
+            averageSpeed = totalSpeed/(len(coordinates[0]))
             road_section.average_speed += averageSpeed
             road_section.average_speed_steps += 1
             return averageSpeed

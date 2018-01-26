@@ -14,6 +14,8 @@ from car import Car
 if len(sys.argv) < 5:
     raise Exception('Missing arguments {type} {steps} {times} {hour} {?sim_24hours}')
 
+
+
 type = int(sys.argv[1])
 steps = int(sys.argv[2])
 times = int(sys.argv[3])
@@ -81,12 +83,21 @@ def calculate_car_difference(simulation):
 def calculate_road_probabilities(road, hour):
     probabilities = road.spawn_probabilities
     directions = [0.33]
-    if road.name == 'R1':
-        text_file_directions = open("directions.csv", "r")
-        text_file_spawn = open("spawn.csv", "r")
+
+    if sim_24hours == 2:
+        if road.name == 'R1':
+            text_file_directions = open("directions.csv", "r")
+            text_file_spawn = open("spawn3.csv", "r")
+        else:
+            text_file_directions = open("directions2.csv", "r")
+            text_file_spawn = open("spawn3.csv", "r")
     else:
-        text_file_directions = open("directions2.csv", "r")
-        text_file_spawn = open("spawn2.csv", "r")
+        if road.name == 'R1':
+            text_file_directions = open("directions.csv", "r")
+            text_file_spawn = open("spawn.csv", "r")
+        else:
+            text_file_directions = open("directions2.csv", "r")
+            text_file_spawn = open("spawn2.csv", "r")
 
     lines_direction = text_file_directions.readlines()
     directions = lines_direction[hour].rstrip().replace(" ","").split(';')
@@ -123,7 +134,7 @@ def plot_multiple_runs(hour, z):
     plt.xlim([0,x_range])
     plt.show()
 
-if sim_24hours == 1:
+if sim_24hours:
     times *= 24
 
 
@@ -157,7 +168,6 @@ def create_result_table(simulations, type, run_number):
 
 if type == 0:
     simulations = {}
-    day = 0
     for i in range(times+1):
         if i % 24 == 0 and i > 0:
             run_number = int(i / 24)
@@ -247,7 +257,6 @@ elif type == 2:
         y.append(flow)
         z.append(average_speed)
 
-    create_result_table(simulations, type, )
     plot_multiple_runs(hour, z)
 elif type == 3:
     road1 = RoadSection(1, 10)

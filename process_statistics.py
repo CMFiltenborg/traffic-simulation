@@ -13,5 +13,31 @@ def read_data(type):
             yield data
 
 
-data = read_data(0)
-print([d for d in data])
+def calculate_average_values(type):
+    dataframes = read_data(type)
+    counter = 1
+    base = next(dataframes)
+    for df in dataframes:
+        base += df
+        counter += 1
+
+    average = base / counter
+
+    print(average)
+    base.to_csv('./results/averages_type_{}.csv')
+
+
+def calculate_difference(path, path_other):
+    if not os.path.isdir(path) or not os.path.isdir(path_other):
+        raise Exception('Invalid paths provided...')
+
+    df = pd.read_csv(path)
+    df_other = pd.read_csv(path_other)
+
+    difference = df - df_other
+    print(difference)
+
+
+
+
+calculate_average_values(0)

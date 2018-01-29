@@ -1,3 +1,7 @@
+# Computational science project - traffic flow
+# Lukas, Martijn, Lennart, Max
+# 10783687, 11922419, 10432973, 11042729
+
 from RoadSection import RoadSection
 from simulation import Simulation
 
@@ -5,13 +9,23 @@ from simulation import Simulation
 class CreateRoads:
     @staticmethod
     def original_road(steps=100):
-        spawn_r2 = [
+        '''
+        Create a road with 5 lanes. The most right lane (index number 4) is at
+        the start a accessroad. This road ends where the first three lanes
+        go to the first direction and the other two go to the second direction.
+        
+        The first index of spawn_r sets the probabilitties a car spawns in de
+        lane of the key. The second index sets the probabilities which speed
+        the spawned car has. The third index sets the probabilities which
+        direction the car wants to go to.
+        '''
+        spawn_r = [
             {0:0.5, 1:0.2, 2:0.2, 3:0.2, 4:0.2,},
             {5:(0,0.2),4:(0.2,0.4),3:(0.4,1),},
             {0:(0,2/9.0), 1:(2/9.0, 4/9), 2:(4/9.0, 6/9.0), 3:(6/9.0, 7.5/9.0), 4:(7.5/9.0,1),}
         ]
 
-        r = RoadSection(5, 100, is_end_road=True, name='R1', spawn_probabilities=spawn_r2, output_colors=['red', 'red', 'red', 'black', 'black'])
+        r = RoadSection(5, 100, is_end_road=True, name='R1', spawn_probabilities=spawn_r, output_colors=['red', 'red', 'red', 'black', 'black'])
 
         simulation = Simulation(r, [], steps, 1)
 
@@ -19,6 +33,26 @@ class CreateRoads:
 
     @staticmethod
     def new_road(steps=100, calculate_average_speed=False):
+        '''
+        Create a road which starts with a road section R1 with 4 lanes and a
+        access road R2 with 1 lane. This road ends with 3 lanes going one direction
+        and 2 the other direction. We have implemented this by having a
+        road section R5 with two lanes and a road section R7 with one lane going to
+        the first direction and a road section R10 with two lanes going to the
+        second direction. R10 actually has 3 lanes but one lane is a insertion
+        lane witch ends at the end of road section R10.
+        
+        The possible paths are:
+        R1 -> R5
+        R1 -> R9 -> R10
+        R2 -> R6 -> R7
+        R2 -> R6 -> R8 -> R10
+        
+        The first index of spawn_r sets the probabilitties a car spawns in de
+        lane of the key. The second index sets the probabilities which speed
+        the spawned car has. The third index sets the probabilities which
+        direction the car wants to go to.
+        '''
         spawn_r1 = [
             {0:0.5, 1:0.2, 2:0.2, 3:0.2,},
             {5:(0,0.2), 4:(0.2, 0.4), 3:(0.4, 1),},
@@ -102,6 +136,9 @@ class CreateRoads:
 
     @staticmethod
     def new_design_road(steps=100, calculate_average_speed=False):
+        '''
+        Test road we curently do not use and does not work.
+        '''
         spawn_r1 = [
             {0:1, 1:0.2, 2:0.2, 3:0.2,},
             {5:(0,0.2),4:(0.2,0.4),3:(0.4,1),},
@@ -151,6 +188,9 @@ class CreateRoads:
         return simulation
 
     def acces_road(steps=100, calculate_average_speed=False):
+        '''
+        Test road we curently do not use and does not work.
+        '''
         spawn_r1 = [
             {0:1,},
             {5:(0,0.2),4:(0.2,0.4),3:(0.4,1),},

@@ -1,6 +1,6 @@
-#Computational science project
+#Computational science project - traffic flow
 #Lukas, Martijn, Lennart, Max
-#10783687, , 10432973, 11042729,
+#10783687, 11922419, 10432973, 11042729
 
 import numpy as np
 import copy

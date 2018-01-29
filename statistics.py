@@ -11,6 +11,7 @@ from simulation import Simulation
 from RoadSection import RoadSection
 from car import Car
 import numpy as np
+from multiprocessing import Pool
 
 
 def original_road(steps):
@@ -103,7 +104,6 @@ def calculate_average_speed(simulation):
     number_roads_cars_driven = 0
     for road in simulation.roads:
         if road.average_speed > 0:
-
             number_roads_cars_driven += 1
 
     average_speeds = {'average_speed:{}'.format(road.name): road.average_speed / road.average_speed_steps for road in simulation.roads}
@@ -118,6 +118,12 @@ def create_result_table(simulations, type, run_number):
         # Add total output of cars
         total_output = sum([r.finished_cars for r in simulation.roads if r.is_end_road])
         df.set_value(hour, 'total_output', total_output)
+
+        # Calculates percentage of cars to Utrecht in road type = 2
+        for r in simulation.roads:
+            if r.name == 'R10':
+                percentage_to_Utrecht =  r.finished_cars / total_output
+                df.set_value(hour, '%_to_Utrecht', percentage_to_Utrecht)
 
         # Add flow
         flow = total_output / simulation.step
@@ -140,6 +146,16 @@ def create_result_table(simulations, type, run_number):
     df['hour'] = df.index
     df.to_csv(path, index=False)
 
+
+def run_simulation(i):
+    simulations = {}
+    for hour in range(0, 24):
+        simulation = road_fn(steps)
+        simulations[hour] = simulation
+
+    create_result_table(simulations, type=road_type, run_number=i)
+    print('Simulation run: {} [0-24 hours]'.format(i))
+
 if __name__ == '__main__':
     if len(sys.argv) < 5:
         raise Exception('Missing arguments {type} {steps} {times} {hour} {?sim_24hours}')
@@ -153,9 +169,6 @@ if __name__ == '__main__':
     if len(sys.argv) >= 6:
         sim_24hours = int(sys.argv[5])
 
-    if sim_24hours:
-        times *= 24
-
     road_fn = None
     if road_type == 0:
         road_fn = original_road
@@ -165,21 +178,8 @@ if __name__ == '__main__':
     if road_fn is None:
         raise Exception('No valid road type')
 
-    simulations = {}
-    for i in range(times+1):
-        if i % 24 == 0 and i > 0:
-            run_number = int(i / 24)
-            create_result_table(simulations, type=road_type, run_number=run_number)
-
-        if sim_24hours:
-            hour = i % 24
-
-        simulation = road_fn(steps)
-        simulations[hour] = simulation
-
-        # calculate_car_difference(simulation)
-        if i % 5 == 0:
-            print('Simulation run: {}'.format(i))
+    with Pool(4) as p:
+        p.map(run_simulation, range(times+1))
 
 
 

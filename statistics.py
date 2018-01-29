@@ -6,6 +6,8 @@ import sys
 import matplotlib.pyplot as plt
 import os
 import pandas as pd
+import time
+
 from CreateRoads import CreateRoads
 from simulation import Simulation
 from RoadSection import RoadSection
@@ -14,7 +16,7 @@ import numpy as np
 from multiprocessing import Pool
 
 
-def original_road(steps):
+def original_road(steps, hour):
     simulation = CreateRoads.original_road(steps)
     for road in simulation.roads:
         if road.spawn:
@@ -25,7 +27,7 @@ def original_road(steps):
 
     return simulation
 
-def new_road(steps):
+def new_road(steps, hour):
     simulation = CreateRoads.new_road(steps,calculate_average_speed=True)
     for road in simulation.roads:
         if road.spawn:
@@ -36,7 +38,7 @@ def new_road(steps):
 
     return simulation
 
-def self_made_road(steps):
+def self_made_road(steps, hour):
     simulation = CreateRoads.new_design_road(steps, True)
     for road in simulation.roads:
         if road.spawn:
@@ -63,24 +65,28 @@ def calculate_car_difference(simulation):
     difference = generated_cars - (finished_cars + cars_still_on_roads)
     print('Cars generated:{} Car:{} difference between generated and finished/still on road'.format(generated_cars, difference))
 
-def calculate_road_probabilities(road, hour):
-    probabilities = road.spawn_probabilities
-    directions = [0.33]
 
-    if sim_24hours == 2:
-        if road.name == 'R1':
-            text_file_directions = open("directions.csv", "r")
-            text_file_spawn = open("spawn3.csv", "r")
-        else:
-            text_file_directions = open("directions2.csv", "r")
-            text_file_spawn = open("spawn3.csv", "r")
+def calculate_road_probabilities(road, hour):
+    """
+    Sets the road spawn probabilities
+    :param road: RoadSection
+    :param hour: hour 0-23
+    """
+    probabilities = road.spawn_probabilities
+
+    if road.name == 'R1':
+        text_file_directions = open("directions.csv", "r")
+        text_file_spawn = open("spawn.csv", "r")
     else:
-        if road.name == 'R1':
-            text_file_directions = open("directions.csv", "r")
-            text_file_spawn = open("spawn.csv", "r")
-        else:
-            text_file_directions = open("directions2.csv", "r")
-            text_file_spawn = open("spawn2.csv", "r")
+        text_file_directions = open("directions2.csv", "r")
+        text_file_spawn = open("spawn2.csv", "r")
+    # else:
+    #     if road.name == 'R1':
+    #         text_file_directions = open("directions.csv", "r")
+    #         text_file_spawn = open("spawn.csv", "r")
+    #     else:
+    #         text_file_directions = open("directions2.csv", "r")
+    #         text_file_spawn = open("spawn2.csv", "r")
 
     lines_direction = text_file_directions.readlines()
     directions = lines_direction[hour].rstrip().replace(" ","").split(';')
@@ -98,9 +104,7 @@ def calculate_road_probabilities(road, hour):
     text_file_spawn.close()
 
 
-
 def calculate_average_speed(simulation):
-    average_speed = 0
     number_roads_cars_driven = 0
     for road in simulation.roads:
         if road.average_speed > 0:
@@ -113,7 +117,13 @@ def calculate_average_speed(simulation):
 
 
 def create_result_table(simulations, type, run_number):
-    df = pd.DataFrame(columns=['total_output', 'density'], index=simulations.keys())
+    """
+    Create a result table from 24 simulations, and save it as a csv.
+    :param simulations:
+    :param type:
+    :param run_number:
+    """
+    df = pd.DataFrame(columns=['total_output', 'density', 'generated_cars', 'flow'], index=simulations.keys())
     for hour, simulation in simulations.items():
         # Add total output of cars
         total_output = sum([r.finished_cars for r in simulation.roads if r.is_end_road])
@@ -122,7 +132,7 @@ def create_result_table(simulations, type, run_number):
         # Calculates percentage of cars to Utrecht in road type = 2
         for r in simulation.roads:
             if r.name == 'R10':
-                percentage_to_Utrecht =  r.finished_cars / total_output
+                percentage_to_Utrecht = r.finished_cars / total_output
                 df.set_value(hour, '%_to_Utrecht', percentage_to_Utrecht)
 
         # Add flow
@@ -132,6 +142,10 @@ def create_result_table(simulations, type, run_number):
         # Add density
         density = np.average(simulation.densities)
         df.set_value(hour, 'density', density)
+
+        # Add generated cars
+        generated_cars = simulation.generated_cars
+        df.set_value(hour, 'generated_cars', generated_cars)
 
 
         average_speeds = calculate_average_speed(simulation)
@@ -148,27 +162,28 @@ def create_result_table(simulations, type, run_number):
 
 
 def run_simulation(i):
+    t0 = time.time()
     simulations = {}
     for hour in range(0, 24):
-        simulation = road_fn(steps)
+        simulation = road_fn(steps, hour)
         simulations[hour] = simulation
+        print('Simulation:{} Hour:{}'.format(i, hour))
 
     create_result_table(simulations, type=road_type, run_number=i)
-    print('Simulation run: {} [0-24 hours]'.format(i))
+    t1 = time.time()
+    total = t1 - t0
+    print('Simulation run: {} [0-24 hours], Time:{}'.format(i, total))
 
 if __name__ == '__main__':
-    if len(sys.argv) < 5:
-        raise Exception('Missing arguments {type} {steps} {times} {hour} {?sim_24hours}')
+    if len(sys.argv) < 4:
+        raise Exception('Missing arguments {type} {steps} {times}')
 
-    road_type = int(sys.argv[1])
-    steps = int(sys.argv[2])
-    times = int(sys.argv[3])
-    hour = int(sys.argv[4]) % 24
+    road_type = int(sys.argv[1])  # Type of road
+    steps = int(sys.argv[2])  # Amount of steps to run per simulation
+    times = int(sys.argv[3])  # Amount of times we want to run the simulations * 24
+    print('Running road_type:{}, steps:{}, times:{}'.format(road_type, steps, times))
 
-    sim_24hours = False
-    if len(sys.argv) >= 6:
-        sim_24hours = int(sys.argv[5])
-
+    # Determine the type of road we want to create
     road_fn = None
     if road_type == 0:
         road_fn = original_road
@@ -178,6 +193,7 @@ if __name__ == '__main__':
     if road_fn is None:
         raise Exception('No valid road type')
 
+    # Run 24 simulations (24-hour) in parallel
     with Pool(4) as p:
         p.map(run_simulation, range(times+1))
 

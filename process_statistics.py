@@ -114,8 +114,8 @@ def calculate_difference(path, path_other):
 
 calculate_average_values(0)
 calculate_average_values(2)
-plot_density_flow(2)
-plot_speed_averages(2)
-plot_percentage_to_Utrecht(2)
+# plot_density_flow(2)
+# plot_speed_averages(2)
+# plot_percentage_to_Utrecht(2)
 
-# calculate_difference('./results/averages_type_2.csv', './results/averages_type_0.csv')
+calculate_difference('./results/averages_type_2.csv', './results/averages_type_0.csv')

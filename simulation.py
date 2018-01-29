@@ -2,7 +2,6 @@ from RoadSection import RoadSection
 import numpy as np
 
 from car import Car
-from traffic import remove_old_cars, print_grid
 import copy
 
 # Global vars

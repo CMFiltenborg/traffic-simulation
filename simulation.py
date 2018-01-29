@@ -21,6 +21,7 @@ class Simulation:
         self.step = step
         self.generated_cars = 0  # Ensures unique ids/indices
         self.avSpeed = avSpeed
+        self.densities = []
 
     def run(self):
         for i in range(self.step):
@@ -53,6 +54,9 @@ class Simulation:
                     averageSpeed = self.speedaverage(grid, cars, road_section,i)
                     #self.avSpeed = averageSpeed
 
+            # Every 10 steps we add a the current density
+            if i % 10 == 0:
+                self.add_density()
 
             yield roads_steps
 
@@ -126,6 +130,18 @@ class Simulation:
             road_section.average_speed_steps += 1
             return averageSpeed
         return 0
+
+    def add_density(self):
+        cars = 0
+        surface = 0
+        for i in range(len(self.roads)):
+            road = self.roads[i]
+            surface += road.grid.shape[0] * road.grid.shape[1]
+            coords = road.get_car_coordinates()
+            cars += len(coords[0])
+
+        density = np.divide(cars, surface)
+        self.densities.append(density)
 
 
 def update_cars(road_section):

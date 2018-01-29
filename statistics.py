@@ -10,6 +10,7 @@ from CreateRoads import CreateRoads
 from simulation import Simulation
 from RoadSection import RoadSection
 from car import Car
+import numpy as np
 
 
 def original_road(steps):
@@ -44,13 +45,6 @@ def self_made_road(steps):
     [0 for r in result]
 
     return simulation
-
-def calculate_density(roads, places):
-    amount_cars = 0
-    for i in range(len(roads)):
-        amount_cars += len(roads[i].cars)
-
-    return amount_cars / (places * 5)
 
 x, y, z = [], [], []
 
@@ -129,8 +123,8 @@ def create_result_table(simulations, type, run_number):
         flow = total_output / simulation.step
         df.set_value(hour, 'flow', flow)
 
-        # TODO: Fix density calculation...
-        density = calculate_density(simulation.roads, 100)
+        # Add density
+        density = np.average(simulation.densities)
         df.set_value(hour, 'density', density)
 
 
@@ -184,7 +178,7 @@ if __name__ == '__main__':
         simulations[hour] = simulation
 
         # calculate_car_difference(simulation)
-        if i % 24 == 0:
+        if i % 5 == 0:
             print('Simulation run: {}'.format(i))
 
 

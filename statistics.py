@@ -6,9 +6,9 @@ import sys
 import matplotlib.pyplot as plt
 import os
 import pandas as pd
+from CreateRoads import CreateRoads
 from simulation import Simulation
 from RoadSection import RoadSection
-from CreateRoads import CreateRoads
 from car import Car
 
 

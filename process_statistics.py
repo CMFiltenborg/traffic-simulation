@@ -14,7 +14,7 @@ def read_data(type):
             yield dataframe
 
 def plot_density_flow(type):
-    dataframes = read_data(0)
+    dataframes = read_data(type)
     base = next(dataframes)
     for df in dataframes:
         base = base.append(df)
@@ -34,8 +34,6 @@ def calculate_average_values(type):
         counter += 1
 
     average = base / counter
-
-    print(average)
     average.to_csv('./results/averages_type_{}.csv'.format(type))
 
 
@@ -46,12 +44,18 @@ def calculate_difference(path, path_other):
     df = pd.read_csv(path)
     df_other = pd.read_csv(path_other)
 
+    common_columns = list(set(df.columns).intersection(set(df_other)))
+    df = df[common_columns]
+    df_other = df_other[common_columns]
+
     difference = df.subtract(df_other, fill_value=0)
     difference.to_csv('./results/difference.csv')
+
+    summed_difference = difference.sum()
+    summed_difference.to_csv('./results/summed_difference.csv')
+
     print(difference)
     print(difference.sum())
-
-
 
 
 # calculate_average_values(0)

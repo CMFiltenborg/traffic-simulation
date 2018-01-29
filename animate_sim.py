@@ -1,7 +1,8 @@
-"""
-Simple animation of the highway
+# Computational science project - traffic flow
+# Lukas, Martijn, Lennart, Max
+# 10783687, 11922419, 10432973, 11042729
 
-"""
+# This file shows a simulation of the original road created in CreateRoads.
 
 import matplotlib
 

@@ -39,17 +39,29 @@ def plot_density_flow(road_type):
             plt.scatter(group['density'], group['total_average_speed'])
     plt.show()
 
-
-def plot_speed_averages(road_type):
-    """
-    Plots the average speed
-    :param road_type: RoadType
-    """
-    dataframes = read_data(road_type)
+# Makes a bar plot of the average speed over all sections per hour.
+def plot_speed_averages(type):
+    dataframes = read_data(type)
     combined = pd.concat(dataframes, axis=1, keys=range(4))
     combined = combined.swaplevel(0,1,axis=1).sortlevel(axis=1)
     combined = combined.groupby(level=0,axis=1).mean()
     plt.bar(range(24), combined['total_average_speed']*20, width=0.9, color='blue')
+    plt.xlim(0,24)
+    plt.ylim(0,100)
+    plt.show()
+
+# Makes a bar plot of the percentage of cars that goes in the direction of Utrecht compared to
+# the cars who stay on the beltway.
+# Only works with type = 2
+def plot_percentage_to_Utrecht(type):
+    dataframes = read_data(type)
+    combined = pd.concat(dataframes, axis=1, keys=range(2))
+    combined = combined.swaplevel(0,1,axis=1).sortlevel(axis=1)
+    combined = combined.groupby(level=0,axis=1).mean()
+    plt.bar(range(24), combined['%_to_Utrecht']*100, width=0.9, color='blue')
+    real_data = pd.read_csv('%_to_Utrecht_real.csv')
+    y = real_data['%_to_Utrecht'].astype(float)
+    plt.plot(range(24), y, color='red')
     plt.xlim(0,24)
     plt.ylim(0,100)
     plt.show()
@@ -100,5 +112,6 @@ calculate_average_values(0)
 calculate_average_values(2)
 plot_density_flow(2)
 plot_speed_averages(2)
+plot_percentage_to_Utrecht(2)
 
 # calculate_difference('./results/averages_type_2.csv', './results/averages_type_0.csv')

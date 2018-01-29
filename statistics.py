@@ -109,7 +109,6 @@ def calculate_average_speed(simulation):
     number_roads_cars_driven = 0
     for road in simulation.roads:
         if road.average_speed > 0:
-
             number_roads_cars_driven += 1
 
     average_speeds = {'average_speed:{}'.format(road.name): road.average_speed / road.average_speed_steps for road in simulation.roads}
@@ -124,6 +123,12 @@ def create_result_table(simulations, type, run_number):
         # Add total output of cars
         total_output = sum([r.finished_cars for r in simulation.roads if r.is_end_road])
         df.set_value(hour, 'total_output', total_output)
+
+        # Calculates percentage of cars to Utrecht in road type = 2
+        for r in simulation.roads:
+            if r.name == 'R10':
+                percentage_to_Utrecht =  r.finished_cars / total_output
+                df.set_value(hour, '%_to_Utrecht', percentage_to_Utrecht)
 
         # Add flow
         flow = total_output / simulation.step

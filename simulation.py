@@ -363,20 +363,3 @@ def calc_gap(r, c, grid_temp, t, road_section):
         return gap, vback
 
     return vmax, vback
-
-
-if __name__ == '__main__':
-    r1 = RoadSection(2, 10)
-    r2 = RoadSection(5, 10, True)
-
-    outputMap = {
-        0: 3,
-        1: 4
-    }
-
-    r1.set_output_mapping(outputMap)
-    r2.set_input_mapping(r1)
-
-    simulation = Simulation(r1, [r2], 100)
-    result = simulation.run()
-    [r for r in result]

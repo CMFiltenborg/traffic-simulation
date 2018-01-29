@@ -42,9 +42,13 @@ def plot_density_flow(road_type):
 # Makes a bar plot of the average speed over all sections per hour.
 def plot_speed_averages(type):
     dataframes = read_data(type)
+    # Combine the different dataframes to one dataframe.
     combined = pd.concat(dataframes, axis=1, keys=range(4))
+    # Re-orden the columns so the different values for each roadsection are next to each other.
     combined = combined.swaplevel(0,1,axis=1).sortlevel(axis=1)
+    # Calculate the mean of each roadsection.
     combined = combined.groupby(level=0,axis=1).mean()
+    # Plot the total average speed.
     plt.bar(range(24), combined['total_average_speed']*20, width=0.9, color='blue')
     plt.xlim(0,24)
     plt.ylim(0,100)

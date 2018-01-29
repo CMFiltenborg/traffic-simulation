@@ -1,8 +1,15 @@
+# Computational science project - traffic flow
+# Lukas, Martijn, Lennart, Max
+# 10783687, 11922419, 10432973, 11042729
+
+# This file shows a simulation of the new road created in CreateRoads.
+
 import matplotlib
 
 from CreateRoads import CreateRoads
 from simulation import Simulation
 
+# fix for blit issue mac
 matplotlib.use('TKAgg')
 
 import numpy as np
@@ -101,10 +108,6 @@ def plot_lines(sections):
 
     return lines
 
-# Scale to plot 0 - 1
-# plt.xlim(0, 200)
-# plt.ylim(0, 100)
-# plt.xlabel('Position')
 plt.title('Highway simulation')
 
 
@@ -131,7 +134,6 @@ def plot_grid(sections):
             # For every car we plot it as a marker with its own color
             for column in column_coordinates:
                 car_index = row[column]
-                # x_placement = column / row.shape[0]  # Scale from 0 - 1
                 x_placement = road_section_x_placement + column
                 marker, = ax.plot(x_placement, y_height, color=cars[car_index].color, marker='o')
                 text = ax.text(x_placement, y_height, str(cars[car_index].index), color="red", fontsize=12)

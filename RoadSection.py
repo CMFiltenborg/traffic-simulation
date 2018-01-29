@@ -1,3 +1,7 @@
+# Computational science project - traffic flow
+# Lukas, Martijn, Lennart, Max
+# 10783687, 11922419, 10432973, 11042729
+
 import numpy as np
 import copy
 import sys
@@ -53,7 +57,6 @@ class RoadSection:
     def output_car(self, car, v):
         self.finished_cars += 1
 
-#del self.cars[car.index]
         if self.is_end_road:
             return
 
@@ -62,8 +65,6 @@ class RoadSection:
 
         car.direction = np.random.randint(0, output_road.right_lane)
 
-
-        #print('Output car', (output_row, output_column))
         output_road.add_car(car, output_row, output_column, v, self)
 
     def set_temp_grid(self):
@@ -73,10 +74,7 @@ class RoadSection:
         return np.where(self.grid > -1)
 
     def add_car(self, car, row, column, v, prev_road):
-
         self.new_car_updates[car.index] = (car, v, (row, column), prev_road)
-
-        # self.cars[car.index] = car
 
     def add_new_cars(self):
         for index, y in self.new_car_updates.items():
@@ -97,7 +95,3 @@ class RoadSection:
             self.grid[row, column] = index
 
         self.new_car_updates = {}
-
-
-
-

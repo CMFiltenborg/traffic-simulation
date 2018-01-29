@@ -1,10 +1,20 @@
+"""
+Processes the files output by the statistics script.
+Comment in/out the stats that you want to run (average, difference, etc)
+"""
+
 import pandas as pd
 import os
 import matplotlib.pyplot as plt
 
 
-def read_data(type):
-    path = "./results/type_{}".format(type)
+def read_data(road_type):
+    """
+    Reads the results from several simulation runs into a list of dataframes
+    :param road_type: Type of road
+    :return: List of panda dataframes
+    """
+    path = "./results/type_{}".format(road_type)
     if not os.path.isdir(path):
         return
 
@@ -13,8 +23,13 @@ def read_data(type):
             dataframe = pd.read_csv('{}/{}'.format(path, file))
             yield dataframe
 
-def plot_density_flow(type):
-    dataframes = read_data(type)
+
+def plot_density_flow(road_type):
+    """
+    Plots the density flow of the road
+    :param road_type: Road Type
+    """
+    dataframes = read_data(road_type)
     base = next(dataframes)
     for df in dataframes:
         base = base.append(df)
@@ -56,8 +71,11 @@ def plot_percentage_to_Utrecht(type):
     plt.show()
 
 
-def calculate_average_values(type):
-    dataframes = read_data(type)
+def calculate_average_values(road_type):
+    """
+    Creates a dataframe of the average values from the list of dataframes of multiple simulations
+    """
+    dataframes = read_data(road_type)
     counter = 1
     base = next(dataframes)
     for df in dataframes:
@@ -65,10 +83,15 @@ def calculate_average_values(type):
         counter += 1
 
     average = base / counter
-    average.to_csv('./results/averages_type_{}.csv'.format(type))
+    average.to_csv('./results/averages_type_{}.csv'.format(road_type))
 
 
 def calculate_difference(path, path_other):
+    """
+    Calculate difference between two result tables
+    :param path: string file path
+    :param path_other: string file path
+    """
     if not os.path.exists(path) or not os.path.exists(path_other):
         raise Exception('Invalid paths provided...')
 
@@ -89,10 +112,10 @@ def calculate_difference(path, path_other):
     print(difference.sum())
 
 
-# calculate_average_values(0)
-# calculate_average_values(2)
+calculate_average_values(0)
+calculate_average_values(2)
 plot_density_flow(2)
 plot_speed_averages(2)
 plot_percentage_to_Utrecht(2)
 
-#calculate_difference('./results/averages_type_2.csv', './results/averages_type_0.csv')
+# calculate_difference('./results/averages_type_2.csv', './results/averages_type_0.csv')

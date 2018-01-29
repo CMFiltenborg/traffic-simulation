@@ -108,13 +108,12 @@ def calculate_average_speed(simulation):
     average_speed = 0
     number_roads_cars_driven = 0
     for road in simulation.roads:
-        if road.average_speed != 0:
-            average_speed += road.average_speed/(road.average_speed_steps)
+        if road.average_speed > 0:
+
             number_roads_cars_driven += 1
-    average_speed = average_speed/number_roads_cars_driven
 
     average_speeds = {'average_speed:{}'.format(road.name): road.average_speed / road.average_speed_steps for road in simulation.roads}
-    average_speeds['total_average_speed'] = sum(average_speeds.values()) / len(simulation.roads)
+    average_speeds['total_average_speed'] = sum(average_speeds.values()) / number_roads_cars_driven
 
     return average_speeds
 
@@ -183,6 +182,7 @@ if __name__ == '__main__':
 
         simulation = road_fn(steps)
         simulations[hour] = simulation
+
         # calculate_car_difference(simulation)
         if i % 24 == 0:
             print('Simulation run: {}'.format(i))

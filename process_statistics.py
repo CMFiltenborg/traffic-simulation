@@ -43,7 +43,7 @@ def plot_density_flow(road_type):
 def plot_speed_averages(type):
     dataframes = read_data(type)
     # Combine the different dataframes to one dataframe.
-    combined = pd.concat(dataframes, axis=1, keys=range(4))
+    combined = pd.concat(dataframes, axis=1, keys=range(101))
     # Re-orden the columns so the different values for each roadsection are next to each other.
     combined = combined.swaplevel(0,1,axis=1).sortlevel(axis=1)
     # Calculate the mean of each roadsection.
@@ -59,7 +59,7 @@ def plot_speed_averages(type):
 # Only works with type = 2
 def plot_percentage_to_Utrecht(type):
     dataframes = read_data(type)
-    combined = pd.concat(dataframes, axis=1, keys=range(2))
+    combined = pd.concat(dataframes, axis=1, keys=range(101))
     combined = combined.swaplevel(0,1,axis=1).sortlevel(axis=1)
     combined = combined.groupby(level=0,axis=1).mean()
     plt.bar(range(24), combined['%_to_Utrecht']*100, width=0.9, color='blue')

@@ -4,6 +4,7 @@ Comment in/out the stats that you want to run (average, difference, etc)
 """
 
 import pandas as pd
+import numpy as np
 import os
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -70,18 +71,22 @@ def plot_density_flow():
     plt.show()
 
 # Makes a bar plot of the average speed over all sections per hour.
-def plot_speed_averages(type):
-    dataframes = read_data(type)
-    # Combine the different dataframes to one dataframe.
-    combined = pd.concat(dataframes, axis=1, keys=range(101))
-    # Re-orden the columns so the different values for each roadsection are next to each other.
-    combined = combined.swaplevel(0,1,axis=1).sortlevel(axis=1)
-    # Calculate the mean of each roadsection.
-    combined = combined.groupby(level=0,axis=1).mean()
+def plot_speed_averages(path, path2=None, yrange=[0,100], plot_labels=["Original", "New"]):
+    df = pd.read_csv(path)
+
     # Plot the total average speed.
-    plt.bar(range(24), combined['total_average_speed']*20, width=0.9, color='blue')
+    width = 0.9
+    if path2 != None:
+        df2 = pd.read_csv(path2)
+        width = 0.4
+        plt.plot(np.arange(0.4,24.4,1.0), df2['total_average_speed']*20, color='red', label=plot_labels[1])
+    plt.plot(range(24), df['total_average_speed']*20, color='blue', label=plot_labels[0])
+    plt.plot(range(25), [0]*25, color='black', linestyle=':')
     plt.xlim(0,24)
-    plt.ylim(0,100)
+    plt.ylim(yrange[0],yrange[1])
+    plt.xlabel("hours")
+    plt.ylabel("speed")
+    plt.legend(bbox_to_anchor=(0, 0.2), loc=2, borderaxespad=0.)
     plt.show()
 
 # Makes a bar plot of the percentage of cars that goes in the direction of Utrecht compared to
@@ -143,11 +148,13 @@ def calculate_difference(path, path_other):
 
 
 calculate_average_values(0)
-calculate_average_values(2)
-plot_density_flow()
-#plot_density_flow(2)
+calculate_average_values(2)AD
+#plot_density_flow()
 #plot_speed_averages(0)
-#plot_speed_averages(2)
+#plot_density_flow(2)
+plot_speed_averages('./results/averages_type_0.csv', './results/averages_type_2.csv')
+plot_speed_averages('./results/difference.csv', yrange=[-50,50], plot_labels=["Difference"])
+>>>>>>> cfb9d06b0bb4cea9ab33f595a2c25836c8e2fd2e
 #plot_percentage_to_Utrecht(2)
 
 calculate_difference('./results/averages_type_2.csv', './results/averages_type_0.csv')

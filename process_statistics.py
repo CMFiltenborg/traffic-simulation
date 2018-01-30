@@ -208,17 +208,13 @@ colors = [
 ]
 
 calculate_average_values(0)
-calculate_average_values(2)AD
-#plot_density_flow()
+calculate_average_values(2)
+plot_density_flow()
 #plot_speed_averages(0)
 #plot_density_flow(2)
 plot_speed_averages('./results/averages_type_2.csv', paths, sections=sections, plot_labels=labels, colors=colors, image=['./new_road_with_names.png'])
 plot_speed_averages('./results/difference.csv', yrange=[-50,50], plot_labels=["Difference"])
-<<<<<<< HEAD
 plot_speed_averages('./results/averages_type_0.csv', ['./results/averages_type_2.csv'])
-=======
->>>>>>> cfb9d06b0bb4cea9ab33f595a2c25836c8e2fd2e
->>>>>>> 9acb2542b34613aa3578e2edcbe034d2122525fa
 #plot_percentage_to_Utrecht(2)
 
 calculate_difference('./results/averages_type_2.csv', './results/averages_type_0.csv')

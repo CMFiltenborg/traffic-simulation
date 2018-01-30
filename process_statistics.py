@@ -49,8 +49,8 @@ def plot_speed_averages(path, path2=None, yrange=[0,100], plot_labels=["Original
     if path2 != None:
         df2 = pd.read_csv(path2)
         width = 0.4
-        plt.plot(np.arange(0.4,24.4,1.0), df2['total_average_speed']*20, color='red', label=plot_labels[1])
-    plt.plot(range(24), df['total_average_speed']*20, color='blue', label=plot_labels[0])
+        plt.plot(np.arange(0.4,24.4,1.0), df2['total_average_speed']*20, color='red', label=plot_labels[1], linestyle='--', marker='o')
+    plt.plot(range(24), df['total_average_speed']*20, color='blue', label=plot_labels[0], linestyle='--', marker='o')
     plt.plot(range(25), [0]*25, color='black', linestyle=':')
     plt.xlim(0,24)
     plt.ylim(yrange[0],yrange[1])

@@ -6,6 +6,8 @@ Comment in/out the stats that you want to run (average, difference, etc)
 import pandas as pd
 import os
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
+import matplotlib.colors as mcolors
 
 
 def read_data(road_type):
@@ -24,19 +26,47 @@ def read_data(road_type):
             yield dataframe
 
 
-def plot_density_flow(road_type):
+def plot_density_flow():
     """
     Plots the density flow of the road
-    :param road_type: Road Type
     """
-    dataframes = read_data(road_type)
-    base = next(dataframes)
-    for df in dataframes:
-        base = base.append(df)
+    _, (ax1, ax2) = plt.subplots(1, 2, sharey=True, sharex=True)
+    #ax1.set_cmap(mpl.cm.rainbow)
+    ax1.set_title("Original road")
+    ax1.set_ylabel("Average speed")
+    ax2.set_title("New road")
+    ax2.set_xlabel("Average Density (cars/surface)")
+    ax1.set_xlabel("Average Density (cars/surface)")
 
-    groups = base.groupby(['hour'])
-    for group_name,group in groups:
-            plt.scatter(group['density'], group['total_average_speed'])
+    norm = mcolors.Normalize(vmin=0, vmax=23)
+    cmap = cm.jet
+
+    '''
+    cmap = mpl.cm.rainbow
+    norm = mpl.colors.Normalize(vmin=0, vmax=23)
+    cb1 = mpl.colorbar.ColorbarBase(ax3, cmap=cmap, norm=norm, orientation="vertical")
+    cb1.set_label("Hours")
+    '''
+
+    for i in [0, 2]:
+        dataframes = read_data(i)
+        base = next(dataframes)
+        for df in dataframes:
+            base = base.append(df)
+
+        groups = base.groupby(['hour'])
+        index =0
+        for group_name,group in groups:
+            if i == 0:
+                ax1.scatter(group['density'], group['total_average_speed'], color=cmap(norm(index)))
+            elif i == 2:
+                ax2.scatter(group['density'], group['total_average_speed'], color=cmap(norm(index)))
+            index += 1
+    
+    scalarmappaple = cm.ScalarMappable(norm=norm, cmap=cmap)
+    scalarmappaple.set_array(index)
+    l = plt.colorbar(scalarmappaple)
+    l.set_label("Hour")
     plt.show()
 
 # Makes a bar plot of the average speed over all sections per hour.
@@ -114,8 +144,10 @@ def calculate_difference(path, path_other):
 
 calculate_average_values(0)
 calculate_average_values(2)
-# plot_density_flow(2)
-# plot_speed_averages(2)
-# plot_percentage_to_Utrecht(2)
+plot_density_flow()
+#plot_density_flow(2)
+#plot_speed_averages(0)
+#plot_speed_averages(2)
+#plot_percentage_to_Utrecht(2)
 
 calculate_difference('./results/averages_type_2.csv', './results/averages_type_0.csv')

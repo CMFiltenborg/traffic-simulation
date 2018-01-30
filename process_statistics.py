@@ -7,6 +7,7 @@ import pandas as pd
 import numpy as np
 import os
 import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 
 
 def read_data(road_type):
@@ -41,22 +42,34 @@ def plot_density_flow(road_type):
     plt.show()
 
 # Makes a bar plot of the average speed over all sections per hour.
-def plot_speed_averages(path, path2=None, yrange=[0,100], plot_labels=["Original", "New"]):
+def plot_speed_averages(path, rest_paths=None, yrange=[0,100], plot_labels=["Original", "New"],
+                        sections=['total_average_speed', 'total_average_speed'], colors=['blue', 'red'], image=None):
     df = pd.read_csv(path)
-
     # Plot the total average speed.
-    width = 0.9
-    if path2 != None:
-        df2 = pd.read_csv(path2)
-        width = 0.4
-        plt.plot(np.arange(0.4,24.4,1.0), df2['total_average_speed']*20, color='red', label=plot_labels[1], linestyle='--', marker='o')
-    plt.plot(range(24), df['total_average_speed']*20, color='blue', label=plot_labels[0], linestyle='--', marker='o')
-    plt.plot(range(25), [0]*25, color='black', linestyle=':')
-    plt.xlim(0,24)
-    plt.ylim(yrange[0],yrange[1])
-    plt.xlabel("hours")
-    plt.ylabel("speed")
-    plt.legend(bbox_to_anchor=(0, 0.2), loc=2, borderaxespad=0.)
+    if image != None:
+        f, (left, right) = plt.subplots(1,2, figsize=(20,7))
+    else:
+        f, left = plt.subplots(1,1)
+    i = 1
+
+    if rest_paths != None:
+        for path2 in rest_paths:
+            df2 = pd.read_csv(path2)
+            left.plot(range(24), df2[sections[i]]*20, color=colors[i], label=plot_labels[i], linestyle='--', marker='o')
+            i += 1
+
+    left.plot(range(24), df[sections[0]]*20, color=colors[0], label=plot_labels[0], linestyle='--', marker='o')
+    left.plot(range(25), [0]*25, color='black', linestyle=':')
+    left.set_xlim(0,24)
+    left.set_ylim(yrange[0],yrange[1])
+    left.set_xlabel("hours")
+    left.set_ylabel("speed")
+    left.legend(bbox_to_anchor=(0, 0.3), loc=2, borderaxespad=0.)
+    if image != None:
+        image = mpimg.imread(image[0])
+        right.imshow(image)
+        right.set_xticks([])
+        right.set_yticks([])
     plt.show()
 
 # Makes a bar plot of the percentage of cars that goes in the direction of Utrecht compared to
@@ -117,13 +130,61 @@ def calculate_difference(path, path_other):
     print(difference.sum())
 
 
+paths = [
+    './results/averages_type_2.csv',
+    './results/averages_type_2.csv',
+    './results/averages_type_2.csv',
+    './results/averages_type_2.csv',
+    './results/averages_type_2.csv',
+    './results/averages_type_2.csv',
+    './results/averages_type_2.csv',
+    './results/averages_type_2.csv'
+]
+
+sections = [
+    'total_average_speed',
+    'average_speed:R1',
+    'average_speed:R2',
+    'average_speed:R5',
+    'average_speed:R6',
+    'average_speed:R7',
+    'average_speed:R8',
+    'average_speed:R9',
+    'average_speed:R10',
+]
+
+labels = [
+    "Average",
+    "R1",
+    "R2",
+    "R5",
+    "R6",
+    "R7",
+    "R8",
+    "R9",
+    "R10"
+]
+
+colors = [
+    'red',
+    'blue',
+    'black',
+    'yellow',
+    'cyan',
+    'yellow',
+    'cyan',
+    'cyan',
+    'green'
+]
+
 calculate_average_values(0)
 calculate_average_values(2)
 #plot_density_flow(0)
 #plot_speed_averages(0)
 #plot_density_flow(2)
-plot_speed_averages('./results/averages_type_0.csv', './results/averages_type_2.csv')
+plot_speed_averages('./results/averages_type_2.csv', paths, sections=sections, plot_labels=labels, colors=colors, image=['./new_road_with_names.png'])
 plot_speed_averages('./results/difference.csv', yrange=[-50,50], plot_labels=["Difference"])
+plot_speed_averages('./results/averages_type_0.csv', ['./results/averages_type_2.csv'])
 #plot_percentage_to_Utrecht(2)
 
 calculate_difference('./results/averages_type_2.csv', './results/averages_type_0.csv')

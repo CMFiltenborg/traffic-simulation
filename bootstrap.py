@@ -80,7 +80,7 @@ for i in range(24):
     variantie1high.append(variantie1[i][1])
     variantie2low.append(variantie2[i][0])
     variantie2high.append(variantie2[i][1])
-plot_speed_averages_errorbar('./results/averages_type_2.csv', ['./results/averages_type_0.csv'], colors=['red', 'blue'], plot_labels=["New simulated","Original simulated"], yerr1=[variantie1low, variantie1high], yerr2=[variantie2low, variantie2high])
+plot_speed_averages_errorbar('./results/averages_type_2.csv', ['./results/averages_type_0.csv'], colors=['red', 'blue'], plot_labels=["Improved road","Original road"], yerr1=[variantie1low, variantie1high], yerr2=[variantie2low, variantie2high])
 
 #print(samples(0)[0][0])
 #samples(0)

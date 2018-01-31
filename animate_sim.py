@@ -14,7 +14,6 @@ matplotlib.use('TKAgg')
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-from traffic import simulate, print_grid
 from RoadSection import RoadSection
 import pylab as pl
 

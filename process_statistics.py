@@ -10,6 +10,9 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import matplotlib.cm as cm
 import matplotlib.colors as mcolors
+import seaborn as sns
+sns.set_style("whitegrid")
+# sns.set()
 
 
 def read_data(road_type):

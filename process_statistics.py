@@ -213,13 +213,12 @@ colors = [
 
 calculate_average_values(0)
 calculate_average_values(2)
-#plot_density_flow()
-#plot_speed_averages(0)
-#plot_density_flow(2)
-#plot_speed_averages('./results/averages_type_2.csv', paths, sections=sections, plot_labels=labels, colors=colors, image=['./new_road_with_names.png'], labelheight=0.5)
-#plot_speed_averages('./results/difference.csv', yrange=[-50,50], plot_labels=["Difference"])
-#plot_speed_averages('./average_real_road.csv', ['./results/averages_type_0.csv', './results/averages_type_2.csv'], colors=['black', 'blue', 'red'], plot_labels=["Real data", "Original simulated", "New simulated"], scalefactor=[0.05,1,1])
-#plot_speed_averages('./results/averages_type_2.csv', ['./results/averages_type_0.csv'], colors=['red', 'blue'], plot_labels=["New simulated","Original simulated"])
+
+plot_density_flow()
+plot_speed_averages('./results/averages_type_2.csv', paths, sections=sections, plot_labels=labels, colors=colors, image=['./new_road_with_names.png'], labelheight=0.5)
+plot_speed_averages('./results/difference.csv', yrange=[-50,50], plot_labels=["Difference"])
+plot_speed_averages('./results/averages_type_2.csv', ['./results/averages_type_0.csv'], colors=['red', 'blue'], plot_labels=["New simulated","Original simulated"])
+plot_speed_averages('./average_real_road.csv', ['./results/averages_type_0.csv', './results/averages_type_2.csv'], colors=['black', 'blue', 'red'], plot_labels=["Real data", "Original simulated", "New simulated"], scalefactor=[0.05,1,1])
 #plot_percentage_to_Utrecht(2)
 
 #calculate_difference('./results/averages_type_2.csv', './results/averages_type_0.csv')

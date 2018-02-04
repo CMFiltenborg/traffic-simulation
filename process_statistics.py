@@ -106,22 +106,6 @@ def plot_speed_averages(path, rest_paths=None, yrange=[0,100], plot_labels=["Ori
         right.set_yticks([])
     plt.show()
 
-# Makes a bar plot of the percentage of cars that goes in the direction of Utrecht compared to
-# the cars who stay on the beltway.
-# Only works with type = 2
-def plot_percentage_to_Utrecht(type):
-    dataframes = read_data(type)
-    combined = pd.concat(dataframes, axis=1, keys=range(101))
-    combined = combined.swaplevel(0,1,axis=1).sortlevel(axis=1)
-    combined = combined.groupby(level=0,axis=1).mean()
-    plt.bar(range(24), combined['%_to_Utrecht']*100, width=0.9, color='blue')
-    real_data = pd.read_csv('%_to_Utrecht_real.csv')
-    y = real_data['%_to_Utrecht'].astype(float)
-    plt.plot(range(24), y, color='red')
-    plt.xlim(0,24)
-    plt.ylim(0,100)
-    plt.show()
-
 
 def calculate_average_values(road_type):
     """
@@ -213,13 +197,11 @@ colors = [
 
 calculate_average_values(0)
 calculate_average_values(2)
-#plot_density_flow()
-#plot_speed_averages(0)
-#plot_density_flow(2)
-#plot_speed_averages('./results/averages_type_2.csv', paths, sections=sections, plot_labels=labels, colors=colors, image=['./new_road_with_names.png'], labelheight=0.5)
-#plot_speed_averages('./results/difference.csv', yrange=[-50,50], plot_labels=["Difference"])
-#plot_speed_averages('./average_real_road.csv', ['./results/averages_type_0.csv', './results/averages_type_2.csv'], colors=['black', 'blue', 'red'], plot_labels=["Real data", "Original simulated", "New simulated"], scalefactor=[0.05,1,1])
-#plot_speed_averages('./results/averages_type_2.csv', ['./results/averages_type_0.csv'], colors=['red', 'blue'], plot_labels=["New simulated","Original simulated"])
-#plot_percentage_to_Utrecht(2)
+
+plot_density_flow()
+plot_speed_averages('./results/averages_type_2.csv', paths, sections=sections, plot_labels=labels, colors=colors, image=['./new_road_with_names.png'], labelheight=0.5)
+plot_speed_averages('./results/difference.csv', yrange=[-50,50], plot_labels=["Difference"])
+plot_speed_averages('./results/averages_type_2.csv', ['./results/averages_type_0.csv'], colors=['red', 'blue'], plot_labels=["New simulated","Original simulated"])
+plot_speed_averages('./average_real_road.csv', ['./results/averages_type_0.csv', './results/averages_type_2.csv'], colors=['black', 'blue', 'red'], plot_labels=["Real data", "Original simulated", "New simulated"], scalefactor=[0.05,1,1])
 
 #calculate_difference('./results/averages_type_2.csv', './results/averages_type_0.csv')

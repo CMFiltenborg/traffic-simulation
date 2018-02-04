@@ -45,8 +45,10 @@ is run, thus if times is 1 every hour is run ones.
 The file "process_statistics.py" reads data from the result map and uses
 this to create csv files with averages. Using this data we create multiple
 plots. The first plot shows the average speed compared to the density.
-The second plot shows the average speed for the different road sections.
-The third plot shows the difference in average speed calculated by the second
-road minus the first road. Thus if the line is above zero then the second
-road has a higher average speed. The forth plot show the average speeds of the
-two roads in one graph.
+in one graph.
+The second plot shows the average speed for the different road sections of
+the second road. The third plot shows the difference in average speed
+calculated by the second road minus the first road. Thus if the line is
+above zero then the second road has a higher average speed. The forth plot
+show the average speeds of the two roads in one graph. The last plot also shows
+the average speed from our data in the previous plot.

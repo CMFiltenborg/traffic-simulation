@@ -6,15 +6,15 @@ With these files we can create roads, run simulations, save data from
 simulations to csv files and use this data to perform statistical tets.
 For our project we have implemented two roads. The first road is based
 on a real road and the second road is a variation of the first road.
-We wanted to compare these two roads with each otter. If you only want
-to look at the results run "process_sstatistics.py".
+We wanted to compare these two roads with each other. If you only want
+to look at the results run "process_statistics.py".
 
 The file "car.py" can create a car object and has functions to return a
 speed the car hopes to get and functions to change the cars speed and
 position.
 
 The file "RoadSection.py" can create a road section object and has function
-to etermine what happens when a car gets on this road section and what
+to determine what happens when a car gets on this road section and what
 happens when the car leaves this road section.
 
 The file "CreateRoads.py" can create different roads using multiple road
